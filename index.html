@@ -1,418 +1,60 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><title>MindNotes.</title><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"><script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-:root{--bg:#f7f1e8;--card:#ffffff;--text:#1a1a1a;--muted:#8a7d6f;--bdr:#e8ddd0;--bdr2:#f0e6d9;--btn:#1a1a1a;--btnT:#fff;--dark:#1a1a1a}
-html.dark,body.dark{--bg:#111;--card:#1c1c1c;--text:#f0e6d9;--muted:#9a8e82;--bdr:#2a2a2a;--bdr2:#222;--btn:#f0e6d9;--btnT:#111;--dark:#000}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden}
-.top{position:sticky;top:0;z-index:50;background:var(--card);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:10px 14px;gap:10px}
-.logo{font-family:'Fraunces',serif;font-weight:700;font-size:22px;letter-spacing:-.5px}
-.right{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end}
-.sBox{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--bdr);border-radius:999px;padding:6px 12px;flex:1;max-width:140px}
-.sBox input{border:none;background:transparent;outline:none;font-size:12px;width:100%;color:var(--text);font-family:inherit}
-.btn{background:var(--bg);border:1px solid var(--bdr);border-radius:999px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;color:var(--text);font-family:inherit}
-.btn.dark{background:var(--btn);color:var(--btnT);border-color:var(--btn)}
-.btn.ico{width:36px;height:36px;padding:0;border-radius:50%}
-.bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90;display:none}.bg.open{display:block}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:88%;max-width:360px;background:var(--card);z-index:100;transform:translateX(100%);transition:.3s;border-left:1px solid var(--bdr);display:flex;flex-direction:column}.drawer.open{transform:translateX(0)}
-.menuHead{display:flex;align-items:center;justify-content:space-between;padding:14px;border-bottom:1px solid var(--bdr);font-weight:700}
-.menuScroll{flex:1;overflow-y:auto}
-.menuSec{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:14px 14px 6px;font-weight:700;background:var(--bg);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr)}
-.menuLink{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;font-size:13px;font-weight:500;cursor:pointer;border-bottom:1px solid var(--bdr2)}.menuLink:active{background:var(--bg)}
-.langBox{margin:10px 14px;border:1px solid var(--bdr);border-radius:12px;overflow:hidden}
-.langHeader{padding:12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;cursor:pointer}
-.langList{max-height:0;overflow:hidden;transition:.25s}.langList.open{max-height:400px;overflow-y:auto;border-top:1px solid var(--bdr)}
-.langItem{padding:10px 12px;display:flex;justify-content:space-between;font-size:12px;cursor:pointer;border-bottom:1px solid var(--bdr2)}.langItem.active{background:var(--bg);font-weight:700}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px;max-width:1100px;margin:0 auto}
-.card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;position:relative;cursor:pointer}
-.slideWrap{aspect-ratio:4/5;background:#000;position:relative;overflow:hidden}.slideWrap img,.slideWrap video{width:100%;height:100%;object-fit:cover}
-.slideCount{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:#fff;font-size:10px;padding:3px 7px;border-radius:999px}
-.musicBadge{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.65);color:#fff;font-size:9px;padding:3px 7px;border-radius:999px}
-.editBar{position:absolute;top:6px;left:6px;display:flex;gap:4px;z-index:3}.editBar span{width:28px;height:28px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px}
-#postView{display:none;max-width:700px;margin:0 auto;padding:12px}
-.carousel{position:relative;overflow:hidden;background:#000;border-radius:16px;margin-top:10px;height:480px}
-.carouselTrack{display:flex;height:100%;transition:transform .3s}
-.carouselTrack img,.carouselTrack video{width:100%;height:480px;object-fit:contain;flex-shrink:0}
-.cArrow{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;background:rgba(255,255,255,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;font-size:18px}
-.cArrow.left{left:8px}.cArrow.right{right:8px}
-.cDots{position:absolute;bottom:44px;left:0;right:0;display:flex;gap:5px;justify-content:center;z-index:3}
-.cDot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4)}.cDot.active{background:#fff;width:16px}
-.musicBar{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));padding:46px 12px 12px;display:flex;gap:10px;align-items:center;color:#fff;z-index:4}
-.musicBtn{width:36px;height:36px;border-radius:50%;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:200;padding:12px}.modal.open{display:flex}
-.box{background:var(--card);color:var(--text);border-radius:20px;max-width:480px;width:100%;padding:18px;border:1px solid var(--bdr);max-height:94vh;overflow-y:auto}
-.inp{width:100%;border:1px solid var(--bdr);background:var(--bg);color:var(--text);border-radius:10px;padding:11px 12px;font-size:14px;outline:none;margin-top:8px;font-family:inherit}.ta{min-height:80px}
-.upGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.upBtn{padding:12px;border:1px dashed var(--bdr);border-radius:12px;text-align:center;font-size:12px;cursor:pointer;background:var(--bg);font-weight:600}
-.draftBar{display:flex;gap:8px;margin-top:12px}
-.previewItem{position:relative;width:86px;height:86px;border-radius:10px;overflow:hidden;border:1px solid var(--bdr);background:#000}.previewItem img,.previewItem video{width:100%;height:100%;object-fit:cover}
-.previewTools{position:absolute;bottom:0;left:0;right:0;display:flex;gap:2px;background:rgba(0,0,0,.8);padding:2px}.previewTools span{flex:1;font-size:9px;color:#fff;text-align:center;padding:5px 0;cursor:pointer;background:rgba(255,255,255,.18);border-radius:4px}
-.musicSheet{background:#121212;color:#fff;border-radius:22px 22px 0 0;width:100%;max-width:480px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
-.musicSheetTop{padding:14px 16px;overflow-y:auto;-webkit-user-select:none;user-select:none}
-.songArt{width:64px;height:64px;border-radius:12px;overflow:hidden;background:#222;flex-shrink:0}.songArt img{width:100%;height:100%;object-fit:cover}
-.waveWrap{position:relative;width:100%;height:54px;background:#1e1e1e;border-radius:10px;margin-top:12px;overflow:hidden}
-.waveCanvas{width:100%;height:54px}
-.trimHandle{position:absolute;top:0;bottom:0;width:2px;background:#fff}
-.draftItem{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--bdr);border-radius:12px;margin-top:8px;background:var(--bg)}.draftItem img{width:50px;height:50px;border-radius:8px;object-fit:cover}
-.cBox{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:14px;margin-top:12px}.cInput{display:flex;align-items:center;gap:8px;margin-top:12px;background:var(--bg);border:1px solid var(--bdr);border-radius:999px;padding:6px 6px 6px 14px}
-.cInput input{flex:1;border:none;outline:none;background:transparent;font-size:14px;color:var(--text);font-family:inherit}
-.dateTag{font-size:11px;color:var(--muted);background:var(--bg);padding:4px 8px;border-radius:999px;border:1px solid var(--bdr);display:inline-flex;align-items:center;gap:4px}
-.footer{max-width:1100px;margin:24px auto 0;padding:16px;text-align:center;color:var(--muted);font-size:11px;border-top:1px solid var(--bdr)}
-.cropContainer{position:relative;width:100%;height:380px;background:#000;overflow:hidden;border-radius:12px;touch-action:none}
-.cropImg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:100%;max-height:100%;user-select:none;pointer-events:none}
-.cropBox{position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.55);touch-action:none}
-.cropHandle{position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;border:2px solid #000}
-.h-tl{top:-9px;left:-9px;cursor:nwse-resize}.h-tr{top:-9px;right:-9px;cursor:nesw-resize}.h-bl{bottom:-9px;left:-9px;cursor:nesw-resize}.h-br{bottom:-9px;right:-9px;cursor:nwse-resize}
-@media(min-width:800px){.grid{grid-template-columns:1fr 1fr 1fr}.carousel{height:560px}.carouselTrack img,.carouselTrack video{height:560px}.sBox{max-width:220px}}
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MindNotes.</title><link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Manrope:wght@400;600&display=swap" rel="stylesheet"><style>:root{--bg:#f7f1e8;--card:#fff;--text:#1a1a1a;--bdr:#e8ddd0;--mut:#8a7d6f;--btn:#111;--btnT:#fff}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--text)}body.dark{--bg:#111;--card:#1c1c1c;--text:#eee;--bdr:#333;--mut:#aaa;--btn:#fff;--btnT:#111}.top{position:sticky;top:0;z-index:9;background:var(--card);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;padding:10px 12px}.logo{font-family:Fraunces;font-weight:700;font-size:22px}.btn{border:1px solid var(--bdr);background:var(--card);padding:7px 12px;border-radius:99px;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}.btn.dark{background:var(--btn);color:var(--btnT)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;max-width:900px;margin:auto}.card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;position:relative}.card img,.card video{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}.cardBody{padding:8px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center;z-index:30}.modal.open{display:flex}.box{background:var(--card);width:100%;max-width:460px;border-radius:20px 20px 0 0;padding:14px;max-height:92vh;overflow:auto}.inp{width:100%;border:1px solid var(--bdr);background:var(--bg);padding:10px;border-radius:10px;margin-top:8px;color:var(--text)}#postView{display:none;max-width:700px;margin:auto;padding:10px}.car{position:relative;background:#000;border-radius:16px;overflow:hidden;height:460px;display:flex;align-items:center;justify-content:center}.carTrack{display:flex;width:100%;height:100%;transition:transform.3s}.carTrack img,.carTrack video{width:100%;height:100%;object-fit:contain;flex-shrink:0}.cAr{position:absolute;top:50%;transform:translateY(-50%);background:#fff;color:#000;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}.cAr.l{left:8px}.cAr.r{right:8px}.cDotRow{position:absolute;bottom:10px;left:0;right:0;display:flex;gap:5px;justify-content:center}.cDot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}.cDot.on{background:#fff}.dateTag{font-size:11px;border:1px solid var(--bdr);padding:4px 8px;border-radius:99px;background:var(--bg)}.prevWrap{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.prevItem{position:relative;width:70px;height:70px;border-radius:10px;overflow:hidden}.prevItem img,.prevItem video{width:100%;height:100%;object-fit:cover}.prevItem span{position:absolute;top:2px;right:2px;background:red;color:#fff;font-size:9px;padding:2px 4px;border-radius:50%;cursor:pointer}.drawer{position:fixed;top:0;right:-100%;width:84%;max-width:320px;height:100%;background:var(--card);z-index:40;transition:.3s;border-left:1px solid var(--bdr);padding:14px;overflow:auto}.drawer.open{right:0}.bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:35}.bg.open{display:block}#cropBox{position:absolute;border:2px dashed #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.5);cursor:move}.musicBar{display:flex;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--bdr);padding:8px;border-radius:12px;margin-top:8px}
 </style></head><body>
-<div class="top"><div class="logo">MindNotes.</div><div class="right"><div class="sBox">🔍<input id="search" placeholder="Search" oninput="doSearch()"></div><div id="authBtn"></div><div class="btn ico dark" onclick="openD()">☰</div></div></div>
-<div class="bg" id="bg" onclick="closeD()"></div>
-<div class="drawer" id="drawer"><div class="menuHead"><b>☰ Menu</b><div class="btn ico" onclick="closeD()">←</div></div><div class="menuScroll">
-<div id="userBox" style="padding:14px;background:var(--bg);border-bottom:1px solid var(--bdr)"></div><div id="authBox"></div>
-<div id="adminSection" style="display:none">
-<div class="menuSec">Admin Control</div>
-<div class="menuLink" onclick="openPostModal()"><span>➕ Create New Post</span><span>›</span></div>
-<div class="menuLink" onclick="openDrafts()"><span>📝 Drafts</span><span id="draftCount">›</span></div>
-<div class="menuLink" onclick="openArchive()"><span>📦 Archived</span><span id="archiveCount">›</span></div>
-<div class="menuSec">Admin Profile</div>
-<div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px">
-<label style="font-size:11px;color:var(--muted)">Display Name</label>
-<div style="display:flex;gap:6px"><input id="adminNameInput" class="inp" style="margin:0" placeholder="Rohit Kumar"><div class="btn dark" onclick="saveAdminName()">Save</div></div>
-<label style="font-size:11px;color:var(--muted);margin-top:6px">Profile Photo</label>
-<input type="file" id="adminPicInput" accept="image/*" style="display:none" onchange="setAdminPic(this)">
-<div style="display:flex;gap:8px;align-items:center"><div id="adminPicPrev"></div><div class="btn" style="flex:1" onclick="document.getElementById('adminPicInput').click()">📷 Change Photo</div></div>
-</div>
-</div>
-<div id="adminLoginSection"><div class="menuSec">Admin</div><div class="menuLink" onclick="openAdminLogin()"><span>Admin Login</span><span>›</span></div></div>
-<div class="menuSec">Choose Preferred Language</div>
-<div class="langBox"><div class="langHeader" onclick="toggleLangList()"><span id="curLangName">🌐 English</span><span id="langArrow">›</span></div><div class="langList" id="langList"></div></div>
-<div class="menuSec">Settings</div><div class="menuLink" onclick="toggleTheme()"><span id="themeText">🌙 Dark Mode</span><span id="tVal">Off</span></div>
-<div class="menuSec">Storage</div><div class="menuLink" onclick="clearFullStorage()" style="background:#ff3b30;color:#fff"><span>🧹 Clear Full Storage (if Full error)</span><span>›</span></div>
-<div style="padding:20px 14px;text-align:center;color:var(--muted);font-size:11px">© 2026 MindNotes • v14 Fixed</div></div></div><div class="modal" id="loginModal"><div class="box" style="text-align:center"><h3 style="font-family:'Fraunces',serif;font-size:20px">Welcome</h3><p style="font-size:12px;color:var(--muted);margin-top:6px">Sign in to comment & like</p>
-<div id="g_id_onload" data-client_id="803953041449-j8v0johgtcclbco4lfj56t860r9hrqo4.apps.googleusercontent.com" data-callback="onGoogleLogin"></div>
-<div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" style="margin:20px auto;display:flex;justify-content:center"></div>
-<div class="btn" style="width:100%;margin-top:8px" onclick="closeLogin()">Cancel</div></div></div>
-<div class="modal" id="adminModal"><div class="box"><h3 style="font-family:'Fraunces',serif">Admin Login</h3><input id="adminPass" class="inp" type="password" placeholder="Enter password"><div style="display:flex;gap:8px;margin-top:12px"><div class="btn dark" style="flex:1" onclick="doAdminLogin()">Login</div><div class="btn" style="flex:1" onclick="closeAdmin()">Cancel</div></div></div></div>
-
-<div class="modal" id="postModal"><div class="box"><h3 style="font-family:'Fraunces',serif">New Post</h3>
-<input id="pCat" class="inp" placeholder="Category"><input id="pTitleIn" class="inp" placeholder="Title * (Required)">
-<label style="font-size:11px;color:var(--muted);margin-top:10px;display:block">📅 Date & Time</label>
-<input id="pDateTime" type="datetime-local" class="inp" style="margin-top:4px">
-<div class="upGrid">
-<div class="upBtn" onclick="document.getElementById('fileMulti').click()">📸 Photos/Videos<br><span style="font-size:10px;opacity:.6">Multi (auto compress)</span></div>
-<div class="upBtn" onclick="document.getElementById('fileAudio').click()">🎵 Music<br><span style="font-size:9px;opacity:.6">Use Spotify link*</span></div>
-</div>
-<input type="file" id="fileMulti" accept="image/*,video/*" multiple style="display:none" onchange="handleMulti(this)">
-<input type="file" id="fileAudio" accept="audio/*" style="display:none" onchange="handleAudio(this)">
-<div id="preview" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"></div>
-<div style="margin-top:10px"><b style="font-size:12px">Spotify Link (Recommended - no storage):</b><input id="spotifyLink" class="inp" placeholder="https://open.spotify.com/track/..." oninput="handleSpotify()"><div id="spotifyPreview" style="margin-top:8px"></div></div>
-<textarea id="pBodyIn" class="inp ta" placeholder="Caption..."></textarea>
-<div class="draftBar"><div class="btn" style="flex:1;height:44px" onclick="saveAsDraft()">📝 Draft</div><div class="btn dark" style="flex:1;height:44px" onclick="savePost()">📤 Post</div></div>
-<div class="btn" style="width:100%;margin-top:8px;height:40px" onclick="closePostModal()">Cancel</div>
-</div></div>
-
-<div class="modal" id="musicModal" style="align-items:flex-end;padding:0"><div class="musicSheet" oncontextmenu="return false">
-<div class="musicSheetTop">
-<div style="width:32px;height:4px;background:rgba(255,255,255,.3);border-radius:99px;margin:0 auto 12px"></div>
-<div style="display:flex;gap:12px;align-items:center"><div class="songArt"><img id="sheetImg" src=""></div><div style="flex:1;text-align:left"><b id="sheetTitle" style="font-size:14px">Song</b><br><span id="sheetArtist" style="font-size:11px;opacity:.6">Artist</span></div><div style="width:46px;height:46px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;border:1px dashed #555" onclick="cycleDur()"><span id="durCircle">30</span>s</div></div>
-<div class="waveWrap" id="waveWrap"><canvas id="waveCanvas" class="waveCanvas"></canvas><div id="waveCursor" class="trimHandle" style="left:0"></div></div>
-<div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6;margin-top:6px"><span id="sheetStart">0.0s</span><span id="sheetEnd">30.0s</span><span id="sheetTotal">/ 0s</span></div>
-<div style="margin-top:14px"><label style="font-size:11px;opacity:.7">Drag to choose start point (Manual Scroll)</label><input type="range" id="sheetSlider" min="0" max="30" value="0" step="0.1" style="width:100%;margin-top:6px;accent-color:#fff" oninput="onSheetSlide()"></div>
-<div style="font-size:11px;opacity:.5;margin-top:8px">• Use slider for exact part • Tap 30s circle to change duration (5/8/10/15/30)</div>
-</div>
-<div style="display:flex;gap:10px;padding:12px 16px;background:#000;flex-shrink:0"><div class="btn" style="flex:1;background:#222;color:#fff;border:none;height:44px" onclick="closeMusicModal()">Cancel</div><div class="btn" style="flex:1;background:#222;color:#fff;border:none;height:44px" onclick="previewSheet()">▶️ Play</div><div class="btn dark" style="flex:1;height:44px;background:#fff;color:#000" onclick="confirmMusic()">Done ✓</div></div>
-</div></div>
-
-<div class="modal" id="cropModal"><div class="box" style="max-width:520px"><h3 style="font-family:'Fraunces',serif">Crop — 4 corner drag</h3><p style="font-size:11px;color:var(--muted);margin-top:4px">Drag box, use corners to resize</p>
-<div style="display:flex;gap:6px;margin:12px 0"><div class="btn dark" onclick="setCropRatio('1:1')">1:1</div><div class="btn" onclick="setCropRatio('4:5')">4:5</div><div class="btn" onclick="setCropRatio('16:9')">16:9</div><div class="btn" onclick="setCropRatio('free')">Free</div></div>
-<div class="cropContainer" id="cropContainer"><img id="cropImg" class="cropImg"><div id="cropBox" class="cropBox"><div class="cropHandle h-tl" data-h="tl"></div><div class="cropHandle h-tr" data-h="tr"></div><div class="cropHandle h-bl" data-h="bl"></div><div class="cropHandle h-br" data-h="br"></div></div></div>
-<div style="display:flex;gap:8px;margin-top:12px"><div class="btn" style="flex:1" onclick="closeCrop()">Cancel</div><div class="btn dark" style="flex:1" onclick="applyCrop()">Apply ✓</div></div></div></div>
-
-<div class="modal" id="videoTrimModal"><div class="box"><h3>Trim Video</h3><video id="trimVideo" style="width:100%;max-height:300px;background:#000;border-radius:12px;margin-top:10px" controls></video>
-<div style="margin-top:12px"><label style="font-size:12px">Start: <span id="vStartLabel">0s</span></label><input type="range" id="vStart" min="0" max="100" value="0" style="width:100%" oninput="onVTrim()"></div>
-<div style="margin-top:8px"><label style="font-size:12px">End: <span id="vEndLabel">0s</span></label><input type="range" id="vEnd" min="0" max="100" value="100" style="width:100%" oninput="onVTrim()"></div>
-<div style="display:flex;gap:8px;margin-top:12px"><div class="btn" style="flex:1" onclick="closeVideoTrim()">Cancel</div><div class="btn dark" style="flex:1" onclick="applyVideoTrim()">Apply ✓</div></div></div></div>
-
-<div class="modal" id="draftModal"><div class="box"><div style="display:flex;justify-content:space-between;align-items:center"><h3>📝 Drafts</h3><div class="btn ico" onclick="closeDrafts()">←</div></div><div id="draftList" style="margin-top:10px"></div></div></div>
-<div class="modal" id="archiveModal"><div class="box"><div style="display:flex;justify-content:space-between;align-items:center"><h3>📦 Archived</h3><div class="btn ico" onclick="closeArchive()">←</div></div><div id="archiveList" style="margin-top:10px"></div></div></div>
-<div class="modal" id="shareModal"><div class="box" style="text-align:center"><h3>Share Post</h3><div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center"><div class="btn dark" onclick="shareWA()">WhatsApp</div><div class="btn" onclick="shareFB()">Facebook</div><div class="btn" onclick="shareX()">X</div><div class="btn" onclick="shareCopy()">Copy Link</div></div><div class="btn" style="width:100%;margin-top:12px" onclick="closeShare()">Close</div></div></div>
-
-<div id="homeView"><div style="max-width:1100px;margin:0 auto;padding:28px 14px 10px"><h1 id="mainTitle" style="font-size:28px;line-height:1.1">Slow mornings, beige thoughts & coffee.</h1><p id="mainSub" style="color:var(--muted);margin-top:10px;font-size:13px">Aesthetic blog from Muzaffarpur</p></div><div class="grid" id="grid"></div><div class="footer">© 2026 MindNotes • Crafted with beige & brown</div></div>
-<div id="postDateTag" style="margin-top:10px"></div>
-<div class="carousel" id="carousel"><div class="carouselTrack" id="cTrack"></div><div class="cArrow left" onclick="slide(-1)">‹</div><div class="cArrow right" onclick="slide(1)">›</div><div class="cDots" id="cDots"></div><div class="musicBar" id="musicBar" style="display:none"><div class="musicBtn" id="musicPlayBtn" onclick="togglePostMusic()">♪</div><div style="flex:1"><b id="musicName" style="font-size:13px;display:block">Music</b><span id="musicTime" style="font-size:11px;opacity:.8">0:30</span></div></div></div>
-<div id="authorBox" style="display:flex;gap:10px;align-items:center;margin-top:12px"></div>
-<h1 id="pTitle" style="font-family:'Fraunces',serif;font-size:22px;margin-top:12px;line-height:1.2"></h1>
-<p id="pBody" style="margin-top:12px;white-space:pre-wrap;font-size:15px;line-height:1.7;color:var(--muted)"></p>
-<div style="display:flex;gap:8px;margin-top:14px;align-items:center"><div class="btn" onclick="toggleLike()">❤️ <span id="likeCount">0</span></div><div class="btn" onclick="document.getElementById('commentInput').focus()">💬 <span id="cCount">0</span></div></div>
-<div class="cBox"><b style="font-size:14px">Comments</b><div id="cList" style="margin-top:8px"></div><div class="cInput"><input id="commentInput" placeholder="Add comment..."><div class="btn dark" onclick="addComment()" style="height:32px">Post</div></div></div>
-</div>
+<div class="top"><div class="logo">MindNotes.</div><div style="display:flex;gap:6px"><div class="btn" onclick="toggleLang()">🌐 <span id="curLang">EN</span></div><div class="btn" onclick="openDrawer()">☰ Menu</div></div></div>
+<div class="grid" id="grid"></div>
+<div id="postView"><div style="display:flex;gap:6px;align-items:center"><div class="btn" onclick="closePost()">← Back</div><b id="pTop" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Post</b><div class="btn" onclick="share()">↗ Share</div><div class="btn" onclick="if(confirm('Archive?')){POSTS[cur].archived=!POSTS[cur].archived;save();closePost();render();}">📦</div><div class="btn" onclick="if(confirm('Delete?')){POSTS.splice(cur,1);save();closePost();render();}">🗑️</div></div>
+<div id="dateTag" style="margin-top:8px"></div>
+<div class="car" id="car" style="margin-top:8px"><div class="carTrack" id="track"></div><div class="cAr l" onclick="slide(-1)">‹</div><div class="cAr r" onclick="slide(1)">›</div><div class="cDotRow" id="dots"></div></div>
+<div id="authBox" style="display:flex;gap:8px;align-items:center;margin-top:10px"></div><h2 id="pTitle" style="font-family:Fraunces;margin-top:10px"></h2><p id="pBody" style="color:var(--mut);margin-top:6px;white-space:pre-wrap"></p>
+<div id="musicBar" class="musicBar" style="display:none"></div>
+<div style="display:flex;gap:8px;margin-top:10px"><div class="btn" onclick="like()">❤️ <span id="likeC">0</span></div><div class="btn" onclick="document.getElementById('cIn').focus()">💬 <span id="cC">0</span></div></div>
+<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:10px;margin-top:10px"><b>Comments</b><div id="cList" style="margin-top:6px"></div><div style="display:flex;gap:6px;margin-top:8px"><input id="cIn" class="inp" style="margin:0" placeholder="Add comment..."><div class="btn dark" onclick="addC()">Post</div></div></div></div>
+<div class="drawer" id="drawer"><div style="display:flex;justify-content:space-between"><b>Menu</b><div class="btn" onclick="closeDrawer()">✕</div></div>
+<div style="margin-top:12px"><input id="adminName" class="inp" placeholder="Your Name"><div style="display:flex;gap:6px;margin-top:6px"><input type="file" id="adminPicIn" accept="image/*" style="display:none" onchange="setAdminPic(this)"><div class="btn" onclick="document.getElementById('adminPicIn').click()">📸 Photo</div><div class="btn dark" onclick="saveName()">Save</div></div><div id="adminPicPrev" style="margin-top:6px"></div></div>
+<div style="margin-top:12px;display:flex;justify-content:space-between"><span>Dark Mode</span><div class="btn" onclick="toggleTheme()">Toggle</div></div>
+<div class="btn" style="width:100%;margin-top:8px" onclick="openCreate();closeDrawer()">+ New Post</div>
+<div class="btn" style="width:100%;margin-top:6px" onclick="openDrafts()">Drafts <span id="dCount"></span></div>
+<div class="btn" style="width:100%;margin-top:6px" onclick="openArchive()">Archived <span id="aCount"></span></div>
+<div class="btn" style="width:100%;margin-top:6px;background:#ffdddd" onclick="if(confirm('Clear all storage?')){localStorage.clear();location.reload();}">🧹 Clear Full Storage</div>
+<div id="authArea" style="margin-top:10px"><div class="btn" style="width:100%" onclick="localStorage.setItem('mn_admin','1');alert('Admin enabled')">Enable Admin</div></div>
+</div><div class="bg" id="bg" onclick="closeDrawer()"></div>
+<div class="modal" id="createModal"><div class="box"><h3>New Post</h3><input id="tCat" class="inp" placeholder="Category"><input id="tTitle" class="inp" placeholder="Title * Required"><input id="tDate" type="datetime-local" class="inp"><input type="file" id="fImg" accept="image/*,video/*" multiple style="display:none" onchange="onImg(this)"><div class="btn" style="width:100%;margin-top:8px" onclick="document.getElementById('fImg').click()">📸 Add Photos/Videos (max 4)</div><div id="prev" class="prevWrap"></div><input id="spotify" class="inp" placeholder="Spotify link https://open.spotify.com/track/..." oninput="onSpotify()"><div id="spotPrev" style="margin-top:6px"></div><textarea id="tBody" class="inp" style="height:80px" placeholder="Caption..."></textarea><div style="display:flex;gap:6px;margin-top:10px"><div class="btn" style="flex:1" onclick="saveDraft()">Draft</div><div class="btn" style="flex:1" onclick="closeCreate()">Cancel</div><div class="btn dark" style="flex:1" onclick="savePost()">Post</div></div></div></div>
+<div class="modal" id="draftModal"><div class="box"><div style="display:flex;justify-content:space-between"><b>Drafts</b><div class="btn" onclick="closeDrafts()">✕</div></div><div id="draftList"></div></div></div>
+<div class="modal" id="archiveModal"><div class="box"><div style="display:flex;justify-content:space-between"><b>Archived</b><div class="btn" onclick="closeArchive()">✕</div></div><div id="archiveList"></div></div></div>
+<div class="modal" id="cropModal"><div class="box"><div style="display:flex;justify-content:space-between"><b>Crop</b><div class="btn" onclick="closeCrop()">✕</div></div><div id="cropCont" style="position:relative;width:100%;height:300px;background:#000;margin-top:8px;overflow:hidden"><img id="cropImg" style="width:100%;height:100%;object-fit:contain"><div id="cropBox" style="left:20%;top:20%;width:60%;height:60%"></div></div><div style="display:flex;gap:6px;margin-top:8px"><div class="btn" onclick="setRatio('1:1')">1:1</div><div class="btn" onclick="setRatio('4:5')">4:5</div><div class="btn dark" style="flex:1" onclick="applyCrop()">Apply</div></div></div></div>
 <script>
-const DEFAULT_POSTS=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Morning coffee prayer.",slides:[{type:"image",src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"}],music:null,authorPic:null,date:Date.now(),archived:false}];
-let POSTS;try{let s=localStorage.getItem('mn_v14')||localStorage.getItem('mn_v13');POSTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_v12')||localStorage.getItem('mn_v11')||'null')||DEFAULT_POSTS;POSTS=POSTS.map(p=>({...p,archived:!!p.archived,date:p.date||Date.now()}));}catch{POSTS=DEFAULT_POSTS}
-let DRAFTS;try{let s=localStorage.getItem('mn_drafts_v14')||localStorage.getItem('mn_drafts_v13');DRAFTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_drafts_v12')||localStorage.getItem('mn_drafts_v11')||'[]');}catch{DRAFTS=[]}
-let curPost=0,curSlide=0,editingIdx=-1,tempSlides=[],tempMusic=null,audioEl=null,sheetAudio=null,editingDraftIdx=-1,cropIdx=-1,trimIdx=-1;
-const LANG_TXT={en:{title:"Slow mornings, beige thoughts & coffee.",sub:"Aesthetic blog from Muzaffarpur",search:"Search"},hi:{title:"धीमी सुबह, सुकून भरे ख्याल और कॉफी।",sub:"मुज़फ्फरपुर से एस्थेटिक ब्लॉग",search:"खोजें"}};
-const LANGUAGES=[{code:'en',name:'English',flag:'🌐'},{code:'hi',name:'हिन्दी',flag:'🇮🇳'},{code:'bn',name:'বাংলা',flag:'🇧🇩'},{code:'bho',name:'भोजपुरी',flag:'🟠'},{code:'mai',name:'मैथिली',flag:'🔶'},{code:'ta',name:'தமிழ்',flag:'🇮🇳'},{code:'te',name:'తెలుగు',flag:'🇮🇳'},{code:'ml',name:'മലയാളം',flag:'🇮🇳'},{code:'kn',name:'ಕನ್ನಡ',flag:'🇮🇳'},{code:'mr',name:'मराठी',flag:'🇮🇳'},{code:'gu',name:'ગુજરાતી',flag:'🇮🇳'},{code:'pa',name:'ਪੰਜਾਬੀ',flag:'🇮🇳'},{code:'ur',name:'اردو',flag:'🇵🇰'},{code:'ne',name:'नेपाली',flag:'🇳🇵'}];
-let curLang=localStorage.getItem('mn_lang')||'en';
-function buildLangList(){let l=document.getElementById('langList');l.innerHTML=LANGUAGES.map(x=>`<div class="langItem ${x.code==curLang?'active':''}" onclick="setLang('${x.code}')"><span>${x.flag} ${x.name}</span><span>${x.code==curLang?'✓':'›'}</span></div>`).join('');let c=LANGUAGES.find(x=>x.code==curLang);document.getElementById('curLangName').innerText=`${c.flag} ${c.name}`;}
-function toggleLangList(){let list=document.getElementById('langList');let a=document.getElementById('langArrow');list.classList.toggle('open');a.innerText=list.classList.contains('open')?'‹':'›';}
-function setLang(code){curLang=code;localStorage.setItem('mn_lang',code);buildLangList();let t=LANG_TXT[code]||LANG_TXT['en'];document.getElementById('mainTitle').innerText=t.title;document.getElementById('mainSub').innerText=t.sub;document.getElementById('search').placeholder=t.search;render();}
-function formatDate(ts){let d=new Date(ts);let now=new Date();let diff=Math.floor((now-d)/1000);if(diff<60)return'Just now';if(diff<3600)return Math.floor(diff/60)+'m ago';if(diff<86400)return Math.floor(diff/3600)+'h ago';if(diff<172800)return'Yesterday';return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+' • '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}
-function formatFullDate(ts){let d=new Date(ts);return d.toLocaleString('en-IN',{weekday:'short',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});}
-function getAdminPic(){return localStorage.getItem('mn_admin_pic')||null;}
-function getAdminName(){return localStorage.getItem('mn_admin_name')||'Rohit Kumar';}
-function setAdminPic(input){let f=input.files[0];if(!f)return;compressImageFile(f,300,0.8,dataUrl=>{localStorage.setItem('mn_admin_pic',dataUrl);renderAdminPic();renderAuth();alert('Photo updated ✓');});}
-function saveAdminName(){let n=document.getElementById('adminNameInput').value.trim();if(!n)return alert('Please enter name');localStorage.setItem('mn_admin_name',n);let u=getUser();if(u){u.name=n;localStorage.setItem('mn_user',JSON.stringify(u));}renderAuth();alert('Name saved ✓');}
-function renderAdminPic(){let pic=getAdminPic();document.getElementById('adminPicPrev').innerHTML=pic?`<img src="${pic}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--bdr)">`:'<div style="width:44px;height:44px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center">👤</div>';}
-function compressImageFile(file,maxW,quality,cb){
- let reader=new FileReader();
- reader.onload=e=>{
-  let img=new Image();
-  img.onload=()=>{
-   let canvas=document.createElement('canvas');
-   let ratio=img.width/img.height;
-   let w=img.width>maxW?maxW:img.width;
-   let h=w/ratio;
-   canvas.width=w;canvas.height=h;
-   canvas.getContext('2d').drawImage(img,0,0,w,h);
-   cb(canvas.toDataURL('image/jpeg',quality));
-  };
-  img.src=e.target.result;
- };
- reader.readAsDataURL(file);
-}
-function handleMulti(input){
- let files=[...input.files];
- if(!files.length)return;
- if(files.length>4){alert('Max 4 photos allowed');files=files.slice(0,4);}
- files.forEach(f=>{
-  if(f.type.startsWith('video')){
-   let r=new FileReader();
-   r.onload=e=>{tempSlides.push({type:'video',src:e.target.result,size:f.size,trim:{start:0,end:100}});renderPreview();};
-   r.readAsDataURL(f);
-  } else {
-   compressImageFile(f,600,0.55,dataUrl=>{tempSlides.push({type:'image',src:dataUrl,size:0});renderPreview();});
-  }
- });
- input.value='';
-}
-function renderPreview(){document.getElementById('preview').innerHTML=tempSlides.map((s,i)=>`<div class="previewItem">${s.type=='video'?`<video src="${s.src}"></video>`:`<img src="${s.src}">`}<div class="previewTools">${s.type=='image'?`<span onclick="openCrop(${i})">Crop</span>`:`<span onclick="openVideoTrim(${i})">Trim</span>`}<span onclick="tempSlides.splice(${i},1);renderPreview()">Del</span></div></div>`).join('')+`<div style="font-size:11px;color:var(--muted);width:100%">${tempSlides.length} slides • compressed 600px</div>`;}
-let cropState={x:50,y:50,w:200,h:200,startX:0,startY:0,mode:null,handle:null,imgW:0,imgH:0,containerRect:null};
-function openCrop(i){
- cropIdx=i;let s=tempSlides[i];
- document.getElementById('cropModal').classList.add('open');
- let img=document.getElementById('cropImg');
- img.src=s.src;
- img.onload=()=>{
-  let cont=document.getElementById('cropContainer');
-  let rect=cont.getBoundingClientRect();
-  cropState.containerRect=rect;
-  cropState.x=rect.width*0.15;cropState.y=rect.height*0.15;cropState.w=rect.width*0.7;cropState.h=rect.height*0.7;
-  updateCropBox();
- };
-}
+let POSTS=JSON.parse(localStorage.getItem('mn_full')||'null')||[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Slow mornings & coffee.",slides:[{type:"image",src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"}],music:null,authorPic:null,date:Date.now(),archived:false}];
+let DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_full')||'[]');
+let cur=0,ci=0,tmp=[],tmpM=null,cropIdx=-1;
+function save(){try{localStorage.setItem('mn_full',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_full',JSON.stringify(DRAFTS));return true;}catch(e){alert('Storage full! Use Spotify link instead of file. Clear storage from Menu.');return false;}}
+function getAdminPic(){return localStorage.getItem('mn_admin_pic')||''}
+function getAdminName(){return localStorage.getItem('mn_admin_name')||'Rohit Kumar'}
+function render(){document.getElementById('grid').innerHTML=POSTS.filter(p=>!p.archived).map((p)=>{let orig=POSTS.indexOf(p);return `<div class="card" onclick="openPost(${orig})"><${p.slides[0].type==='video'?'video':'img'} src="${p.slides[0].src}" ${p.slides[0].type==='video'?'muted':''}></${p.slides[0].type==='video'?'video':'img'}><div style="position:absolute;top:6px;left:6px;background:#000;color:#fff;font-size:9px;padding:2px 6px;border-radius:99px">${p.slides.length}</div>${p.music?`<div style="position:absolute;top:6px;right:6px;background:#fff;font-size:9px;padding:2px 6px;border-radius:99px">🎵</div>`:''}<div class="cardBody"><b style="font-size:12px">${p.title}</b><div style="font-size:10px;color:gray">${p.cat}</div></div></div>`}).join('');document.getElementById('dCount').innerText=DRAFTS.length?DRAFTS.length+' ›':'';document.getElementById('aCount').innerText=POSTS.filter(p=>p.archived).length?POSTS.filter(p=>p.archived).length+' ›':'';document.getElementById('adminPicPrev').innerHTML=getAdminPic()?`<img src="${getAdminPic()}" style="width:40px;height:40px;border-radius:50%">`:'';}
+function openPost(i){cur=i;ci=0;let p=POSTS[i];document.getElementById('grid').style.display='none';document.getElementById('postView').style.display='block';document.getElementById('pTop').innerText=p.title;document.getElementById('pTitle').innerText=p.title;document.getElementById('pBody').innerText=p.body;document.getElementById('dateTag').innerHTML=`<span class="dateTag">🕒 ${new Date(p.date).toLocaleString()}</span>`;let t=document.getElementById('track');t.innerHTML=p.slides.map(s=>s.type==='video'?`<video src="${s.src}" controls></video>`:`<img src="${s.src}">`).join('');t.style.transform='translateX(0)';document.getElementById('dots').innerHTML=p.slides.map((_,k)=>`<div class="cDot ${k===0?'on':''}"></div>`).join('');document.getElementById('authBox').innerHTML=`<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;background:#111;color:#fff;display:flex;align-items:center;justify-content:center">${p.authorPic||getAdminPic()?`<img src="${p.authorPic||getAdminPic()}" style="width:100%;height:100%;object-fit:cover">`:'R'}</div><b style="font-size:12px">${getAdminName()}</b>`;let mb=document.getElementById('musicBar');if(p.music){if(p.music.type==='spotify'){mb.style.display='block';mb.innerHTML=`<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${p.music.spotifyId}" width="100%" height="80" frameborder="0" allow="autoplay"></iframe>`;}else{mb.style.display='flex';mb.innerHTML=`<div class="btn" onclick="let a=document.getElementById('pa');a.paused?a.play():a.pause()">♪ Play</div><div><b>${p.music.name}</b></div><audio id="pa" src="${p.music.src}"></audio>`;}}else mb.style.display='none';renderLike();renderComments();window.scrollTo(0,0);}
+function closePost(){document.getElementById('grid').style.display='grid';document.getElementById('postView').style.display='none';}
+function slide(d){let p=POSTS[cur];ci=(ci+d+p.slides.length)%p.slides.length;document.getElementById('track').style.transform=`translateX(-${ci*100}%)`;document.querySelectorAll('.cDot').forEach((e,i)=>e.classList.toggle('on',i===ci));}
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('bg').classList.add('open');}function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('bg').classList.remove('open');}
+function openCreate(){tmp=[];tmpM=null;document.getElementById('prev').innerHTML='';document.getElementById('spotPrev').innerHTML='';document.getElementById('tTitle').value='';document.getElementById('tBody').value='';document.getElementById('tCat').value='';document.getElementById('spotify').value='';let n=new Date();n.setMinutes(n.getMinutes()-n.getTimezoneOffset());document.getElementById('tDate').value=n.toISOString().slice(0,16);document.getElementById('createModal').classList.add('open');closeDrawer();}
+function closeCreate(){document.getElementById('createModal').classList.remove('open');}
+function compress(file,cb){let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let c=document.createElement('canvas');let max=700;let w=img.width>max?max:img.width;let h=w/(img.width/img.height);c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',0.6));};img.src=e.target.result;};r.readAsDataURL(file);}
+function onImg(inp){let fs=[...inp.files].slice(0,4);fs.forEach(f=>{if(f.type.startsWith('video')){let r=new FileReader();r.onload=e=>{tmp.push({type:'video',src:e.target.result});renderPrev();};r.readAsDataURL(f);}else compress(f,d=>{tmp.push({type:'image',src:d});renderPrev();});});inp.value='';}
+function renderPrev(){document.getElementById('prev').innerHTML=tmp.map((s,i)=>`<div class="prevItem">${s.type==='video'?`<video src="${s.src}"></video>`:`<img src="${s.src}">`}<span onclick="tmp.splice(${i},1);renderPrev()">✕</span><div style="position:absolute;bottom:0;left:0;right:0;text-align:center;background:rgba(0,0,0,.6);color:#fff;font-size:9px" onclick="openCrop(${i})">Crop</div></div>`).join('');}
+function openCrop(i){cropIdx=i;document.getElementById('cropModal').classList.add('open');document.getElementById('cropImg').src=tmp[i].src;}
 function closeCrop(){document.getElementById('cropModal').classList.remove('open');}
-function updateCropBox(){
- let box=document.getElementById('cropBox');
- box.style.left=cropState.x+'px';box.style.top=cropState.y+'px';box.style.width=cropState.w+'px';box.style.height=cropState.h+'px';
-}
-function setCropRatio(r){
- let cont=document.getElementById('cropContainer').getBoundingClientRect();
- if(r=='1:1'){cropState.w=Math.min(cropState.w,cropState.h);cropState.h=cropState.w;}
- else if(r=='4:5'){cropState.w=cont.width*0.6;cropState.h=cropState.w*1.25;}
- else if(r=='16:9'){cropState.w=cont.width*0.7;cropState.h=cropState.w*0.5625;}
- updateCropBox();
-}
-(function(){
- let box=document.getElementById('cropBox');
- if(!box)return;
- function getPos(e){let t=e.touches?e.touches[0]:e;return {x:t.clientX,y:t.clientY};}
- function onStart(e,mode,handle){
-  e.preventDefault();
-  let p=getPos(e);
-  cropState.startX=p.x;cropState.startY=p.y;
-  cropState.mode=mode;cropState.handle=handle;
-  cropState.ox=cropState.x;cropState.oy=cropState.y;cropState.ow=cropState.w;cropState.oh=cropState.h;
- }
- box.addEventListener('mousedown',e=>{if(e.target.classList.contains('cropHandle'))return;onStart(e,'move')});
- box.addEventListener('touchstart',e=>{if(e.target.classList.contains('cropHandle'))return;onStart(e,'move')},{passive:false});
- document.querySelectorAll('.cropHandle').forEach(h=>{
-  h.addEventListener('mousedown',e=>{e.stopPropagation();onStart(e,'resize',h.dataset.h);});
-  h.addEventListener('touchstart',e=>{e.stopPropagation();onStart(e,'resize',h.dataset.h);},{passive:false});
- });
- function onMove(e){
-  if(!cropState.mode)return;
-  let p=getPos(e);
-  let dx=p.x-cropState.startX, dy=p.y-cropState.startY;
-  if(cropState.mode=='move'){
-   cropState.x=Math.max(0,Math.min(cropState.ox+dx, cropState.containerRect.width - cropState.w));
-   cropState.y=Math.max(0,Math.min(cropState.oy+dy, cropState.containerRect.height - cropState.h));
-  } else {
-   if(cropState.handle.includes('r')) cropState.w=Math.max(40, cropState.ow+dx);
-   if(cropState.handle.includes('b')) cropState.h=Math.max(40, cropState.oh+dy);
-   if(cropState.handle.includes('l')){let nw=Math.max(40, cropState.ow-dx);cropState.x=cropState.ox+cropState.ow-nw;cropState.w=nw;}
-   if(cropState.handle.includes('t')){let nh=Math.max(40, cropState.oh-dy);cropState.y=cropState.oy+cropState.oh-nh;cropState.h=nh;}
-  }
-  updateCropBox();
- }
- function onEnd(){cropState.mode=null;}
- window.addEventListener('mousemove',onMove);window.addEventListener('touchmove',onMove,{passive:false});
- window.addEventListener('mouseup',onEnd);window.addEventListener('touchend',onEnd);
-})();
-function applyCrop(){
- let s=tempSlides[cropIdx];
- let imgEl=document.getElementById('cropImg');
- let cont=document.getElementById('cropContainer').getBoundingClientRect();
- let imgRect=imgEl.getBoundingClientRect();
- let scaleX=imgEl.naturalWidth / imgRect.width;
- let scaleY=imgEl.naturalHeight / imgRect.height;
- let cropRelX=cropState.x - (imgRect.left - cont.left);
- let cropRelY=cropState.y - (imgRect.top - cont.top);
- let sx=cropRelX*scaleX, sy=cropRelY*scaleY, sw=cropState.w*scaleX, sh=cropState.h*scaleY;
- sx=Math.max(0,sx); sy=Math.max(0,sy);
- let canvas=document.createElement('canvas');canvas.width=sw;canvas.height=sh;
- let ctx=canvas.getContext('2d');
- let tempImg=new Image();
- tempImg.onload=()=>{
-  ctx.drawImage(tempImg,sx,sy,sw,sh,0,0,sw,sh);
-  tempSlides[cropIdx].src=canvas.toDataURL('image/jpeg',0.65);
-  closeCrop();renderPreview();
- };
- tempImg.src=s.src;
-}
-function openVideoTrim(i){trimIdx=i;let s=tempSlides[i];document.getElementById('videoTrimModal').classList.add('open');let v=document.getElementById('trimVideo');v.src=s.src;v.onloadedmetadata=()=>{document.getElementById('vStart').max=Math.floor(v.duration*10);document.getElementById('vEnd').max=Math.floor(v.duration*10);document.getElementById('vEnd').value=Math.floor(v.duration*10);document.getElementById('vEndLabel').innerText=v.duration.toFixed(1)+'s';};}
-function closeVideoTrim(){document.getElementById('videoTrimModal').classList.remove('open');}
-function onVTrim(){let v=document.getElementById('trimVideo');let vs=parseFloat(document.getElementById('vStart').value)/10;let ve=parseFloat(document.getElementById('vEnd').value)/10;document.getElementById('vStartLabel').innerText=vs.toFixed(1)+'s';document.getElementById('vEndLabel').innerText=ve.toFixed(1)+'s';v.currentTime=vs;}
-function applyVideoTrim(){let vs=parseFloat(document.getElementById('vStart').value)/10;let ve=parseFloat(document.getElementById('vEnd').value)/10;tempSlides[trimIdx].trim={start:vs,end:ve};closeVideoTrim();renderPreview();}
-function handleAudio(input){let f=input.files[0];if(!f)return;if(f.size>1200000){alert('File too large ('+(f.size/1000000).toFixed(1)+' MB). Please use Spotify link instead - it uses 0 storage.');input.value='';return;}let r=new FileReader();r.onload=e=>{tempMusic={type:'file',src:e.target.result,name:f.name,art:"",artist:"Local",start:0,dur:30};openMusicSheet();};r.readAsDataURL(f);input.value='';}
-function handleSpotify(){let url=document.getElementById('spotifyLink').value.trim();if(!url.includes('spotify.com'))return;let id=url.split('track/')[1]?.split('?')[0]?.split('/')[0];if(!id)return;fetch(`https://open.spotify.com/oembed?url=https://open.spotify.com/track/${id}`).then(r=>r.json()).then(d=>{tempMusic={type:'spotify',src:url,spotifyId:id,name:d.title,artist:d.author_name,art:d.thumbnail_url,start:0,dur:30};document.getElementById('spotifyPreview').innerHTML=`<div style="display:flex;gap:8px;align-items:center;background:var(--bg);padding:8px;border-radius:10px"><img src="${d.thumbnail_url}" style="width:40px;height:40px;border-radius:6px"><div><b style="font-size:12px">${d.title}</b></div><span style="color:green;font-size:10px">✓ Loaded</span></div>`;openMusicSheet();}).catch(()=>{tempMusic={type:'spotify',src:url,spotifyId:id,name:'Spotify Track',artist:'Spotify',art:'',start:0,dur:30};openMusicSheet();});}
-function openMusicSheet(){
- if(!tempMusic)return;
- document.getElementById('musicModal').classList.add('open');
- document.getElementById('sheetTitle').innerText=tempMusic.name||'Music';
- document.getElementById('sheetArtist').innerText=tempMusic.artist||'';
- document.getElementById('sheetImg').src=tempMusic.art||'';
- document.getElementById('durCircle').innerText=tempMusic.dur;
- document.getElementById('sheetSlider').value=tempMusic.start;
- document.getElementById('sheetTotal').innerText='';
- if(tempMusic.type=='file'){
-  if(sheetAudio)sheetAudio.pause();
-  sheetAudio=new Audio(tempMusic.src);
-  sheetAudio.onloadedmetadata=()=>{
-   let dur=sheetAudio.duration;
-   document.getElementById('sheetSlider').max=Math.max(0,dur-1);
-   document.getElementById('sheetTotal').innerText='/ '+dur.toFixed(1)+'s';
-   drawWave(dur);updateSheetLabels();
-  };
-  sheetAudio.ontimeupdate=()=>{
-   let perc=(sheetAudio.currentTime / sheetAudio.duration)*100;
-   document.getElementById('waveCursor').style.left=perc+'%';
-   if(sheetAudio.currentTime >= tempMusic.start+tempMusic.dur){sheetAudio.pause();}
-  };
- } else {drawWave(30);}
- updateSheetLabels();
-}
-function drawWave(total){
- let c=document.getElementById('waveCanvas');let ctx=c.getContext('2d');
- let w=c.offsetWidth=document.getElementById('waveWrap').offsetWidth;
- c.width=w;c.height=54;ctx.clearRect(0,0,w,54);
- for(let i=0;i<w/8;i++){let h=8+Math.random()*32;let x=i*8;ctx.fillStyle='#555';ctx.fillRect(x,(54-h)/2,4,h);}
-}
-function onSheetSlide(){if(!tempMusic)return;tempMusic.start=parseFloat(document.getElementById('sheetSlider').value);updateSheetLabels();}
-function updateSheetLabels(){document.getElementById('sheetStart').innerText=(tempMusic?.start||0).toFixed(1)+'s';document.getElementById('sheetEnd').innerText=((tempMusic?.start||0)+(tempMusic?.dur||30)).toFixed(1)+'s';}
-function cycleDur(){let opts=[5,8,10,15,30];let idx=opts.indexOf(tempMusic.dur);tempMusic.dur=opts[(idx+1)%opts.length];document.getElementById('durCircle').innerText=tempMusic.dur;updateSheetLabels();}
-function previewSheet(){if(!tempMusic||tempMusic.type!='file'||!sheetAudio)return;if(sheetAudio.paused){sheetAudio.currentTime=tempMusic.start;sheetAudio.play().catch(()=>{});}else{sheetAudio.pause();}}
-function confirmMusic(){document.getElementById('musicModal').classList.remove('open');if(sheetAudio)sheetAudio.pause();}
-function closeMusicModal(){document.getElementById('musicModal').classList.remove('open');if(sheetAudio)sheetAudio.pause();}
-function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
-function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
-function saveAll(){
- try{
-  ['mn_v11','mn_v12','mn_posts','mn_drafts','mn_drafts_v11','mn_drafts_v12','mn_c','mn_c_v11'].forEach(k=>localStorage.removeItem(k));
-  localStorage.setItem('mn_v14',JSON.stringify(POSTS));localStorage.setItem('mn_v13',JSON.stringify(POSTS));
-  localStorage.setItem('mn_drafts_v14',JSON.stringify(DRAFTS));localStorage.setItem('mn_drafts_v13',JSON.stringify(DRAFTS));
-  return true;
- }catch(e){
-  alert('Storage full! Click MENU > Clear Full Storage (red button) once, then try again.\nTip: Use Spotify link not MP3.\nError: '+e.message);
-  return false;
- }
-}
-function clearFullStorage(){if(!confirm('Clear all local data? Posts will be reset to default.'))return;localStorage.clear();location.reload();}
-function renderAuth(){
- let u=getUser();let admin=isAdmin();let pic=getAdminPic();let name=getAdminName();
- document.getElementById('adminNameInput').value=name;
- document.getElementById('authBtn').innerHTML=u?`<div class="btn" onclick="doLogout()">${u.name.split(' ')[0]} | Out</div>`:`<div class="btn dark" onclick="openLogin()">Sign in</div>`;
- document.getElementById('userBox').innerHTML=u?`<div style="display:flex;gap:10px;align-items:center"><div style="width:36px;height:36px;border-radius:50%;overflow:hidden;background:var(--btn);color:var(--btnT);display:flex;align-items:center;justify-content:center;font-weight:700">${pic||u.pic?`<img src="${pic||u.pic}" style="width:100%;height:100%;object-fit:cover">`:u.name[0]}</div><div><b>${u.name}</b></div></div>`:`<div style="font-size:12px;color:var(--muted)">Login to comment</div>`;
- document.getElementById('authBox').innerHTML=u?`<div class="menuLink" onclick="doLogout()"><span>Sign out</span><span>›</span></div>`:`<div style="padding:10px 14px"><div class="btn dark" style="width:100%" onclick="openLogin();closeD()">Sign in with Google</div></div>`;
- document.getElementById('adminSection').style.display=admin?'block':'none';
- document.getElementById('adminLoginSection').style.display=admin?'none':'block';
- renderAdminPic();
- document.getElementById('draftCount').innerText=DRAFTS.length?`${DRAFTS.length} ›`:'›';
- document.getElementById('archiveCount').innerText=POSTS.filter(p=>p.archived).length?`${POSTS.filter(p=>p.archived).length} ›`:'›';
- render();
-}
-function openLogin(){document.getElementById('loginModal').classList.add('open')}function closeLogin(){document.getElementById('loginModal').classList.remove('open')}
-function openAdminLogin(){document.getElementById('adminModal').classList.add('open');closeD()}function closeAdmin(){document.getElementById('adminModal').classList.remove('open')}
-function doAdminLogin(){if(document.getElementById('adminPass').value==='rohit2026'){localStorage.setItem('mn_admin','1');if(!getUser())localStorage.setItem('mn_user',JSON.stringify({name:getAdminName(),email:'admin@local',pic:getAdminPic()||''}));closeAdmin();renderAuth();}else alert('Wrong password')}
-function onGoogleLogin(r){try{let p=JSON.parse(atob(r.credential.split('.')[1]));localStorage.setItem('mn_user',JSON.stringify({email:p.email,name:p.name,pic:p.picture}));closeLogin();renderAuth();}catch{}}
-function doLogout(){localStorage.removeItem('mn_user');localStorage.removeItem('mn_admin');renderAuth();}
-function getLikes(){try{return JSON.parse(localStorage.getItem('mn_likes')||'{}')}catch{return {}}}function toggleLike(){if(!getUser()){openLogin();return}let L=getLikes(),k='post_'+curPost;L[k]=L[k]||0;let liked=localStorage.getItem('mn_liked_'+k);if(liked){L[k]--;localStorage.removeItem('mn_liked_'+k);}else{L[k]++;localStorage.setItem('mn_liked
-<div id="postView"><div style="display:flex;gap:8px;align-items:center"><div class="btn ico" onclick="closePost()">←</div><b id="pTop" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Post</b><div class="btn ico" onclick="openShare()">↗</div><div id="archiveBtn" class="btn ico" style="display:none" onclick="toggleArchiveCurrent()">📦</div></div><div id="postDateTag" style="margin-top:10px"></div>
-<div class="carousel" id="carousel"><div class="carouselTrack" id="cTrack"></div><div class="cArrow left" onclick="slide(-1)">‹</div><div class="cArrow right" onclick="slide(1)">›</div><div class="cDots" id="cDots"></div><div class="musicBar" id="musicBar" style="display:none"><div class="musicBtn" id="musicPlayBtn" onclick="togglePostMusic()">♪</div><div style="flex:1"><b id="musicName" style="font-size:13px;display:block">Music</b><span id="musicTime" style="font-size:11px;opacity:.8">0:30</span></div></div></div>
-<div id="authorBox" style="display:flex;gap:10px;align-items:center;margin-top:12px"></div>
-<h1 id="pTitle" style="font-family:'Fraunces',serif;font-size:22px;margin-top:12px;line-height:1.2"></h1>
-<p id="pBody" style="margin-top:12px;white-space:pre-wrap;font-size:15px;line-height:1.7;color:var(--muted)"></p>
-<div style="display:flex;gap:8px;margin-top:14px;align-items:center"><div class="btn" onclick="toggleLike()">❤️ <span id="likeCount">0</span></div><div class="btn" onclick="document.getElementById('commentInput').focus()">💬 <span id="cCount">0</span></div></div>
-<div class="cBox"><b style="font-size:14px">Comments</b><div id="cList" style="margin-top:8px"></div><div class="cInput"><input id="commentInput" placeholder="Add comment..."><div class="btn dark" onclick="addComment()" style="height:32px">Post</div></div></div>
-</div><script>
-const DEFAULT_POSTS=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Morning coffee prayer.",slides:[{type:"image",src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"}],music:null,authorPic:null,date:Date.now(),archived:false}];
-let POSTS;try{let s=localStorage.getItem('mn_v14')||localStorage.getItem('mn_v13');POSTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_v12')||localStorage.getItem('mn_v11')||'null')||DEFAULT_POSTS;POSTS=POSTS.map(p=>({...p,archived:!!p.archived,date:p.date||Date.now()}));}catch{POSTS=DEFAULT_POSTS}
-let DRAFTS;try{let s=localStorage.getItem('mn_drafts_v14')||localStorage.getItem('mn_drafts_v13');DRAFTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_drafts_v12')||localStorage.getItem('mn_drafts_v11')||'[]');}catch{DRAFTS=[]}
-let curPost=0,curSlide=0,editingIdx=-1,tempSlides=[],tempMusic=null,audioEl=null,sheetAudio=null,editingDraftIdx=-1,cropIdx=-1,trimIdx=-1;
-const LANG_TXT={en:{title:"Slow mornings, beige thoughts & coffee.",sub:"Aesthetic blog from Muzaffarpur",search:"Search"},hi:{title:"धीमी सुबह, सुकून भरे ख्याल और कॉफी।",sub:"मुज़फ्फरपुर से एस्थेटिक ब्लॉग",search:"खोजें"}};
-const LANGUAGES=[{code:'en',name:'English',flag:'🌐'},{code:'hi',name:'हिन्दी',flag:'🇮🇳'},{code:'bn',name:'বাংলা',flag:'🇧🇩'},{code:'bho',name:'भोजपुरी',flag:'🟠'},{code:'mai',name:'मैथिली',flag:'🔶'}];
-let curLang=localStorage.getItem('mn_lang')||'en';
-function buildLangList(){let l=document.getElementById('langList');l.innerHTML=LANGUAGES.map(x=>`<div class="langItem ${x.code==curLang?'active':''}" onclick="setLang('${x.code}')"><span>${x.flag} ${x.name}</span><span>${x.code==curLang?'✓':'›'}</span></div>`).join('');let c=LANGUAGES.find(x=>x.code==curLang);document.getElementById('curLangName').innerText=`${c.flag} ${c.name}`;}
-function toggleLangList(){let list=document.getElementById('langList');let a=document.getElementById('langArrow');list.classList.toggle('open');a.innerText=list.classList.contains('open')?'‹':'›';}
-function setLang(code){curLang=code;localStorage.setItem('mn_lang',code);buildLangList();let t=LANG_TXT[code]||LANG_TXT['en'];document.getElementById('mainTitle').innerText=t.title;document.getElementById('mainSub').innerText=t.sub;document.getElementById('search').placeholder=t.search;render();}
-function formatDate(ts){let d=new Date(ts);let now=new Date();let diff=Math.floor((now-d)/1000);if(diff<60)return'Just now';if(diff<3600)return Math.floor(diff/60)+'m ago';if(diff<86400)return Math.floor(diff/3600)+'h ago';return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});}
-function formatFullDate(ts){let d=new Date(ts);return d.toLocaleString('en-IN',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});}
-function getAdminPic(){return localStorage.getItem('mn_admin_pic')||null;}
-function getAdminName(){return localStorage.getItem('mn_admin_name')||'Rohit Kumar';}
-function setAdminPic(input){let f=input.files[0];if(!f)return;compressImageFile(f,300,0.8,dataUrl=>{localStorage.setItem('mn_admin_pic',dataUrl);renderAdminPic();renderAuth();alert('Photo updated');});}
-function saveAdminName(){let n=document.getElementById('adminNameInput').value.trim();if(!n)return alert('Please enter name');localStorage.setItem('mn_admin_name',n);renderAuth();alert('Saved');}
-function renderAdminPic(){let pic=getAdminPic();document.getElementById('adminPicPrev').innerHTML=pic?`<img src="${pic}" style="width:44px;height:44px;border-radius:50%;object-fit:cover">`:'👤';}
-function compressImageFile(file,maxW,quality,cb){let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let c=document.createElement('canvas');let w=img.width>maxW?maxW:img.width;let h=w/(img.width/img.height);c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',quality));};img.src=e.target.result;};r.readAsDataURL(file);}
-function handleMulti(input){let files=[...input.files];if(!files.length)return;if(files.length>4){alert('Max 4 photos');files=files.slice(0,4);}files.forEach(f=>{if(f.type.startsWith('video')){let r=new FileReader();r.onload=e=>{tempSlides.push({type:'video',src:e.target.result});renderPreview();};r.readAsDataURL(f);}else{compressImageFile(f,600,0.55,d=>{tempSlides.push({type:'image',src:d});renderPreview();});}});input.value='';}
-function renderPreview(){document.getElementById('preview').innerHTML=tempSlides.map((s,i)=>`<div class="previewItem">${s.type=='video'?`<video src="${s.src}"></video>`:`<img src="${s.src}">`}<div class="previewTools"><span onclick="openCrop(${i})">Crop</span><span onclick="tempSlides.splice(${i},1);renderPreview()">Del</span></div></div>`).join('');}
-function handleAudio(input){let f=input.files[0];if(!f)return;if(f.size>1200000){alert('File too large. Use Spotify link (0 storage)');input.value='';return;}let r=new FileReader();r.onload=e=>{tempMusic={type:'file',src:e.target.result,name:f.name,art:"",artist:"Local",start:0,dur:30};openMusicSheet();};r.readAsDataURL(f);input.value='';}
-function handleSpotify(){let url=document.getElementById('spotifyLink').value.trim();let id=url.split('track/')[1]?.split('?')[0];if(!id)return;tempMusic={type:'spotify',src:url,spotifyId:id,name:'Spotify Track',artist:'Spotify',art:'',start:0,dur:30};openMusicSheet();}
-function openMusicSheet(){if(!tempMusic)return;document.getElementById('musicModal').classList.add('open');document.getElementById('sheetTitle').innerText=tempMusic.name;document.getElementById('sheetSlider').value=tempMusic.start;}
-function onSheetSlide(){tempMusic.start=parseFloat(document.getElementById('sheetSlider').value);}
-function confirmMusic(){document.getElementById('musicModal').classList.remove('open');}
-function closeMusicModal(){document.getElementById('musicModal').classList.remove('open');}
-function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
-function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
-function saveAll(){try{localStorage.setItem('mn_v14',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v14',JSON.stringify(DRAFTS));return true;}catch(e){alert('Storage full! Click MENU > Clear Full Storage');return false;}}
-function clearFullStorage(){if(!confirm('Clear all local data?'))return;localStorage.clear();location.reload();}<div id="postDateTag" style="margin-top:10px"></div>
-<div class="carousel" id="carousel"><div class="carouselTrack" id="cTrack"></div><div class="cArrow left" onclick="slide(-1)">‹</div><div class="cArrow right" onclick="slide(1)">›</div><div class="cDots" id="cDots"></div><div class="musicBar" id="musicBar" style="display:none"><div class="musicBtn" id="musicPlayBtn" onclick="togglePostMusic()">♪</div><div style="flex:1"><b id="musicName" style="font-size:13px;display:block">Music</b><span id="musicTime" style="font-size:11px;opacity:.8">0:30</span></div></div></div>
-<div id="authorBox" style="display:flex;gap:10px;align-items:center;margin-top:12px"></div>
-<h1 id="pTitle" style="font-family:'Fraunces',serif;font-size:22px;margin-top:12px"></h1>
-<p id="pBody" style="margin-top:12px;white-space:pre-wrap;font-size:15px"></p>
-<div style="display:flex;gap:8px;margin-top:14px"><div class="btn" onclick="toggleLike()">❤️ <span id="likeCount">0</span></div><div class="btn" onclick="document.getElementById('commentInput').focus()">💬 <span id="cCount">0</span></div></div>
-<div class="cBox"><b>Comments</b><div id="cList"></div><div class="cInput"><input id="commentInput" placeholder="Add comment..."><div class="btn dark" onclick="addComment()">Post</div></div></div>
-</div>
-<script>
-let curPost=0,curSlide=0,tempSlides=[],tempMusic=null,audioEl=null;
-function renderAuth(){document.getElementById('adminSection').style.display=localStorage.getItem('mn_admin')==='1'?'block':'none';render();}
-function render(){let grid=document.getElementById('grid');grid.innerHTML=POSTS.map((p,i)=>`<div class="card" onclick="openPost(${i})"><div class="slideWrap"><img src="${p.slides[0]?.src||''}"><div class="slideCount">1/${p.slides.length}</div></div><div style="padding:10px"><b style="font-size:13px">${p.title}</b><div style="font-size:10px;color:gray">${p.cat}</div></div></div>`).join('');}
-function openPost(i){curPost=i;document.getElementById('homeView').style.display='none';document.getElementById('postView').style.display='block';let p=POSTS[i];document.getElementById('pTop').innerText=p.title;document.getElementById('pTitle').innerText=p.title;document.getElementById('pBody').innerText=p.body;document.getElementById('postDateTag').innerHTML=new Date(p.date).toLocaleString();let track=document.getElementById('cTrack');track.innerHTML=p.slides.map(s=>`<img src="${s.src}">`).join('');}
-function closePost(){document.getElementById('homeView').style.display='block';document.getElementById('postView').style.display='none';}
-function slide(d){curSlide=(curSlide+d+POSTS[curPost].slides.length)%POSTS[curPost].slides.length;document.getElementById('cTrack').style.transform=`translateX(-${curSlide*100}%)`;}
-function openD(){document.getElementById('drawer').classList.add('open');document.getElementById('bg').classList.add('open');}
-function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('bg').classList.remove('open');}
-function openPostModal(){tempSlides=[];document.getElementById('postModal').classList.add('open');closeD();}
-function closePostModal(){document.getElementById('postModal').classList.remove('open');}
-function savePost(){let t=document.getElementById('pTitleIn').value;if(!t){alert('Please enter Title');return;}if(!tempSlides.length){alert('Add 1 photo');return;}POSTS.unshift({cat:document.getElementById('pCat').value||'NOTES',title:t,body:document.getElementById('pBodyIn').value,slides:tempSlides,music:tempMusic,date:document.getElementById('pDateTime').value?new Date(document.getElementById('pDateTime').value).getTime():Date.now(),archived:false});localStorage.setItem('mn_v14',JSON.stringify(POSTS));closePostModal();render();alert('Posted');}
-function toggleTheme(){document.body.classList.toggle('dark');}
-function clearFullStorage(){localStorage.clear();location.reload();}
-(function(){localStorage.removeItem('mn_v11');localStorage.removeItem('mn_v12');localStorage.removeItem('mn_v13');render();renderAuth();})();
-</script></body></html>
+function setRatio(r){let b=document.getElementById('cropBox');if(r==='1:1'){b.style.width='60%';b.style.height='60%';}else if(r==='4:5'){b.style.width='50%';b.style.height='62%';}else{b.style.width='70%';b.style.height='39%';}}
+function applyCrop(){let img=document.getElementById('cropImg');let box=document.getElementById('cropBox');let ir=img.getBoundingClientRect();let bx=box.getBoundingClientRect();let sx=(bx.left-ir.left)/ir.width*img.naturalWidth, sy=(bx.top-ir.top)/ir.height*img.naturalHeight, sw=bx.width/ir.width*img.naturalWidth, sh=bx.height/ir.height*img.naturalHeight;let c=document.createElement('canvas');c.width=sw;c.height=sh;let im=new Image();im.onload=()=>{c.getContext('2d').drawImage(im,sx,sy,sw,sh,0,0,sw,sh);tmp[cropIdx].src=c.toDataURL('image/jpeg',0.6);closeCrop();renderPrev();};im.src=tmp[cropIdx].src;}
+function onSpotify(){let u=document.getElementById('spotify').value;let id=u.split('track/')[1]?.split('?')[0]?.split('/')[0];if(!id)return;tmpM={type:'spotify',spotifyId:id,name:'Spotify',dur:30};document.getElementById('spotPrev').innerHTML=`<span style="color:green;font-size:11px">✓ Spotify loaded</span>`;}
+function saveDraft(){if(!tmp.length){alert('Add photo');return;}let d={cat:document.getElementById('tCat').value||'NOTES',title:document.getElementById('tTitle').value||'Untitled',body:document.getElementById('tBody').value,slides:tmp,music:tmpM,date:document.getElementById('tDate').value?new Date(document.getElementById('tDate').value).getTime():Date.now()};DRAFTS.unshift(d);save();closeCreate();render();alert('Draft saved');}
+function openDrafts(){document.getElementById('draftModal').classList.add('open');document.getElementById('draftList').innerHTML=DRAFTS.map((d,i)=>`<div style="display:flex;gap:6px;padding:6px;border-bottom:1px solid #eee"><img src="${d.slides[0].src}" style="width:40px;height:40px;border-radius:6px"><div style="flex:1"><b style="font-size:12px">${d.title}</b></div><div class="btn dark" onclick="POSTS.unshift({...DRAFTS[${i}],archived:false,authorPic:getAdminPic()});DRAFTS.splice(${i},1);save();closeDrafts();render();">Post</div><div class="btn" onclick="DRAFTS.splice(${i},1);save();openDrafts();render()">Del</div></div>`).join('')||'No drafts';}
+function closeDrafts(){document.getElementById('draftModal').classList.remove('open');}
+function openArchive(){document.getElementById('archiveModal').classList.add('open');let a=POSTS.filter(p=>p.archived);document.getElementById('archiveList').innerHTML=a.map(p=>{let idx=POSTS.indexOf(p);return `<div style="display:flex;gap:6px;padding:6px"><img src="${p.slides[0].src}" style="width:40px;height:40px;border-radius:6px"><div style="flex:1"><b>${p.title}</b></div><div class="btn" onclick="POSTS[${idx}].archived=false;save();openArchive();render()">Restore</div></div>`}).join('')||'No archived';}
+function closeArchive(){document.getElementById('archiveModal').classList.remove('open');}
+function savePost(){let t=document.getElementById('tTitle').value.trim();if(!t){alert('Please enter Title');return;}if(!tmp.length){alert('Add photo');return;}let p={cat:document.getElementById('tCat').value||'NOTES',title:t,body:document.getElementById('tBody').value,slides:tmp,music:tmpM,authorPic:getAdminPic(),date:document.getElementById('tDate').value?new Date(document.getElementById('tDate').value).getTime():Date.now(),archived:false};POSTS.unshift(p);if(save()){closeCreate();render();alert('Posted ✓');}}
+function like(){let k='like_'+cur;let L=JSON.parse(localStorage.getItem('mn_likes')||'{}');L[k]=(L[k]||0)+1;localStorage.setItem('mn_likes',JSON.stringify(L));renderLike();}function renderLike(){let L=JSON.parse(localStorage.getItem('mn_likes')||'{}');document.getElementById('likeC').innerText=L['like_'+cur]||0;}
+function getC(){return JSON.parse(localStorage.getItem('mn_comments')||'{}')}function renderComments(){let C=getC();let list=C['c_'+cur]||[];document.getElementById('cC').innerText=list.length;document.getElementById('cList').innerHTML=list.map(x=>`<div style="padding:4px 0;border-bottom:1px solid #eee"><b>${x.name}</b>: ${x.text}</div>`).join('')||'No comments';}function addC(){let t=document.getElementById('cIn').value.trim();if(!t)return;let C=getC();let k='c_'+cur;C[k]=C[k]||[];C[k].push({name:getAdminName(),text:t});localStorage.setItem('mn_comments',JSON.stringify(C));document.getElementById('cIn').value='';renderComments();}
+function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('mn_dark',document.body.classList.contains('dark')?'1':'0');}
+function setAdminPic(inp){let f=inp.files[0];if(!f)return;compress(f,d=>{localStorage.setItem('mn_admin_pic',d);render();});}
+function saveName(){let n=document.getElementById('adminName').value.trim();if(!n)return;localStorage.setItem('mn_admin_name',n);render();alert('Saved');}
+function share(){navigator.clipboard.writeText(location.href);alert('Link copied');}
+(function(){if(localStorage.getItem('mn_dark')==='1')document.body.classList.add('dark');render();})();
+</script></body></html> 
