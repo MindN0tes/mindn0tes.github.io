@@ -1,60 +1,554 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MindNotes.</title><link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Manrope:wght@400;600&display=swap" rel="stylesheet"><style>:root{--bg:#f7f1e8;--card:#fff;--text:#1a1a1a;--bdr:#e8ddd0;--mut:#8a7d6f;--btn:#111;--btnT:#fff}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--text)}body.dark{--bg:#111;--card:#1c1c1c;--text:#eee;--bdr:#333;--mut:#aaa;--btn:#fff;--btnT:#111}.top{position:sticky;top:0;z-index:9;background:var(--card);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;padding:10px 12px}.logo{font-family:Fraunces;font-weight:700;font-size:22px}.btn{border:1px solid var(--bdr);background:var(--card);padding:7px 12px;border-radius:99px;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}.btn.dark{background:var(--btn);color:var(--btnT)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;max-width:900px;margin:auto}.card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;position:relative}.card img,.card video{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}.cardBody{padding:8px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center;z-index:30}.modal.open{display:flex}.box{background:var(--card);width:100%;max-width:460px;border-radius:20px 20px 0 0;padding:14px;max-height:92vh;overflow:auto}.inp{width:100%;border:1px solid var(--bdr);background:var(--bg);padding:10px;border-radius:10px;margin-top:8px;color:var(--text)}#postView{display:none;max-width:700px;margin:auto;padding:10px}.car{position:relative;background:#000;border-radius:16px;overflow:hidden;height:460px;display:flex;align-items:center;justify-content:center}.carTrack{display:flex;width:100%;height:100%;transition:transform.3s}.carTrack img,.carTrack video{width:100%;height:100%;object-fit:contain;flex-shrink:0}.cAr{position:absolute;top:50%;transform:translateY(-50%);background:#fff;color:#000;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}.cAr.l{left:8px}.cAr.r{right:8px}.cDotRow{position:absolute;bottom:10px;left:0;right:0;display:flex;gap:5px;justify-content:center}.cDot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}.cDot.on{background:#fff}.dateTag{font-size:11px;border:1px solid var(--bdr);padding:4px 8px;border-radius:99px;background:var(--bg)}.prevWrap{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.prevItem{position:relative;width:70px;height:70px;border-radius:10px;overflow:hidden}.prevItem img,.prevItem video{width:100%;height:100%;object-fit:cover}.prevItem span{position:absolute;top:2px;right:2px;background:red;color:#fff;font-size:9px;padding:2px 4px;border-radius:50%;cursor:pointer}.drawer{position:fixed;top:0;right:-100%;width:84%;max-width:320px;height:100%;background:var(--card);z-index:40;transition:.3s;border-left:1px solid var(--bdr);padding:14px;overflow:auto}.drawer.open{right:0}.bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:35}.bg.open{display:block}#cropBox{position:absolute;border:2px dashed #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.5);cursor:move}.musicBar{display:flex;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--bdr);padding:8px;border-radius:12px;margin-top:8px}
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MindNotes.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f1e8;--card:#ffffff;--text:#1a1a1a;--bdr:#e8ddd0;--mut:#8a7d6f;--btn:#111;--btnT:#fff;--accent:#ff5a5f}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--text)}
+body.dark{--bg:#0f0f0f;--card:#1c1c1c;--text:#f0f0f0;--bdr:#2a2a2a;--mut:#9a9a9a;--btn:#fff;--btnT:#111}
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;padding:12px 14px}
+body.dark .top{background:rgba(28,28,28,0.85)}
+.logo{font-family:Fraunces;font-weight:700;font-size:24px}
+.btn{border:1px solid var(--bdr);background:var(--card);padding:8px 14px;border-radius:99px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.btn.dark{background:var(--btn);color:var(--btnT)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px;max-width:900px;margin:auto}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:18px;overflow:hidden;position:relative}
+.card img,.card video{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
+.cardBody{padding:10px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modal.open{display:flex}
+.box{background:var(--card);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:18px;max-height:94vh;overflow:auto}
+.inp{width:100%;border:1px solid var(--bdr);background:var(--bg);padding:12px;border-radius:12px;margin-top:10px;color:var(--text);font-family:Manrope}
+#postView{display:none;max-width:700px;margin:auto;padding:12px}
+.car{position:relative;background:#000;border-radius:20px;overflow:hidden;height:500px;display:flex;align-items:center;justify-content:center}
+.carTrack{display:flex;width:100%;height:100%;transition:transform .35s}
+.carTrack img,.carTrack video{width:100%;height:100%;object-fit:contain;flex-shrink:0}
+.cAr{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.9);color:#000;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;font-weight:700}
+.cAr.l{left:10px}.cAr.r{right:10px}
+.cDotRow{position:absolute;bottom:12px;left:0;right:0;display:flex;gap:6px;justify-content:center}
+.cDot{width:18px;height:4px;border-radius:99px;background:rgba(255,255,255,.4)}.cDot.on{background:#fff;width:28px}
+.dateTag{font-size:11px;border:1px solid var(--bdr);padding:5px 10px;border-radius:99px;background:var(--bg);display:inline-flex;gap:6px}
+.prevWrap{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.prevItem{position:relative;width:76px;height:76px;border-radius:14px;overflow:hidden;border:1px solid var(--bdr)}.prevItem img,.prevItem video{width:100%;height:100%;object-fit:cover}.prevItem .x{position:absolute;top:3px;right:3px;background:#ff3b30;color:#fff;font-size:10px;padding:3px 5px;border-radius:50%;cursor:pointer}.prevItem .c{position:absolute;bottom:0;left:0;right:0;text-align:center;background:rgba(0,0,0,.7);color:#fff;font-size:9px;padding:3px}
+.drawer{position:fixed;top:0;right:-100%;width:88%;max-width:340px;height:100%;background:var(--card);z-index:60;transition:.35s;border-left:1px solid var(--bdr);padding:18px;overflow:auto}.drawer.open{right:0}.bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:55}.bg.open{display:block}
+.musicBar{display:flex;gap:12px;align-items:center;background:var(--bg);border:1px solid var(--bdr);padding:10px 12px;border-radius:14px;margin-top:12px}
+.storageBar{height:6px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--bdr);margin-top:8px}.storageFill{height:100%;background:var(--accent)}
 </style></head><body>
-<div class="top"><div class="logo">MindNotes.</div><div style="display:flex;gap:6px"><div class="btn" onclick="toggleLang()">🌐 <span id="curLang">EN</span></div><div class="btn" onclick="openDrawer()">☰ Menu</div></div></div>
+<div class="top"><div class="logo">MindNotes.</div><div class="btn" onclick="openDrawer()">☰ Menu</div></div>
+<div style="max-width:900px;margin:auto;padding:8px 12px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mut)"><span>🚀 Unlimited Storage (Photo + Video)</span><span id="storageText">...</span></div><div class="storageBar"><div class="storageFill" id="storageFill" style="width:0%"></div></div></div>
 <div class="grid" id="grid"></div>
-<div id="postView"><div style="display:flex;gap:6px;align-items:center"><div class="btn" onclick="closePost()">← Back</div><b id="pTop" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Post</b><div class="btn" onclick="share()">↗ Share</div><div class="btn" onclick="if(confirm('Archive?')){POSTS[cur].archived=!POSTS[cur].archived;save();closePost();render();}">📦</div><div class="btn" onclick="if(confirm('Delete?')){POSTS.splice(cur,1);save();closePost();render();}">🗑️</div></div>
-<div id="dateTag" style="margin-top:8px"></div>
-<div class="car" id="car" style="margin-top:8px"><div class="carTrack" id="track"></div><div class="cAr l" onclick="slide(-1)">‹</div><div class="cAr r" onclick="slide(1)">›</div><div class="cDotRow" id="dots"></div></div>
-<div id="authBox" style="display:flex;gap:8px;align-items:center;margin-top:10px"></div><h2 id="pTitle" style="font-family:Fraunces;margin-top:10px"></h2><p id="pBody" style="color:var(--mut);margin-top:6px;white-space:pre-wrap"></p>
+<div id="postView">
+<div style="display:flex;gap:8px;align-items:center">
+<div class="btn" onclick="closePost()">← Back</div>
+<b id="pTop" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Post</b>
+<div class="btn" onclick="sharePost()">↗</div>
+<div class="btn" onclick="archivePost()">📦</div>
+<div class="btn" style="color:#ff3b30" onclick="deletePost()">🗑️</div>
+</div>
+<div id="dateTag" style="margin-top:10px"></div>
+<div class="car" id="car" style="margin-top:10px">
+<div class="carTrack" id="track"></div>
+<div class="cAr l" onclick="slide(-1)">‹</div>
+<div class="cAr r" onclick="slide(1)">›</div>
+<div class="cDotRow" id="dots"></div>
+</div>
+<div id="authBox" style="display:flex;gap:10px;align-items:center;margin-top:14px"></div>
+<h2 id="pTitle" style="font-family:Fraunces;margin-top:12px;font-size:26px"></h2>
+<p id="pBody" style="color:var(--mut);margin-top:8px;white-space:pre-wrap;line-height:1.6"></p>
 <div id="musicBar" class="musicBar" style="display:none"></div>
-<div style="display:flex;gap:8px;margin-top:10px"><div class="btn" onclick="like()">❤️ <span id="likeC">0</span></div><div class="btn" onclick="document.getElementById('cIn').focus()">💬 <span id="cC">0</span></div></div>
-<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:10px;margin-top:10px"><b>Comments</b><div id="cList" style="margin-top:6px"></div><div style="display:flex;gap:6px;margin-top:8px"><input id="cIn" class="inp" style="margin:0" placeholder="Add comment..."><div class="btn dark" onclick="addC()">Post</div></div></div></div>
-<div class="drawer" id="drawer"><div style="display:flex;justify-content:space-between"><b>Menu</b><div class="btn" onclick="closeDrawer()">✕</div></div>
-<div style="margin-top:12px"><input id="adminName" class="inp" placeholder="Your Name"><div style="display:flex;gap:6px;margin-top:6px"><input type="file" id="adminPicIn" accept="image/*" style="display:none" onchange="setAdminPic(this)"><div class="btn" onclick="document.getElementById('adminPicIn').click()">📸 Photo</div><div class="btn dark" onclick="saveName()">Save</div></div><div id="adminPicPrev" style="margin-top:6px"></div></div>
-<div style="margin-top:12px;display:flex;justify-content:space-between"><span>Dark Mode</span><div class="btn" onclick="toggleTheme()">Toggle</div></div>
-<div class="btn" style="width:100%;margin-top:8px" onclick="openCreate();closeDrawer()">+ New Post</div>
-<div class="btn" style="width:100%;margin-top:6px" onclick="openDrafts()">Drafts <span id="dCount"></span></div>
-<div class="btn" style="width:100%;margin-top:6px" onclick="openArchive()">Archived <span id="aCount"></span></div>
-<div class="btn" style="width:100%;margin-top:6px;background:#ffdddd" onclick="if(confirm('Clear all storage?')){localStorage.clear();location.reload();}">🧹 Clear Full Storage</div>
-<div id="authArea" style="margin-top:10px"><div class="btn" style="width:100%" onclick="localStorage.setItem('mn_admin','1');alert('Admin enabled')">Enable Admin</div></div>
-</div><div class="bg" id="bg" onclick="closeDrawer()"></div>
-<div class="modal" id="createModal"><div class="box"><h3>New Post</h3><input id="tCat" class="inp" placeholder="Category"><input id="tTitle" class="inp" placeholder="Title * Required"><input id="tDate" type="datetime-local" class="inp"><input type="file" id="fImg" accept="image/*,video/*" multiple style="display:none" onchange="onImg(this)"><div class="btn" style="width:100%;margin-top:8px" onclick="document.getElementById('fImg').click()">📸 Add Photos/Videos (max 4)</div><div id="prev" class="prevWrap"></div><input id="spotify" class="inp" placeholder="Spotify link https://open.spotify.com/track/..." oninput="onSpotify()"><div id="spotPrev" style="margin-top:6px"></div><textarea id="tBody" class="inp" style="height:80px" placeholder="Caption..."></textarea><div style="display:flex;gap:6px;margin-top:10px"><div class="btn" style="flex:1" onclick="saveDraft()">Draft</div><div class="btn" style="flex:1" onclick="closeCreate()">Cancel</div><div class="btn dark" style="flex:1" onclick="savePost()">Post</div></div></div></div>
-<div class="modal" id="draftModal"><div class="box"><div style="display:flex;justify-content:space-between"><b>Drafts</b><div class="btn" onclick="closeDrafts()">✕</div></div><div id="draftList"></div></div></div>
-<div class="modal" id="archiveModal"><div class="box"><div style="display:flex;justify-content:space-between"><b>Archived</b><div class="btn" onclick="closeArchive()">✕</div></div><div id="archiveList"></div></div></div>
-<div class="modal" id="cropModal"><div class="box"><div style="display:flex;justify-content:space-between"><b>Crop</b><div class="btn" onclick="closeCrop()">✕</div></div><div id="cropCont" style="position:relative;width:100%;height:300px;background:#000;margin-top:8px;overflow:hidden"><img id="cropImg" style="width:100%;height:100%;object-fit:contain"><div id="cropBox" style="left:20%;top:20%;width:60%;height:60%"></div></div><div style="display:flex;gap:6px;margin-top:8px"><div class="btn" onclick="setRatio('1:1')">1:1</div><div class="btn" onclick="setRatio('4:5')">4:5</div><div class="btn dark" style="flex:1" onclick="applyCrop()">Apply</div></div></div></div>
+<div style="display:flex;gap:10px;margin-top:14px">
+<div class="btn" onclick="likePost()">❤️ <span id="likeC">0</span></div>
+<div class="btn" onclick="document.getElementById('cIn').focus()">💬 <span id="cC">0</span></div>
+</div>
+<div style="background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:14px;margin-top:14px">
+<b style="font-family:Fraunces">Comments</b>
+<div id="cList" style="margin-top:8px"></div>
+<div style="display:flex;gap:8px;margin-top:10px">
+<input id="cIn" class="inp" style="margin:0" placeholder="Add a comment...">
+<div class="btn dark" onclick="addComment()">Post</div>
+</div>
+</div>
+</div>
+
+<div class="drawer" id="drawer">
+<div style="display:flex;justify-content:space-between">
+<b style="font-family:Fraunces;font-size:18px">Menu</b>
+<div class="btn" onclick="closeDrawer()">✕</div>
+</div>
+<div style="margin-top:18px;padding:12px;background:var(--bg);border-radius:14px;border:1px solid var(--bdr)">
+<div style="font-size:12px;font-weight:700">Admin Profile</div>
+<input id="adminName" class="inp" placeholder="Your Name">
+<input id="adminBio" class="inp" placeholder="Bio">
+<input id="adminInsta" class="inp" placeholder="Instagram link">
+<div style="display:flex;gap:8px;margin-top:10px">
+<input type="file" id="adminPicIn" accept="image/*" style="display:none" onchange="setAdminPic(this)">
+<div class="btn" style="flex:1" onclick="document.getElementById('adminPicIn').click()">📸 Photo</div>
+<div class="btn dark" style="flex:1" onclick="saveAdmin()">Save</div>
+</div>
+<div id="adminPicPrev" style="margin-top:10px;display:flex;justify-content:center"></div>
+</div>
+<div style="margin-top:14px;display:flex;justify-content:space-between">
+<span style="font-size:13px">Dark Mode</span>
+<div class="btn" onclick="toggleTheme()">Toggle 🌙</div>
+</div>
+<div class="btn dark" style="width:100%;margin-top:14px;padding:14px;justify-content:center" onclick="openCreate();closeDrawer()">+ New Post</div>
+<div class="btn" style="width:100%;margin-top:8px" onclick="openDrafts()">📝 Drafts <span id="dCount"></span></div>
+<div class="btn" style="width:100%;margin-top:8px" onclick="openArchive()">📦 Archived <span id="aCount"></span></div>
+<div class="btn" style="width:100%;margin-top:8px" onclick="exportData()">💾 Export Backup</div>
+<div class="btn" style="width:100%;margin-top:12px;background:#ffdddd;color:#a00" onclick="clearAll()">🧹 Clear All (Fix)</div>
+<div style="margin-top:12px;font-size:11px;color:var(--mut)">💡 IndexedDB = Photo + Video Unlimited. LocalStorage limit khatam. 500MB tak store.</div>
+</div>
+<div class="bg" id="bg" onclick="closeDrawer()"></div>
+
+<div class="modal" id="createModal"><div class="box">
+<h3 style="font-family:Fraunces;font-size:20px">New Post</h3>
+<input id="tCat" class="inp" placeholder="Category">
+<input id="tTitle" class="inp" placeholder="Title * Required">
+<input id="tDate" type="datetime-local" class="inp">
+<input type="file" id="fImg" accept="image/*,video/*" multiple style="display:none" onchange="onImg(this)">
+<div class="btn" style="width:100%;margin-top:10px;justify-content:center;padding:12px" onclick="document.getElementById('fImg').click()">📸 Add Photos/Videos (max 10 - Unlimited Storage)</div>
+<div id="prev" class="prevWrap"></div>
+<div style="margin-top:12px;padding:10px;background:var(--bg);border-radius:12px;border:1px solid var(--bdr)">
+<b style="font-size:12px">🎵 Music (Spotify)</b>
+<input id="spotify" class="inp" placeholder="Spotify track link" oninput="onSpotify()">
+<div id="spotPrev" style="margin-top:8px"></div>
+</div>
+<textarea id="tBody" class="inp" style="height:100px" placeholder="Caption..."></textarea>
+<div style="display:flex;gap:8px;margin-top:14px">
+<div class="btn" style="flex:1;justify-content:center" onclick="saveDraft()">Draft</div>
+<div class="btn" style="flex:1;justify-content:center" onclick="closeCreate()">Cancel</div>
+<div class="btn dark" style="flex:1;justify-content:center" onclick="savePost()">Post</div>
+</div>
+</div></div>
+
+<div class="modal" id="draftModal"><div class="box">
+<div style="display:flex;justify-content:space-between"><b>Drafts</b><div class="btn" onclick="closeDrafts()">✕</div></div>
+<div id="draftList" style="margin-top:10px"></div>
+</div></div>
+
+<div class="modal" id="archiveModal"><div class="box">
+<div style="display:flex;justify-content:space-between"><b>Archived</b><div class="btn" onclick="closeArchive()">✕</div></div>
+<div id="archiveList" style="margin-top:10px"></div>
+</div></div>
+
+<div class="modal" id="cropModal"><div class="box">
+<div style="display:flex;justify-content:space-between"><b>Crop Photo</b><div class="btn" onclick="closeCrop()">✕</div></div>
+<div id="cropCont" style="position:relative;width:100%;height:340px;background:#000;margin-top:12px;overflow:hidden;border-radius:12px">
+<img id="cropImg" style="width:100%;height:100%;object-fit:contain">
+<div id="cropBox" style="position:absolute;left:20%;top:20%;width:60%;height:60%;border:2px dashed #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.5)"></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<div class="btn" onclick="setRatio(1)">1:1</div>
+<div class="btn" onclick="setRatio(4/5)">4:5</div>
+<div class="btn dark" style="flex:1;justify-content:center" onclick="applyCrop()">Apply Crop</div>
+</div>
+</div></div>
 <script>
-let POSTS=JSON.parse(localStorage.getItem('mn_full')||'null')||[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Slow mornings & coffee.",slides:[{type:"image",src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"}],music:null,authorPic:null,date:Date.now(),archived:false}];
-let DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_full')||'[]');
-let cur=0,ci=0,tmp=[],tmpM=null,cropIdx=-1;
-function save(){try{localStorage.setItem('mn_full',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_full',JSON.stringify(DRAFTS));return true;}catch(e){alert('Storage full! Use Spotify link instead of file. Clear storage from Menu.');return false;}}
+const DB_NAME='MindNotesDB',DB_VER=1;
+function openDB(){
+ return new Promise((res,rej)=>{
+  let r=indexedDB.open(DB_NAME,DB_VER);
+  r.onupgradeneeded=e=>{
+   let db=e.target.result;
+   if(!db.objectStoreNames.contains('posts')) db.createObjectStore('posts',{keyPath:'id'});
+   if(!db.objectStoreNames.contains('drafts')) db.createObjectStore('drafts',{keyPath:'id'});
+  };
+  r.onsuccess=()=>res(r.result);
+  r.onerror=()=>rej(r.error);
+ });
+}
+async function dbGetAll(s){
+ let db=await openDB();
+ return new Promise(res=>{
+  let tx=db.transaction(s,'readonly');
+  let st=tx.objectStore(s);
+  let req=st.getAll();
+  req.onsuccess=()=>res(req.result);
+ });
+}
+async function dbPut(s,o){
+ let db=await openDB();
+ return new Promise(res=>{
+  let tx=db.transaction(s,'readwrite');
+  tx.objectStore(s).put(o);
+  tx.oncomplete=()=>res();
+ });
+}
+async function dbDel(s,id){
+ let db=await openDB();
+ return new Promise(res=>{
+  let tx=db.transaction(s,'readwrite');
+  tx.objectStore(s).delete(id);
+  tx.oncomplete=()=>res();
+ });
+}
+async function dbClear(s){
+ let db=await openDB();
+ return new Promise(res=>{
+  let tx=db.transaction(s,'readwrite');
+  tx.objectStore(s).clear();
+  tx.oncomplete=()=>res();
+ });
+}
+
+let POSTS=[],DRAFTS=[],cur=0,ci=0,tmp=[],tmpM=null,cropIdx=-1;
+
+async function init(){
+ let old=localStorage.getItem('mn_full');
+ if(old){
+  try{
+   let arr=JSON.parse(old);
+   for(let p of arr){
+    if(!p.id) p.id=Date.now()+Math.random();
+    await dbPut('posts',p);
+   }
+   localStorage.removeItem('mn_full');
+  }catch(e){}
+ }
+ POSTS=await dbGetAll('posts');
+ if(!POSTS.length){
+  let def={
+   id:Date.now(),
+   cat:"COFFEE",
+   title:"My 6am coffee ritual",
+   body:"Welcome! Photo + Video Unlimited Storage now! No more 5MB limit.",
+   slides:[{type:"image",src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"}],
+   music:null,
+   authorPic:localStorage.getItem('mn_admin_pic')||null,
+   date:Date.now(),
+   archived:false,
+   likes:0
+  };
+  await dbPut('posts',def);
+  POSTS=[def];
+ }
+ DRAFTS=await dbGetAll('drafts');
+ POSTS.sort((a,b)=>b.date-a.date);
+ render();
+ updateStorageInfo();
+ if(localStorage.getItem('mn_dark')==='1') document.body.classList.add('dark');
+}
+
 function getAdminPic(){return localStorage.getItem('mn_admin_pic')||''}
 function getAdminName(){return localStorage.getItem('mn_admin_name')||'Rohit Kumar'}
-function render(){document.getElementById('grid').innerHTML=POSTS.filter(p=>!p.archived).map((p)=>{let orig=POSTS.indexOf(p);return `<div class="card" onclick="openPost(${orig})"><${p.slides[0].type==='video'?'video':'img'} src="${p.slides[0].src}" ${p.slides[0].type==='video'?'muted':''}></${p.slides[0].type==='video'?'video':'img'}><div style="position:absolute;top:6px;left:6px;background:#000;color:#fff;font-size:9px;padding:2px 6px;border-radius:99px">${p.slides.length}</div>${p.music?`<div style="position:absolute;top:6px;right:6px;background:#fff;font-size:9px;padding:2px 6px;border-radius:99px">🎵</div>`:''}<div class="cardBody"><b style="font-size:12px">${p.title}</b><div style="font-size:10px;color:gray">${p.cat}</div></div></div>`}).join('');document.getElementById('dCount').innerText=DRAFTS.length?DRAFTS.length+' ›':'';document.getElementById('aCount').innerText=POSTS.filter(p=>p.archived).length?POSTS.filter(p=>p.archived).length+' ›':'';document.getElementById('adminPicPrev').innerHTML=getAdminPic()?`<img src="${getAdminPic()}" style="width:40px;height:40px;border-radius:50%">`:'';}
-function openPost(i){cur=i;ci=0;let p=POSTS[i];document.getElementById('grid').style.display='none';document.getElementById('postView').style.display='block';document.getElementById('pTop').innerText=p.title;document.getElementById('pTitle').innerText=p.title;document.getElementById('pBody').innerText=p.body;document.getElementById('dateTag').innerHTML=`<span class="dateTag">🕒 ${new Date(p.date).toLocaleString()}</span>`;let t=document.getElementById('track');t.innerHTML=p.slides.map(s=>s.type==='video'?`<video src="${s.src}" controls></video>`:`<img src="${s.src}">`).join('');t.style.transform='translateX(0)';document.getElementById('dots').innerHTML=p.slides.map((_,k)=>`<div class="cDot ${k===0?'on':''}"></div>`).join('');document.getElementById('authBox').innerHTML=`<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;background:#111;color:#fff;display:flex;align-items:center;justify-content:center">${p.authorPic||getAdminPic()?`<img src="${p.authorPic||getAdminPic()}" style="width:100%;height:100%;object-fit:cover">`:'R'}</div><b style="font-size:12px">${getAdminName()}</b>`;let mb=document.getElementById('musicBar');if(p.music){if(p.music.type==='spotify'){mb.style.display='block';mb.innerHTML=`<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${p.music.spotifyId}" width="100%" height="80" frameborder="0" allow="autoplay"></iframe>`;}else{mb.style.display='flex';mb.innerHTML=`<div class="btn" onclick="let a=document.getElementById('pa');a.paused?a.play():a.pause()">♪ Play</div><div><b>${p.music.name}</b></div><audio id="pa" src="${p.music.src}"></audio>`;}}else mb.style.display='none';renderLike();renderComments();window.scrollTo(0,0);}
-function closePost(){document.getElementById('grid').style.display='grid';document.getElementById('postView').style.display='none';}
-function slide(d){let p=POSTS[cur];ci=(ci+d+p.slides.length)%p.slides.length;document.getElementById('track').style.transform=`translateX(-${ci*100}%)`;document.querySelectorAll('.cDot').forEach((e,i)=>e.classList.toggle('on',i===ci));}
-function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('bg').classList.add('open');}function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('bg').classList.remove('open');}
-function openCreate(){tmp=[];tmpM=null;document.getElementById('prev').innerHTML='';document.getElementById('spotPrev').innerHTML='';document.getElementById('tTitle').value='';document.getElementById('tBody').value='';document.getElementById('tCat').value='';document.getElementById('spotify').value='';let n=new Date();n.setMinutes(n.getMinutes()-n.getTimezoneOffset());document.getElementById('tDate').value=n.toISOString().slice(0,16);document.getElementById('createModal').classList.add('open');closeDrawer();}
+function getAdminBio(){return localStorage.getItem('mn_admin_bio')||'Coffee & Slow Mornings'}
+
+function render(){
+ let list=POSTS.filter(p=>!p.archived);
+ document.getElementById('grid').innerHTML=list.map(p=>{
+  let orig=POSTS.indexOf(p);
+  let first=p.slides[0];
+  return `
+  <div class="card" onclick="openPost(${orig})">
+   ${first.type==='video'?`<video src="${first.src}" muted></video>`:`<img src="${first.src}">`}
+   <div style="position:absolute;top:8px;left:8px;background:#000;color:#fff;font-size:9px;padding:4px 8px;border-radius:99px">${p.slides.length} • ${p.cat}</div>
+   ${p.music?`<div style="position:absolute;top:8px;right:8px;background:#1DB954;color:#fff;font-size:9px;padding:4px 8px;border-radius:99px">🎵</div>`:''}
+   <div class="cardBody">
+    <b style="font-size:13px;font-family:Fraunces">${p.title}</b>
+    <div style="font-size:11px;color:gray;margin-top:2px">${new Date(p.date).toLocaleDateString()} • ❤️ ${p.likes||0}</div>
+   </div>
+  </div>`;
+ }).join('');
+ document.getElementById('dCount').innerText=DRAFTS.length?DRAFTS.length:'';
+ document.getElementById('aCount').innerText=POSTS.filter(p=>p.archived).length||'';
+ document.getElementById('adminPicPrev').innerHTML=getAdminPic()?`<img src="${getAdminPic()}" style="width:70px;height:70px;border-radius:50%;object-fit:cover">`:`<div style="width:70px;height:70px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center">No Photo</div>`;
+}
+
+function openPost(i){
+ cur=i;ci=0;let p=POSTS[i];
+ document.getElementById('grid').style.display='none';
+ document.getElementById('postView').style.display='block';
+ document.getElementById('pTop').innerText=p.title;
+ document.getElementById('pTitle').innerText=p.title;
+ document.getElementById('pBody').innerText=p.body;
+ document.getElementById('dateTag').innerHTML=`<span class="dateTag">📅 ${new Date(p.date).toLocaleDateString()} • ${p.cat}</span>`;
+ let t=document.getElementById('track');
+ t.innerHTML=p.slides.map(s=>s.type==='video'?`<video src="${s.src}" controls></video>`:`<img src="${s.src}">`).join('');
+ t.style.transform='translateX(0)';
+ document.getElementById('dots').innerHTML=p.slides.map((_,k)=>`<div class="cDot ${k===0?'on':''}"></div>`).join('');
+ document.getElementById('authBox').innerHTML=`
+  <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#111;display:flex;align-items:center;justify-content:center">
+   ${p.authorPic||getAdminPic()?`<img src="${p.authorPic||getAdminPic()}" style="width:100%;height:100%;object-fit:cover">`:'<span style="color:#fff">R</span>'}
+  </div>
+  <div><b style="font-size:13px">${getAdminName()}</b><div style="font-size:11px;color:var(--mut)">${getAdminBio()}</div></div>`;
+ let mb=document.getElementById('musicBar');
+ if(p.music&&p.music.spotifyId){
+  mb.style.display='block';
+  mb.innerHTML=`<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${p.music.spotifyId}" width="100%" height="80" frameborder="0" allow="autoplay"></iframe>`;
+ }else mb.style.display='none';
+ document.getElementById('likeC').innerText=p.likes||0;
+ renderComments();
+ window.scrollTo(0,0);
+}
+
+function closePost(){
+ document.getElementById('grid').style.display='grid';
+ document.getElementById('postView').style.display='none';
+ render();
+}
+function slide(d){
+ let p=POSTS[cur];
+ ci=(ci+d+p.slides.length)%p.slides.length;
+ document.getElementById('track').style.transform=`translateX(-${ci*100}%)`;
+ document.querySelectorAll('.cDot').forEach((e,i)=>e.classList.toggle('on',i===ci));
+}
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('bg').classList.add('open');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('bg').classList.remove('open');}
+function openCreate(){
+ tmp=[];tmpM=null;
+ document.getElementById('prev').innerHTML='';
+ document.getElementById('spotPrev').innerHTML='';
+ document.getElementById('tTitle').value='';
+ document.getElementById('tBody').value='';
+ document.getElementById('tCat').value='';
+ document.getElementById('spotify').value='';
+ let n=new Date();n.setMinutes(n.getMinutes()-n.getTimezoneOffset());
+ document.getElementById('tDate').value=n.toISOString().slice(0,16);
+ document.getElementById('createModal').classList.add('open');
+ closeDrawer();
+}
 function closeCreate(){document.getElementById('createModal').classList.remove('open');}
-function compress(file,cb){let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let c=document.createElement('canvas');let max=700;let w=img.width>max?max:img.width;let h=w/(img.width/img.height);c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',0.6));};img.src=e.target.result;};r.readAsDataURL(file);}
-function onImg(inp){let fs=[...inp.files].slice(0,4);fs.forEach(f=>{if(f.type.startsWith('video')){let r=new FileReader();r.onload=e=>{tmp.push({type:'video',src:e.target.result});renderPrev();};r.readAsDataURL(f);}else compress(f,d=>{tmp.push({type:'image',src:d});renderPrev();});});inp.value='';}
-function renderPrev(){document.getElementById('prev').innerHTML=tmp.map((s,i)=>`<div class="prevItem">${s.type==='video'?`<video src="${s.src}"></video>`:`<img src="${s.src}">`}<span onclick="tmp.splice(${i},1);renderPrev()">✕</span><div style="position:absolute;bottom:0;left:0;right:0;text-align:center;background:rgba(0,0,0,.6);color:#fff;font-size:9px" onclick="openCrop(${i})">Crop</div></div>`).join('');}
-function openCrop(i){cropIdx=i;document.getElementById('cropModal').classList.add('open');document.getElementById('cropImg').src=tmp[i].src;}
+function compress(file,cb){
+ let r=new FileReader();
+ r.onload=e=>{
+  let img=new Image();
+  img.onload=()=>{
+   let c=document.createElement('canvas');
+   let max=800;
+   let w=img.width>max?max:img.width;
+   let h=w/(img.width/img.height);
+   c.width=w;c.height=h;
+   c.getContext('2d').drawImage(img,0,0,w,h);
+   cb(c.toDataURL('image/jpeg',0.5));
+  };
+  img.src=e.target.result;
+ };
+ r.readAsDataURL(file);
+}
+function onImg(inp){
+ let fs=[...inp.files].slice(0,4-tmp.length);
+ fs.forEach(f=>{
+  if(f.type.startsWith('video')){
+   if(f.size>50*1024*1024){alert('Video >50MB, choose smaller');return;}
+   let r=new FileReader();
+   r.onload=e=>{
+    tmp.push({type:'video',src:e.target.result});
+    renderPrev();
+    updateStorageInfo();
+   };
+   r.readAsDataURL(f);
+  }else{
+   compress(f,d=>{
+    tmp.push({type:'image',src:d});
+    renderPrev();
+    updateStorageInfo();
+   });
+  }
+ });
+ inp.value='';
+}
+function renderPrev(){
+ document.getElementById('prev').innerHTML=tmp.map((s,i)=>`
+  <div class="prevItem">
+   ${s.type==='video'?`<video src="${s.src}"></video>`:`<img src="${s.src}">`}
+   <div class="x" onclick="tmp.splice(${i},1);renderPrev()">✕</div>
+   <div class="c" onclick="openCrop(${i})">Crop</div>
+  </div>`).join('');
+}
+function openCrop(i){
+ if(tmp[i].type==='video'){alert('Video crop not needed');return;}
+ cropIdx=i;
+ document.getElementById('cropModal').classList.add('open');
+ document.getElementById('cropImg').src=tmp[i].src;
+}
 function closeCrop(){document.getElementById('cropModal').classList.remove('open');}
-function setRatio(r){let b=document.getElementById('cropBox');if(r==='1:1'){b.style.width='60%';b.style.height='60%';}else if(r==='4:5'){b.style.width='50%';b.style.height='62%';}else{b.style.width='70%';b.style.height='39%';}}
-function applyCrop(){let img=document.getElementById('cropImg');let box=document.getElementById('cropBox');let ir=img.getBoundingClientRect();let bx=box.getBoundingClientRect();let sx=(bx.left-ir.left)/ir.width*img.naturalWidth, sy=(bx.top-ir.top)/ir.height*img.naturalHeight, sw=bx.width/ir.width*img.naturalWidth, sh=bx.height/ir.height*img.naturalHeight;let c=document.createElement('canvas');c.width=sw;c.height=sh;let im=new Image();im.onload=()=>{c.getContext('2d').drawImage(im,sx,sy,sw,sh,0,0,sw,sh);tmp[cropIdx].src=c.toDataURL('image/jpeg',0.6);closeCrop();renderPrev();};im.src=tmp[cropIdx].src;}
-function onSpotify(){let u=document.getElementById('spotify').value;let id=u.split('track/')[1]?.split('?')[0]?.split('/')[0];if(!id)return;tmpM={type:'spotify',spotifyId:id,name:'Spotify',dur:30};document.getElementById('spotPrev').innerHTML=`<span style="color:green;font-size:11px">✓ Spotify loaded</span>`;}
-function saveDraft(){if(!tmp.length){alert('Add photo');return;}let d={cat:document.getElementById('tCat').value||'NOTES',title:document.getElementById('tTitle').value||'Untitled',body:document.getElementById('tBody').value,slides:tmp,music:tmpM,date:document.getElementById('tDate').value?new Date(document.getElementById('tDate').value).getTime():Date.now()};DRAFTS.unshift(d);save();closeCreate();render();alert('Draft saved');}
-function openDrafts(){document.getElementById('draftModal').classList.add('open');document.getElementById('draftList').innerHTML=DRAFTS.map((d,i)=>`<div style="display:flex;gap:6px;padding:6px;border-bottom:1px solid #eee"><img src="${d.slides[0].src}" style="width:40px;height:40px;border-radius:6px"><div style="flex:1"><b style="font-size:12px">${d.title}</b></div><div class="btn dark" onclick="POSTS.unshift({...DRAFTS[${i}],archived:false,authorPic:getAdminPic()});DRAFTS.splice(${i},1);save();closeDrafts();render();">Post</div><div class="btn" onclick="DRAFTS.splice(${i},1);save();openDrafts();render()">Del</div></div>`).join('')||'No drafts';}
+function setRatio(r){
+ let b=document.getElementById('cropBox');
+ let w=60,h=w/r;
+ if(h>80) h=80;
+ b.style.width=w+'%';
+ b.style.height=h+'%';
+}
+function applyCrop(){
+ let img=document.getElementById('cropImg');
+ let box=document.getElementById('cropBox');
+ let ir=img.getBoundingClientRect();
+ let bx=box.getBoundingClientRect();
+ let sx=(bx.left-ir.left)/ir.width*img.naturalWidth;
+ let sy=(bx.top-ir.top)/ir.height*img.naturalHeight;
+ let sw=bx.width/ir.width*img.naturalWidth;
+ let sh=bx.height/ir.height*img.naturalHeight;
+ let c=document.createElement('canvas');
+ c.width=sw;c.height=sh;
+ let im=new Image();
+ im.onload=()=>{
+  c.getContext('2d').drawImage(im,sx,sy,sw,sh,0,0,sw,sh);
+  tmp[cropIdx].src=c.toDataURL('image/jpeg',0.5);
+  closeCrop();
+  renderPrev();
+ };
+ im.src=tmp[cropIdx].src;
+}
+function onSpotify(){
+ let u=document.getElementById('spotify').value;
+ let id=u.split('track/')[1]?.split('?')[0]?.split('/')[0];
+ if(!id) return;
+ tmpM={spotifyId:id,name:'Spotify'};
+ document.getElementById('spotPrev').innerHTML=`
+  <div style="color:#1DB954;font-size:12px">✓ Spotify ${id}</div>
+  <iframe style="border-radius:12px;margin-top:6px" src="https://open.spotify.com/embed/track/${id}" width="100%" height="80" frameborder="0"></iframe>`;
+}
+async function saveDraft(){
+ if(!tmp.length){alert('Add photo/video');return;}
+ let d={
+  id:Date.now(),
+  cat:document.getElementById('tCat').value||'NOTES',
+  title:document.getElementById('tTitle').value||'Untitled',
+  body:document.getElementById('tBody').value,
+  slides:tmp,
+  music:tmpM,
+  date:document.getElementById('tDate').value?new Date(document.getElementById('tDate').value).getTime():Date.now()
+ };
+ await dbPut('drafts',d);
+ DRAFTS=await dbGetAll('drafts');
+ closeCreate();render();updateStorageInfo();
+ alert('Draft saved unlimited ✓');
+}
+function openDrafts(){
+ document.getElementById('draftModal').classList.add('open');
+ document.getElementById('draftList').innerHTML=DRAFTS.map(d=>`
+  <div style="display:flex;gap:8px;padding:8px;border-bottom:1px solid var(--bdr)">
+   <img src="${d.slides[0].src}" style="width:50px;height:50px;border-radius:10px;object-fit:cover">
+   <div style="flex:1"><b style="font-size:13px">${d.title}</b></div>
+   <div class="btn dark" onclick="publishDraft(${d.id})">Post</div>
+   <div class="btn" onclick="deleteDraft(${d.id})">Del</div>
+  </div>`).join('')||'No drafts';
+}
 function closeDrafts(){document.getElementById('draftModal').classList.remove('open');}
-function openArchive(){document.getElementById('archiveModal').classList.add('open');let a=POSTS.filter(p=>p.archived);document.getElementById('archiveList').innerHTML=a.map(p=>{let idx=POSTS.indexOf(p);return `<div style="display:flex;gap:6px;padding:6px"><img src="${p.slides[0].src}" style="width:40px;height:40px;border-radius:6px"><div style="flex:1"><b>${p.title}</b></div><div class="btn" onclick="POSTS[${idx}].archived=false;save();openArchive();render()">Restore</div></div>`}).join('')||'No archived';}
+async function publishDraft(id){
+ let d=DRAFTS.find(x=>x.id===id);
+ if(!d) return;
+ let p={...d,id:Date.now(),archived:false,authorPic:getAdminPic(),likes:0};
+ await dbPut('posts',p);
+ await dbDel('drafts',id);
+ POSTS=await dbGetAll('posts');
+ DRAFTS=await dbGetAll('drafts');
+ POSTS.sort((a,b)=>b.date-a.date);
+ closeDrafts();render();updateStorageInfo();
+}
+async function deleteDraft(id){
+ await dbDel('drafts',id);
+ DRAFTS=await dbGetAll('drafts');
+ openDrafts();render();
+}
+function openArchive(){
+ document.getElementById('archiveModal').classList.add('open');
+ let a=POSTS.filter(p=>p.archived);
+ document.getElementById('archiveList').innerHTML=a.map(p=>`
+  <div style="display:flex;gap:8px;padding:8px">
+   <img src="${p.slides[0].src}" style="width:50px;height:50px;border-radius:10px">
+   <div style="flex:1"><b>${p.title}</b></div>
+   <div class="btn" onclick="restorePost(${p.id})">Restore</div>
+  </div>`).join('')||'No archived';
+}
 function closeArchive(){document.getElementById('archiveModal').classList.remove('open');}
-function savePost(){let t=document.getElementById('tTitle').value.trim();if(!t){alert('Please enter Title');return;}if(!tmp.length){alert('Add photo');return;}let p={cat:document.getElementById('tCat').value||'NOTES',title:t,body:document.getElementById('tBody').value,slides:tmp,music:tmpM,authorPic:getAdminPic(),date:document.getElementById('tDate').value?new Date(document.getElementById('tDate').value).getTime():Date.now(),archived:false};POSTS.unshift(p);if(save()){closeCreate();render();alert('Posted ✓');}}
-function like(){let k='like_'+cur;let L=JSON.parse(localStorage.getItem('mn_likes')||'{}');L[k]=(L[k]||0)+1;localStorage.setItem('mn_likes',JSON.stringify(L));renderLike();}function renderLike(){let L=JSON.parse(localStorage.getItem('mn_likes')||'{}');document.getElementById('likeC').innerText=L['like_'+cur]||0;}
-function getC(){return JSON.parse(localStorage.getItem('mn_comments')||'{}')}function renderComments(){let C=getC();let list=C['c_'+cur]||[];document.getElementById('cC').innerText=list.length;document.getElementById('cList').innerHTML=list.map(x=>`<div style="padding:4px 0;border-bottom:1px solid #eee"><b>${x.name}</b>: ${x.text}</div>`).join('')||'No comments';}function addC(){let t=document.getElementById('cIn').value.trim();if(!t)return;let C=getC();let k='c_'+cur;C[k]=C[k]||[];C[k].push({name:getAdminName(),text:t});localStorage.setItem('mn_comments',JSON.stringify(C));document.getElementById('cIn').value='';renderComments();}
+async function restorePost(id){
+ let p=POSTS.find(x=>x.id===id);
+ if(p){p.archived=false;await dbPut('posts',p);POSTS=await dbGetAll('posts');POSTS.sort((a,b)=>b.date-a.date);openArchive();render();}
+}
+async function savePost(){
+ let t=document.getElementById('tTitle').value.trim();
+ if(!t){alert('Title required');return;}
+ if(!tmp.length){alert('Add photo/video');return;}
+ let p={
+  id:Date.now(),
+  cat:document.getElementById('tCat').value||'NOTES',
+  title:t,
+  body:document.getElementById('tBody').value,
+  slides:tmp,
+  music:tmpM,
+  authorPic:getAdminPic(),
+  date:document.getElementById('tDate').value?new Date(document.getElementById('tDate').value).getTime():Date.now(),
+  archived:false,
+  likes:0
+ };
+ await dbPut('posts',p);
+ POSTS=await dbGetAll('posts');
+ POSTS.sort((a,b)=>b.date-a.date);
+ closeCreate();render();updateStorageInfo();
+ alert('Posted unlimited ✓ Photo+Video');
+}
+async function archivePost(){
+ if(!confirm('Archive?')) return;
+ POSTS[cur].archived=true;
+ await dbPut('posts',POSTS[cur]);
+ POSTS=await dbGetAll('posts');
+ POSTS.sort((a,b)=>b.date-a.date);
+ closePost();render();
+}
+async function deletePost(){
+ if(!confirm('Delete permanently?')) return;
+ await dbDel('posts',POSTS[cur].id);
+ POSTS=await dbGetAll('posts');
+ closePost();render();updateStorageInfo();
+}
+async function likePost(){
+ POSTS[cur].likes=(POSTS[cur].likes||0)+1;
+ document.getElementById('likeC').innerText=POSTS[cur].likes;
+ await dbPut('posts',POSTS[cur]);
+}
+function getComments(){return JSON.parse(localStorage.getItem('mn_comments')||'{}')}
+function renderComments(){
+ let C=getComments();
+ let list=C['c_'+POSTS[cur].id]||[];
+ document.getElementById('cC').innerText=list.length;
+ document.getElementById('cList').innerHTML=list.map(x=>`<div style="padding:8px 0;border-bottom:1px solid var(--bdr)"><b>${x.name}</b>: ${x.text}</div>`).join('')||'No comments';
+}
+function addComment(){
+ let t=document.getElementById('cIn').value.trim();
+ if(!t) return;
+ let C=getComments();
+ let k='c_'+POSTS[cur].id;
+ C[k]=C[k]||[];
+ C[k].push({name:getAdminName(),text:t});
+ localStorage.setItem('mn_comments',JSON.stringify(C));
+ document.getElementById('cIn').value='';
+ renderComments();
+}
 function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('mn_dark',document.body.classList.contains('dark')?'1':'0');}
-function setAdminPic(inp){let f=inp.files[0];if(!f)return;compress(f,d=>{localStorage.setItem('mn_admin_pic',d);render();});}
-function saveName(){let n=document.getElementById('adminName').value.trim();if(!n)return;localStorage.setItem('mn_admin_name',n);render();alert('Saved');}
-function share(){navigator.clipboard.writeText(location.href);alert('Link copied');}
-(function(){if(localStorage.getItem('mn_dark')==='1')document.body.classList.add('dark');render();})();
-</script></body></html> 
+function setAdminPic(inp){
+ let f=inp.files[0];if(!f) return;
+ compress(f,d=>{localStorage.setItem('mn_admin_pic',d);render();});
+}
+function saveAdmin(){
+ let n=document.getElementById('adminName').value.trim();
+ let b=document.getElementById('adminBio').value.trim();
+ if(n) localStorage.setItem('mn_admin_name',n);
+ if(b) localStorage.setItem('mn_admin_bio',b);
+ render();alert('Profile saved ✓');
+}
+function sharePost(){navigator.clipboard.writeText(location.href);alert('Link copied');}
+async function updateStorageInfo(){
+ try{
+  if(navigator.storage&&navigator.storage.estimate){
+   let est=await navigator.storage.estimate();
+   let used=((est.usage||0)/1024/1024).toFixed(2);
+   let quota=((est.quota||0)/1024/1024).toFixed(0);
+   document.getElementById('storageText').innerText=used+' MB / '+quota+' MB Used';
+   document.getElementById('storageFill').style.width=(est.usage/est.quota*100)+'%';
+  }else{
+   document.getElementById('storageText').innerText=POSTS.length+' posts • Unlimited';
+  }
+ }catch(e){}
+}
+async function clearAll(){
+ if(!confirm('Clear ALL?')) return;
+ await dbClear('posts');await dbClear('drafts');
+ localStorage.clear();location.reload();
+}
+async function exportData(){
+ let data={posts:POSTS,drafts:DRAFTS};
+ let blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+ let url=URL.createObjectURL(blob);
+ let a=document.createElement('a');
+ a.href=url;a.download='mindnotes-backup.json';a.click();
+}
+init();
+</script></body></html>
