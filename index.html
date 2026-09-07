@@ -1,181 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MindNotes</title>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MindNotes</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#f7f1e8;--card:#fff;--text:#1a1a1a;--bdr:#e8ddd0;--mut:#8a7d6f;--btn:#111;--btnT:#fff}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--text)}
-body.dark{--bg:#0f0f0f;--card:#1c1c1c;--text:#f0f0f0;--bdr:#2a2a2a;--mut:#9a9a9a;--btn:#fff;--btnT:#111}
-.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
-.logo{font-family:Fraunces;font-weight:700;font-size:24px}
-.btn{border:1px solid var(--bdr);background:var(--card);padding:8px 14px;border-radius:99px;font-size:12px;cursor:pointer;display:inline-flex;gap:6px;font-weight:600}
-.btn.dark{background:var(--btn);color:var(--btnT)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px;max-width:900px;margin:auto}
-.card{background:var(--card);border:1px solid var(--bdr);border-radius:20px;overflow:hidden;position:relative}
-.card img,.card video{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
-.cardBody{padding:12px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:50}
-.modal.open{display:flex}
-.box{background:var(--card);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:20px;max-height:94vh;overflow:auto}
-.inp{width:100%;border:1px solid var(--bdr);background:var(--bg);padding:12px;border-radius:12px;margin-top:10px;color:var(--text)}
-#postView{display:none;max-width:700px;margin:auto;padding:12px}
-.car{position:relative;background:#000;border-radius:20px;overflow:hidden;height:520px;display:flex;align-items:center;justify-content:center}
-.carTrack{display:flex;width:100%;height:100%;transition:transform.35s}
-.carTrack img,.carTrack video{width:100%;height:100%;object-fit:contain;flex-shrink:0}
-.cAr{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.9);color:#000;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.cAr.l{left:10px}
-.cAr.r{right:10px}
-.cDotRow{position:absolute;bottom:12px;left:0;right:0;display:flex;gap:6px;justify-content:center}
-.cDot{width:18px;height:4px;border-radius:99px;background:rgba(255,255,255,.4)}
-.cDot.on{background:#fff;width:28px}
-.prevWrap{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.prevItem{position:relative;width:76px;height:76px;border-radius:14px;overflow:hidden;border:1px solid var(--bdr)}
-.prevItem img,.prevItem video{width:100%;height:100%;object-fit:cover}
-.prevItem.x{position:absolute;top:3px;right:3px;background:#ff3b30;color:#fff;font-size:10px;padding:3px 5px;border-radius:50%;cursor:pointer}
-.prevItem.c{position:absolute;bottom:2px;left:2px;background:#000;color:#fff;font-size:8px;padding:2px 5px;border-radius:99px;cursor:pointer}
-.drawer{position:fixed;top:0;right:-100%;width:88%;max-width:340px;height:100%;background:var(--card);z-index:60;transition:.35s;border-left:1px solid var(--bdr);padding:20px;overflow:auto}
-.drawer.open{right:0}
-.bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:55}
-.bg.open{display:block}
-</style>
-</head>
-<body>
-<div class="top">
-<div class="logo">MindNotes.</div>
-<div class="btn" onclick="openDrawer()">☰ Menu</div>
-</div>
+<style>:root{--bg:#f7f1e8;--card:#fff;--text:#1a1a1a;--bdr:#e8ddd0;--mut:#8a7d6f;--btn:#111;--btnT:#fff}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Manrope,sans-serif;background:var(--bg);color:var(--text)}body.dark{--bg:#0f0f0f;--card:#1c1c1c;--text:#f0f0f0;--bdr:#2a2a2a;--mut:#9a9a9a;--btn:#fff;--btnT:#111}.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;padding:12px 16px}.logo{font-family:Fraunces;font-weight:700;font-size:24px}.btn{border:1px solid var(--bdr);background:var(--card);padding:8px 14px;border-radius:99px;font-size:12px;cursor:pointer;display:inline-flex;gap:6px;font-weight:600}.btn.dark{background:var(--btn);color:var(--btnT)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px;max-width:900px;margin:auto}.card{background:var(--card);border:1px solid var(--bdr);border-radius:20px;overflow:hidden;position:relative;cursor:pointer}.card img,.card video{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}.cardBody{padding:12px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:50}.modal.open{display:flex}.box{background:var(--card);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:20px;max-height:94vh;overflow:auto}.inp{width:100%;border:1px solid var(--bdr);background:var(--bg);padding:12px;border-radius:12px;margin-top:10px;color:var(--text)}#postView{display:none;max-width:700px;margin:auto;padding:12px}.car{position:relative;background:#000;border-radius:20px;overflow:hidden;height:520px;display:flex;align-items:center;justify-content:center}.carTrack{display:flex;width:100%;height:100%;transition:transform.35s}.carTrack img,.carTrack video{width:100%;height:100%;object-fit:contain;flex-shrink:0}.cAr{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.9);color:#000;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}.cAr.l{left:10px}.cAr.r{right:10px}.cDotRow{position:absolute;bottom:12px;left:0;right:0;display:flex;gap:6px;justify-content:center}.cDot{width:18px;height:4px;border-radius:99px;background:rgba(255,255,255,.4)}.cDot.on{background:#fff;width:28px}.prevWrap{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.prevItem{position:relative;width:76px;height:76px;border-radius:14px;overflow:hidden;border:1px solid var(--bdr)}.prevItem img,.prevItem video{width:100%;height:100%;object-fit:cover}.prevItem.x{position:absolute;top:3px;right:3px;background:#ff3b30;color:#fff;font-size:10px;padding:3px 5px;border-radius:50%;cursor:pointer}.prevItem.c{position:absolute;bottom:2px;left:2px;background:#000;color:#fff;font-size:8px;padding:2px 5px;border-radius:99px;cursor:pointer}.drawer{position:fixed;top:0;right:-100%;width:88%;max-width:340px;height:100%;background:var(--card);z-index:60;transition:.35s;border-left:1px solid var(--bdr);padding:20px;overflow:auto}.drawer.open{right:0}.bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:55}.bg.open{display:block}</style></head><body>
+<div class="top"><div class="logo">MindNotes.</div><div class="btn" onclick="openDrawer()">☰ Menu</div></div>
 <div class="grid" id="grid"></div>
-<div id="postView">
-<div style="display:flex;gap:8px">
-<div class="btn" onclick="closePost()">← Back</div>
-<b id="pTop" style="flex:1"></b>
-<div class="btn" onclick="archivePost()">Archive</div>
-<div class="btn" style="color:#ff3b30" onclick="deletePost()">Delete</div>
-</div>
-<div id="dateTag" style="margin-top:10px"></div>
-<div class="car" id="car" style="margin-top:12px">
-<div class="carTrack" id="track"></div>
-<div class="cAr l" onclick="slide(-1)">‹</div>
-<div class="cAr r" onclick="slide(1)">›</div>
-<div class="cDotRow" id="dots"></div>
-</div>
-<div id="authBox" style="display:flex;gap:10px;margin-top:14px"></div>
-<h2 id="pTitle" style="font-family:Fraunces;margin-top:12px;font-size:26px"></h2>
-<p id="pBody" style="color:var(--mut);margin-top:8px;white-space:pre-wrap"></p>
-<div id="musicBar" style="margin-top:12px"></div>
-<div style="display:flex;gap:10px;margin-top:14px">
-<div class="btn" onclick="likePost()">❤️ <span id="likeC">0</span></div>
-<div class="btn" onclick="document.getElementById('cIn').focus()">💬 <span id="cC">0</span></div>
-</div>
-<div style="background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:14px;margin-top:14px">
-<b>Comments</b>
-<div id="cList" style="margin-top:8px"></div>
-<div style="display:flex;gap:8px;margin-top:10px">
-<input id="cIn" class="inp" style="margin:0" placeholder="Add comment...">
-<div class="btn dark" onclick="addComment()">Post</div>
-</div>
-</div>
-</div>
-<div class="drawer" id="drawer">
-<div style="display:flex;justify-content:space-between">
-<b style="font-family:Fraunces;font-size:18px">Admin Access</b>
-<div class="btn" onclick="closeDrawer()">✕</div>
-</div>
-<div id="authSection" style="margin-top:20px;padding:12px;background:var(--bg);border:1px solid var(--bdr);border-radius:14px">
-<div style="font-size:13px;font-weight:700" id="authTitle">Sign In Required</div>
-<input id="adminPass" type="password" class="inp" placeholder="Enter Admin Password">
-<div style="display:flex;gap:8px;margin-top:10px">
-<div class="btn dark" style="flex:1;justify-content:center" onclick="signIn()">Sign In</div>
-<div class="btn" style="flex:1;justify-content:center" onclick="setFirstPassword()">Set Password</div>
-</div>
-<div id="authMsg" style="font-size:11px;margin-top:8px;color:gray"></div>
-</div>
-<div id="adminSection" style="display:none;margin-top:20px">
-<input id="adminName" class="inp" placeholder="Your Name">
-<input id="adminBio" class="inp" placeholder="Bio">
-<input type="file" id="adminPicIn" accept="image/*" style="display:none" onchange="setAdminPic(this)">
-<div style="display:flex;gap:8px;margin-top:10px">
-<div class="btn" style="flex:1" onclick="document.getElementById('adminPicIn').click()">Photo</div>
-<div class="btn dark" style="flex:1" onclick="saveAdmin()">Save</div>
-</div>
-<div id="adminPicPrev" style="margin-top:12px;display:flex;justify-content:center"></div>
-<div class="btn" style="width:100%;margin-top:12px" onclick="signOut()">Sign Out</div>
-</div>
-<div style="margin-top:22px;display:flex;justify-content:space-between">
-<span>Dark Mode</span>
-<div class="btn" onclick="toggleTheme()">Toggle</div>
-</div>
-<div id="newPostBtn" class="btn dark" style="width:100%;margin-top:22px;padding:14px;justify-content:center;display:none" onclick="openCreate();closeDrawer()">+ New Post (Admin)</div>
-<div class="btn" style="width:100%;margin-top:10px" onclick="openDrafts()">Drafts <span id="dCount"></span></div>
-<div class="btn" style="width:100%;margin-top:10px" onclick="openArchive()">Archived <span id="aCount"></span></div>
-</div>
+<div id="postView"><div style="display:flex;gap:8px"><div class="btn" onclick="closePost()">← Back</div><b id="pTop" style="flex:1"></b><div class="btn" onclick="archivePost()">Archive</div><div class="btn" style="color:#ff3b30" onclick="deletePost()">Delete</div></div><div id="dateTag" style="margin-top:10px"></div><div class="car" id="car" style="margin-top:12px"><div class="carTrack" id="track"></div><div class="cAr l" onclick="slide(-1)">‹</div><div class="cAr r" onclick="slide(1)">›</div><div class="cDotRow" id="dots"></div></div><div id="authBox" style="display:flex;gap:10px;margin-top:14px"></div><h2 id="pTitle" style="font-family:Fraunces;margin-top:12px;font-size:26px"></h2><p id="pBody" style="color:var(--mut);margin-top:8px;white-space:pre-wrap"></p><div id="musicBar" style="margin-top:12px"></div><div style="display:flex;gap:10px;margin-top:14px"><div class="btn" onclick="likePost()">❤️ <span id="likeC">0</span></div><div class="btn" onclick="document.getElementById('cIn').focus()">💬 <span id="cC">0</span></div></div><div style="background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:14px;margin-top:14px"><b>Comments</b><div id="cList" style="margin-top:8px"></div><div style="display:flex;gap:8px;margin-top:10px"><input id="cIn" class="inp" style="margin:0" placeholder="Add comment..."><div class="btn dark" onclick="addComment()">Post</div></div></div></div>
+<div class="drawer" id="drawer"><div style="display:flex;justify-content:space-between"><b style="font-family:Fraunces;font-size:18px">Admin Access</b><div class="btn" onclick="closeDrawer()">✕</div></div>
+<div id="authSection" style="margin-top:20px;padding:12px;background:var(--bg);border:1px solid var(--bdr);border-radius:14px"><div style="font-size:13px;font-weight:700" id="authTitle">Sign In with OTP</div><input id="adminPhone" class="inp" placeholder="Phone No. e.g. 9876543210"><div class="btn dark" style="width:100%;margin-top:10px;justify-content:center" onclick="sendOtp()">Send OTP</div><div id="otpBox" style="display:none;margin-top:10px"><input id="otpInput" class="inp" placeholder="Enter 6 digit OTP"><div style="display:flex;gap:8px;margin-top:8px"><div class="btn dark" style="flex:1;justify-content:center" onclick="verifyOtp()">Verify OTP</div><div class="btn" style="flex:1;justify-content:center" onclick="sendOtp()">Resend</div></div></div><div id="authMsg" style="font-size:11px;margin-top:8px;color:gray"></div></div>
+<div id="adminSection" style="display:none;margin-top:20px"><input id="adminName" class="inp" placeholder="Your Name"><input id="adminBio" class="inp" placeholder="Bio"><input type="file" id="adminPicIn" accept="image/*" style="display:none" onchange="setAdminPic(this)"><div style="display:flex;gap:8px;margin-top:10px"><div class="btn" style="flex:1" onclick="document.getElementById('adminPicIn').click()">Photo</div><div class="btn dark" style="flex:1" onclick="saveAdmin()">Save</div></div><div id="adminPicPrev" style="margin-top:12px;display:flex;justify-content:center"></div><div class="btn" style="width:100%;margin-top:12px" onclick="signOut()">Sign Out</div></div>
+<div style="margin-top:22px;display:flex;justify-content:space-between"><span>Dark Mode</span><div class="btn" onclick="toggleTheme()">Toggle</div></div><div id="newPostBtn" class="btn dark" style="width:100%;margin-top:22px;padding:14px;justify-content:center;display:none" onclick="openCreate();closeDrawer()">+ New Post (Admin)</div><div class="btn" style="width:100%;margin-top:10px" onclick="openDrafts()">Drafts <span id="dCount"></span></div><div class="btn" style="width:100%;margin-top:10px" onclick="openArchive()">Archived <span id="aCount"></span></div></div>
 <div class="bg" id="bg" onclick="closeDrawer()"></div>
-<div class="modal" id="createModal">
-<div class="box">
-<h3 style="font-family:Fraunces;font-size:20px">New Post - All Features + 10GB Movie</h3>
-<input id="tCat" class="inp" placeholder="Category">
-<input id="tTitle" class="inp" placeholder="Title *">
-<input id="tDate" type="datetime-local" class="inp">
-<input type="file" id="fImg" accept="image/*,video/*" multiple style="display:none" onchange="onImg(this)">
-<div class="btn" style="width:100%;margin-top:10px;justify-content:center;padding:12px" onclick="document.getElementById('fImg').click()">Add Photos / Videos / 10GB Movie (max 4)</div>
-<div id="prev" class="prevWrap"></div>
-<div style="margin-top:12px;background:var(--bg);border:1px solid var(--bdr);border-radius:12px;padding:10px">
-<b style="font-size:12px">🎵 Music from Phone</b>
-<input type="file" id="fAudio" accept="audio/*" style="display:none" onchange="onAudio(this)">
-<div class="btn" style="width:100%;margin-top:8px;justify-content:center" onclick="document.getElementById('fAudio').click()">Choose Audio from Phone</div>
-<div id="audioPrev" style="margin-top:8px"></div>
-<div id="scrollBox" style="display:none;margin-top:8px">
-<div style="font-size:11px;opacity:.7">Scroll to desired line:</div>
-<input type="range" id="timeRange" style="width:100%" min="0" max="100" value="0" oninput="seekAudio(this.value)">
-<div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6">
-<span id="tStart">0:00</span>
-<span id="tEnd">0:00</span>
-</div>
-</div>
-<input id="spotify" class="inp" placeholder="Spotify link (optional)" oninput="onSpotify()">
-<div id="spotPrev" style="margin-top:8px"></div>
-</div>
-<textarea id="tBody" class="inp" style="height:100px" placeholder="Caption..."></textarea>
-<div style="display:flex;gap:8px;margin-top:14px">
-<div class="btn" style="flex:1;justify-content:center" onclick="saveDraft()">Draft</div>
-<div class="btn" style="flex:1;justify-content:center" onclick="closeCreate()">Cancel</div>
-<div class="btn dark" style="flex:1;justify-content:center" onclick="savePost()">Post</div>
-</div>
-</div>
-</div>
-<div class="modal" id="draftModal">
-<div class="box">
-<div style="display:flex;justify-content:space-between"><b>Drafts</b><div class="btn" onclick="closeDrafts()">✕</div></div>
-<div id="draftList" style="margin-top:10px"></div>
-</div>
-</div>
-<div class="modal" id="archiveModal">
-<div class="box">
-<div style="display:flex;justify-content:space-between"><b>Archived</b><div class="btn" onclick="closeArchive()">✕</div></div>
-<div id="archiveList" style="margin-top:10px"></div>
-</div>
-</div>
-<div class="modal" id="cropModal">
-<div class="box">
-<div style="display:flex;justify-content:space-between"><b>Crop</b><div class="btn" onclick="closeCrop()">✕</div></div>
-<div id="cropCont" style="position:relative;width:100%;height:340px;background:#000;margin-top:12px;overflow:hidden;border-radius:12px">
-<img id="cropImg" style="width:100%;height:100%;object-fit:contain">
-<div id="cropBox" style="position:absolute;left:20%;top:20%;width:60%;height:60%;border:2px dashed #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.5)"></div>
-</div>
-<div style="display:flex;gap:8px;margin-top:12px">
-<div class="btn" onclick="setRatio(1)">1:1</div>
-<div class="btn" onclick="setRatio(4/5)">4:5</div>
-<div class="btn dark" style="flex:1;justify-content:center" onclick="applyCrop()">Apply</div>
-</div>
-</div>
-</div>
+<div class="modal" id="createModal"><div class="box"><h3 style="font-family:Fraunces;font-size:20px">New Post</h3><input id="tCat" class="inp" placeholder="Category"><input id="tTitle" class="inp" placeholder="Title *"><input id="tDate" type="datetime-local" class="inp"><input type="file" id="fImg" accept="image/*,video/*" multiple style="display:none" onchange="onImg(this)"><div class="btn" style="width:100%;margin-top:10px;justify-content:center;padding:12px" onclick="document.getElementById('fImg').click()">Add Photos / Videos (max 4)</div><div id="prev" class="prevWrap"></div><div style="margin-top:12px;background:var(--bg);border:1px solid var(--bdr);border-radius:12px;padding:10px"><b style="font-size:12px">🎵 Music from Phone</b><input type="file" id="fAudio" accept="audio/*" style="display:none" onchange="onAudio(this)"><div class="btn" style="width:100%;margin-top:8px;justify-content:center" onclick="document.getElementById('fAudio').click()">Choose Audio</div><div id="audioPrev" style="margin-top:8px"></div><div id="scrollBox" style="display:none;margin-top:8px"><input type="range" id="timeRange" style="width:100%" min="0" max="100" value="0" oninput="seekAudio(this.value)"><div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6"><span id="tStart">0:00</span><span id="tEnd">0:00</span></div></div><input id="spotify" class="inp" placeholder="Spotify link (optional)" oninput="onSpotify()"><div id="spotPrev" style="margin-top:8px"></div></div><textarea id="tBody" class="inp" style="height:100px" placeholder="Caption..."></textarea><div style="display:flex;gap:8px;margin-top:14px"><div class="btn" style="flex:1;justify-content:center" onclick="saveDraft()">Draft</div><div class="btn" style="flex:1;justify-content:center" onclick="closeCreate()">Cancel</div><div class="btn dark" style="flex:1;justify-content:center" onclick="savePost()">Post</div></div></div></div>
+<div class="modal" id="draftModal"><div class="box"><div style="display:flex;justify-content:space-between"><b>Drafts</b><div class="btn" onclick="closeDrafts()">✕</div></div><div id="draftList" style="margin-top:10px"></div></div></div>
+<div class="modal" id="archiveModal"><div class="box"><div style="display:flex;justify-content:space-between"><b>Archived</b><div class="btn" onclick="closeArchive()">✕</div></div><div id="archiveList" style="margin-top:10px"></div></div></div>
+<div class="modal" id="cropModal"><div class="box"><div style="display:flex;justify-content:space-between"><b>Crop</b><div class="btn" onclick="closeCrop()">✕</div></div><div id="cropCont" style="position:relative;width:100%;height:340px;background:#000;margin-top:12px;overflow:hidden;border-radius:12px"><img id="cropImg" style="width:100%;height:100%;object-fit:contain"><div id="cropBox" style="position:absolute;left:20%;top:20%;width:60%;height:60%;border:2px dashed #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.5)"></div></div><div style="display:flex;gap:8px;margin-top:12px"><div class="btn" onclick="setRatio(1)">1:1</div><div class="btn" onclick="setRatio(4/5)">4:5</div><div class="btn dark" style="flex:1;justify-content:center" onclick="applyCrop()">Apply</div></div></div></div>
 <script>
-const DB_NAME='MindNotesDB',DB_VER=1;
-function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{let db=e.target.result;if(!db.objectStoreNames.contains('posts'))db.createObjectStore('posts',{keyPath:'id'});if(!db.objectStoreNames.contains('drafts'))db.createObjectStore('drafts',{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+const DB_NAME='MindNotesDB',DB_VER=1;function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{let db=e.target.result;if(!db.objectStoreNames.contains('posts'))db.createObjectStore('posts',{keyPath:'id'});if(!db.objectStoreNames.contains('drafts'))db.createObjectStore('drafts',{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
 async function dbGetAll(s){let db=await openDB();return new Promise(res=>{let tx=db.transaction(s,'readonly');let req=tx.objectStore(s).getAll();req.onsuccess=()=>res(req.result);});}
 async function dbPut(s,o){let db=await openDB();return new Promise(res=>{let tx=db.transaction(s,'readwrite');tx.objectStore(s).put(o);tx.oncomplete=()=>res();});}
 async function dbDel(s,id){let db=await openDB();return new Promise(res=>{let tx=db.transaction(s,'readwrite');tx.objectStore(s).delete(id);tx.oncomplete=()=>res();});}
@@ -184,17 +23,17 @@ async function init(){POSTS=await dbGetAll('posts');if(!POSTS.length){let def={i
 function getAdminPic(){return localStorage.getItem('mn_admin_pic')||''}
 function getAdminName(){return localStorage.getItem('mn_admin_name')||'Admin'}
 function getAdminBio(){return localStorage.getItem('mn_admin_bio')||''}
-function checkAuth(){let l=localStorage.getItem('mn_logged')==='1';let h=!!localStorage.getItem('mn_admin_pass');document.getElementById('authSection').style.display=l?'none':'block';document.getElementById('adminSection').style.display=l?'block':'none';document.getElementById('newPostBtn').style.display=l?'flex':'none';document.getElementById('authTitle').innerText=h?'Sign In Required':'Set Your Admin Password';return l;}
-function setFirstPassword(){let p=document.getElementById('adminPass').value.trim();if(p.length<4){alert('Password min 4 chars');return;}localStorage.setItem('mn_admin_pass',p);localStorage.setItem('mn_logged','1');checkAuth();render();}
-function signIn(){let s=localStorage.getItem('mn_admin_pass');let e=document.getElementById('adminPass').value.trim();if(!s){alert('First set password');return;}if(e===s){localStorage.setItem('mn_logged','1');checkAuth();alert('Signed In ✓');}else alert('Wrong password');}
-function signOut(){localStorage.removeItem('mn_logged');checkAuth();alert('Signed Out');}
-function render(){let list=POSTS.filter(p=>!p.archived);document.getElementById('grid').innerHTML=list.map(p=>{let o=POSTS.indexOf(p);let f=p.slides[0];let src=f.blob?URL.createObjectURL(f.blob):f.src;let m=f.type==='video'?`<video src="${src}" muted></video>`:`<img src="${src}">`;return `<div class="card" onclick="openPost(${o})">${m}<div style="position:absolute;top:8px;left:8px;background:#000;color:#fff;font-size:9px;padding:4px 8px;border-radius:99px">${p.cat}</div><div class="cardBody"><b style="font-size:13px;font-family:Fraunces">${p.title}</b><div style="font-size:11px;color:gray">${new Date(p.date).toLocaleDateString()} • ❤️ ${p.likes||0}</div></div></div>`}).join('');document.getElementById('dCount').innerText=DRAFTS.length||'';document.getElementById('aCount').innerText=POSTS.filter(p=>p.archived).length||'';document.getElementById('adminPicPrev').innerHTML=getAdminPic()?`<img src="${getAdminPic()}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`:'';document.getElementById('adminName').value=localStorage.getItem('mn_admin_name')||'';document.getElementById('adminBio').value=localStorage.getItem('mn_admin_bio')||'';}
+function checkAuth(){let l=localStorage.getItem('mn_logged')==='1';document.getElementById('authSection').style.display=l?'none':'block';document.getElementById('adminSection').style.display=l?'block':'none';document.getElementById('newPostBtn').style.display=l?'flex':'none';return l;}
+function sendOtp(){let phone=document.getElementById('adminPhone').value.trim();if(phone.length<8){document.getElementById('authMsg').innerText='Valid phone daalo';return;}let otp=Math.floor(100000+Math.random()*900000);localStorage.setItem('mn_otp',otp);localStorage.setItem('mn_phone',phone);document.getElementById('otpBox').style.display='block';document.getElementById('authMsg').innerHTML='<span style=color:green>OTP: <b>'+otp+'</b> (test mode)</span>';}
+function verifyOtp(){let e=document.getElementById('otpInput').value.trim();let real=localStorage.getItem('mn_otp');if(e===real && e!==''){localStorage.setItem('mn_logged','1');document.getElementById('otpBox').style.display='none';document.getElementById('authMsg').innerText='';checkAuth();alert('OTP Verified ✓');}else{document.getElementById('authMsg').innerText='Galat OTP';}}
+function signOut(){localStorage.removeItem('mn_logged');checkAuth();closeDrawer();}
+function render(){let list=POSTS.filter(p=>!p.archived);document.getElementById('grid').innerHTML=list.map(p=>{let o=POSTS.indexOf(p);let f=p.slides[0];let src=f.blob?URL.createObjectURL(f.blob):f.src;let m=f.type==='video'?`<video src="${src}" muted></video>`:`<img src="${src}">`;return `<div class="card" onclick="openPost(${o})">${m}<div style="position:absolute;top:8px;left:8px;background:#000;color:#fff;font-size:9px;padding:4px 8px;border-radius:99px">${p.cat}</div><div class="cardBody"><b style="font-size:13px;font-family:Fraunces">${p.title}</b><div style="font-size:11px;color:gray">${new Date(p.date).toLocaleDateString()} • ❤️ ${p.likes||0}</div></div></div>`}).join('');document.getElementById('dCount').innerText=DRAFTS.length||'';document.getElementById('aCount').innerText=POSTS.filter(p=>p.archived).length||'';document.getElementById('adminPicPrev').innerHTML=getAdminPic()?`<img src="${getAdminPic()}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`:'';let nm=document.getElementById('adminName');if(nm)nm.value=localStorage.getItem('mn_admin_name')||'';let bio=document.getElementById('adminBio');if(bio)bio.value=localStorage.getItem('mn_admin_bio')||'';}
 function openPost(i){cur=i;ci=0;let p=POSTS[i];document.getElementById('grid').style.display='none';document.getElementById('postView').style.display='block';document.getElementById('pTop').innerText=p.title;document.getElementById('pTitle').innerText=p.title;document.getElementById('pBody').innerText=p.body;document.getElementById('dateTag').innerHTML=`<span style="font-size:11px;border:1px solid var(--bdr);padding:6px 10px;border-radius:99px">${new Date(p.date).toLocaleDateString()} • ${p.cat}</span>`;let t=document.getElementById('track');t.innerHTML=p.slides.map(s=>{let src=s.blob?URL.createObjectURL(s.blob):s.src;return s.type==='video'?`<video src="${src}" controls></video>`:`<img src="${src}">`;}).join('');t.style.transform='translateX(0)';document.getElementById('dots').innerHTML=p.slides.map((_,k)=>`<div class="cDot ${k===0?'on':''}"></div>`).join('');document.getElementById('authBox').innerHTML=`<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;background:#111">${getAdminPic()?`<img src="${getAdminPic()}" style="width:100%;height:100%;object-fit:cover">`:''}</div><div><b>${getAdminName()}</b><div style="font-size:11px;color:var(--mut)">${getAdminBio()}</div></div>`;let mb=document.getElementById('musicBar');if(p.music){if(p.music.audioBlob){let u=URL.createObjectURL(p.music.audioBlob);mb.innerHTML=`<b style="font-size:12px">🎵 ${p.music.name}</b><div style="font-size:10px;opacity:.6">From ${Math.floor((p.music.start||0)/60)}:${String(Math.floor((p.music.start||0)%60)).padStart(2,'0')}</div><audio src="${u}" controls style="width:100%;margin-top:8px"></audio>`;}else if(p.music.spotifyId){mb.innerHTML=`<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${p.music.spotifyId}" width="100%" height="80" frameborder="0"></iframe>`;}}else mb.innerHTML='';document.getElementById('likeC').innerText=p.likes||0;renderComments();window.scrollTo(0,0);}
 function closePost(){document.getElementById('grid').style.display='grid';document.getElementById('postView').style.display='none';render();}
 function slide(d){let p=POSTS[cur];ci=(ci+d+p.slides.length)%p.slides.length;document.getElementById('track').style.transform=`translateX(-${ci*100}%)`;document.querySelectorAll('.cDot').forEach((e,i)=>e.classList.toggle('on',i===ci));}
 function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('bg').classList.add('open');}
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('bg').classList.remove('open');}
-function openCreate(){if(!checkAuth()){alert('Sign In first');openDrawer();return;}tmp=[];tmpM=null;document.getElementById('prev').innerHTML='';document.getElementById('spotPrev').innerHTML='';document.getElementById('audioPrev').innerHTML='';document.getElementById('scrollBox').style.display='none';document.getElementById('tTitle').value='';document.getElementById('tBody').value='';document.getElementById('tCat').value='';document.getElementById('spotify').value='';let n=new Date();n.setMinutes(n.getMinutes()-n.getTimezoneOffset());document.getElementById('tDate').value=n.toISOString().slice(0,16);document.getElementById('createModal').classList.add('open');closeDrawer();}
+function openCreate(){if(!checkAuth()){alert('Sign In with OTP first');openDrawer();return;}tmp=[];tmpM=null;document.getElementById('prev').innerHTML='';document.getElementById('spotPrev').innerHTML='';document.getElementById('audioPrev').innerHTML='';document.getElementById('scrollBox').style.display='none';document.getElementById('tTitle').value='';document.getElementById('tBody').value='';document.getElementById('tCat').value='';document.getElementById('spotify').value='';let n=new Date();n.setMinutes(n.getMinutes()-n.getTimezoneOffset());document.getElementById('tDate').value=n.toISOString().slice(0,16);document.getElementById('createModal').classList.add('open');closeDrawer();}
 function closeCreate(){document.getElementById('createModal').classList.remove('open');}
 function compress(f,cb){let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let c=document.createElement('canvas');let max=1000;let w=img.width>max?max:img.width;let h=w/(img.width/img.height);c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',0.6));};img.src=e.target.result;};r.readAsDataURL(f);}
 function onImg(inp){let fs=[...inp.files].slice(0,4-tmp.length);fs.forEach(f=>{if(f.type.startsWith('video')){let u=URL.createObjectURL(f);tmp.push({type:'video',blob:f,url:u});renderPrev();}else{compress(f,d=>{tmp.push({type:'image',src:d});renderPrev();});}});inp.value='';}
@@ -226,6 +65,4 @@ function setAdminPic(inp){let f=inp.files[0];if(!f)return;compress(f,d=>{localSt
 function saveAdmin(){let n=document.getElementById('adminName').value.trim();let b=document.getElementById('adminBio').value.trim();if(n)localStorage.setItem('mn_admin_name',n);if(b)localStorage.setItem('mn_admin_bio',b);render();alert('Saved');}
 function sharePost(){navigator.clipboard.writeText(location.href);alert('Link copied');}
 init();
-</script>
-</body>
-</html>
+</script></body></html>
