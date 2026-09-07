@@ -1,86 +1,96 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>MindNotes</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{max-width:100%;overflow-x:hidden;width:100%;position:relative}
-body{background:#fdf8f0;color:#2b241e;font-family:system-ui,sans-serif;overflow-x:hidden}
-img{max-width:100%;height:auto;display:block}
-.top{max-width:1100px;margin:auto;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ece3d6;position:sticky;top:0;background:#fdf8f0;z-index:10;gap:8px}
-.logo{font-size:22px;font-weight:800;white-space:nowrap}
-.right{display:flex;align-items:center;gap:8px}
+html{overflow-x:clip;width:100%}
+body{background:#fdf8f0;color:#2b241e;font-family:system-ui,sans-serif;width:100%;overflow-x:clip;position:relative}
+img{max-width:100%;display:block}
+.top{max-width:1100px;margin:0 auto;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ece3d6;position:sticky;top:0;background:#fdf8f0;z-index:10;gap:8px;width:100%}
+.logo{font-size:22px;font-weight:800}.right{display:flex;align-items:center;gap:8px}
 .sBox{display:flex;align-items:center;border:1px solid #ece3d6;background:#fff;padding:6px 10px;border-radius:999px}
-.sBox input{border:none;outline:none;background:transparent;width:90px;font-size:13px}
+.sBox input{border:none;outline:none;background:transparent;width:80px;font-size:13px}
 .btn{height:34px;padding:0 12px;border-radius:999px;border:1px solid #ece3d6;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;white-space:nowrap}
 .btn.dark{background:#2b241e;color:#fff;border-color:#2b241e}
-.grid{max-width:1100px;margin:auto;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.grid{max-width:1100px;margin:0 auto;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
 .card{background:#fff;border:1px solid #ece3d6;border-radius:14px;overflow:hidden;cursor:pointer;width:100%}
-.card img{width:100%;height:155px;object-fit:cover;display:block}
-.cardBody{padding:9px}
-.drawer{position:fixed;top:0;right:0;width:340px;max-width:88vw;height:100vh;background:#fff;border-left:1px solid #ece3d6;z-index:200;transition:.3s;transform:translateX(100%);display:flex;flex-direction:column;overflow:hidden}
+.card img{width:100%;height:155px;object-fit:cover}.cardBody{padding:9px}
+.drawer{position:fixed;top:0;right:0;width:360px;max-width:85vw;height:100dvh;background:#fff;border-left:1px solid #ece3d6;z-index:200;transform:translateX(105%);transition:transform.28s ease;display:flex;flex-direction:column;overflow:hidden}
 .drawer.open{transform:translateX(0)}
 .bg{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;z-index:150}.bg.open{display:block}
-.langList{flex:1;overflow:auto;border-top:1px solid #ece3d6}
-.langList div{padding:12px 14px;border-bottom:1px solid #f3ece1;display:flex;justify-content:space-between;cursor:pointer;font-size:14px}
+.menuHead{padding:14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ece3d6}
+.menuScroll{flex:1;overflow-y:auto;overflow-x:hidden}
+.langList{border-top:1px solid #ece3d6}.langList div{padding:12px 14px;border-bottom:1px solid #f3ece1;display:flex;justify-content:space-between;cursor:pointer;font-size:14px}
 .langList div.active{background:#2b241e;color:#fff}
-#postView{display:none;max-width:700px;margin:auto;padding:16px;width:100%;box-sizing:border-box}
-#postView img{width:100%;height:280px;object-fit:cover;border-radius:16px;margin:12px 0}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:300;padding:16px}
-.modal.open{display:flex}
+.menuSec{padding:12px 14px;font-size:11px;letter-spacing:.6px;color:#8a7d74;text-transform:uppercase;font-weight:700;background:#fdf8f0;border-top:1px solid #ece3d6;border-bottom:1px solid #ece3d6}
+.menuLink{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;font-size:14px;cursor:pointer;border-bottom:1px solid #f8f0e6}
+.menuLink:hover{background:#fdf8f0}
+#postView{display:none;max-width:700px;margin:0 auto;padding:16px;width:100%}
+#postView img.mainImg{width:100%;height:280px;object-fit:cover;border-radius:16px;margin:12px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:300;padding:16px}.modal.open{display:flex}
 .modalBox{background:#fff;border-radius:20px;max-width:380px;width:100%;padding:24px;text-align:center}
-.cBox{background:#fff;border:1px solid #ece3d6;border-radius:16px;padding:14px;margin-top:12px;width:100%;box-sizing:border-box}
-.cItem{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #fdf8f0}
+.cBox{background:#fff;border:1px solid #ece3d6;border-radius:16px;padding:14px;margin-top:12px;width:100%}
+.cItem{position:relative;display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #f5ece0}
 .cAvatar{width:32px;height:32px;border-radius:50%;background:#2b241e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;overflow:hidden}
 .cAvatar img{width:100%;height:100%;object-fit:cover}
+.cText{flex:1;min-width:0;word-wrap:break-word}
+.cDots{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.cDots:hover{background:#fdf8f0}
+.cMenu{position:absolute;right:0;top:36px;background:#fff;border:1px solid #ece3d6;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden;display:none;z-index:5;min-width:120px}
+.cMenu.open{display:block}.cMenu div{padding:10px 12px;font-size:13px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.cMenu div:hover{background:#fdf8f0}.cMenu div.del{color:#c0392b}
 .cInputWrap{display:flex;align-items:center;gap:8px;margin-top:12px;background:#fdf8f0;border:1px solid #ece3d6;border-radius:999px;padding:6px 6px 6px 14px}
 .cInputWrap input{flex:1;border:none;outline:none;background:transparent;font-size:14px;min-width:0}
 .cSend{width:36px;height:36px;border-radius:50%;background:#2b241e;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-size:16px;flex-shrink:0}
-.footer{max-width:1100px;margin:20px auto 0;padding:16px;text-align:center;color:#8a7d74;font-size:11px;border-top:1px solid #ece3d6}
+.footer{max-width:1100px;margin:20px auto 0;padding:16px;text-align:center;color:#8a7d74;font-size:11px;border-top:1px solid #ece3d6;width:100%}
 @media(min-width:800px){.grid{grid-template-columns:1fr 1fr 1fr}.sBox input{width:180px}}
 </style></head><body>
 <div class="top"><div class="logo">MindNotes.</div><div class="right"><div class="sBox">🔍<input id="search" placeholder="Search" oninput="doSearch()"></div><div id="authBtn"></div><div class="btn dark" onclick="openD()">☰</div></div></div>
 <div class="bg" id="bg" onclick="closeD()"></div>
-<div class="drawer" id="drawer"><div style="padding:12px 14px;display:flex;justify-content:space-between;align-items:center"><b>☰ Menu</b><div class="btn" onclick="closeD()">✕</div></div><div id="userInDrawer" style="padding:12px 14px;border-bottom:1px solid #ece3d6;background:#fdf8f0"></div><div style="padding:8px 14px;font-size:11px;color:#8a7d74">Translate - 20 Languages</div><div class="langList" id="langList"></div></div>
-
-<div class="modal" id="loginModal"><div class="modalBox">
-<h3 style="font-size:20px;font-weight:800">Welcome back</h3>
-<p style="font-size:12px;color:#888;margin:6px 0 0">Continue to MindNotes</p>
-<div id="g_id_onload" data-client_id="803953041449-j8v0johgtcclbco4lfj56t860r9hrqo4.apps.googleusercontent.com" data-callback="onGoogleLogin"></div>
-<div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" style="margin:18px auto;display:flex;justify-content:center"></div>
-<div class="btn" style="margin-top:10px" onclick="closeLogin()">Cancel</div>
+<div class="drawer" id="drawer">
+<div class="menuHead"><b>☰ Menu</b><div class="btn" onclick="closeD()">✕</div></div>
+<div class="menuScroll">
+<div id="userInDrawer" style="padding:14px;background:#fdf8f0;border-bottom:1px solid #ece3d6"></div>
+<div class="menuSec">Account</div><div id="drawerAuth"></div>
+<div class="menuSec">Translate - 20 Languages</div><div class="langList" id="langList"></div>
+<div class="menuSec">Explore</div>
+<div class="menuLink" onclick="alert('About: MindNotes is aesthetic journal from Muzaffarpur')">📖 About MindNotes <span>›</span></div>
+<div class="menuLink" onclick="alert('Write: Coming soon!')">✍️ Write a Note <span>›</span></div>
+<div class="menuLink" onclick="alert('Contact: mindnotes.contact@gmail.com')">✉️ Contact <span>›</span></div>
+<div class="menuLink" onclick="alert('Privacy: We only store likes/comments locally')">🔒 Privacy Policy <span>›</span></div>
+<div class="menuSec">Settings</div>
+<div class="menuLink" onclick="toggleTheme()"><span>🌙 Dark Mode (Soon)</span><span>Off</span></div>
+<div class="menuLink" onclick="if(confirm('Clear all?')){localStorage.clear();location.reload()}"><span>🗑️ Clear Data</span><span>›</span></div>
+<div style="padding:20px 14px;color:#aaa;font-size:11px;text-align:center">© 2026 MindNotes • v2.1 Fixed</div>
 </div></div>
-
-<div id="homeView"><div style="max-width:1100px;margin:auto;padding:16px 12px;box-sizing:border-box"><h1 style="font-size:26px;line-height:1.2;word-wrap:break-word">Slow mornings, beige thoughts & coffee.</h1><p style="color:#8a7d74;margin-top:4px;font-size:13px">Aesthetic blog from Muzaffarpur</p></div><div class="grid" id="grid"></div><div class="footer">© 2026 MindNotes</div></div>
-
-<div id="postView"><div style="display:flex;gap:8px;align-items:center"><div class="btn" onclick="closePost()">← Back</div><b id="pTop" style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></b></div><h1 id="pTitle" style="font-size:26px;margin:10px 0;font-weight:800;word-wrap:break-word"></h1><img id="pImg"><p id="pBody" style="line-height:1.7;white-space:pre-line;font-size:15px;word-wrap:break-word"></p>
-<div style="display:flex;gap:8px;margin:14px 0"><div class="btn" id="likeBtn" onclick="toggleLike()">❤️ <span id="likeCount">0</span></div><div class="btn" onclick="sharePost()">↗️ Share</div></div>
-<div class="cBox">
-<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:14px">Comments</b><span id="cCount" style="font-size:12px;color:#888;background:#fdf8f0;padding:2px 8px;border-radius:999px">0</span></div>
-<div id="cList" style="margin-top:8px"></div>
-<div class="cInputWrap"><input id="commentInput" placeholder="Add a thoughtful comment..."><button class="cSend" onclick="addComment()">↑</button></div>
-</div></div>
-
+<div class="modal" id="loginModal"><div class="modalBox"><h3 style="font-size:20px;font-weight:800">Welcome back</h3><p style="font-size:12px;color:#888;margin:6px 0 0">Continue to MindNotes</p><div id="g_id_onload" data-client_id="803953041449-j8v0johgtcclbco4lfj56t860r9hrqo4.apps.googleusercontent.com" data-callback="onGoogleLogin"></div><div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" style="margin:18px auto;display:flex;justify-content:center"></div><div class="btn" style="margin-top:10px" onclick="closeLogin()">Cancel</div></div></div>
+<div id="homeView"><div style="max-width:1100px;margin:0 auto;padding:16px 12px;width:100%"><h1 style="font-size:26px;line-height:1.2;word-break:break-word">Slow mornings, beige thoughts & coffee.</h1><p style="color:#8a7d74;margin-top:4px;font-size:13px">Aesthetic blog from Muzaffarpur</p></div><div class="grid" id="grid"></div><div class="footer">© 2026 MindNotes • No more left-right scroll</div></div>
+<div id="postView"><div style="display:flex;gap:8px;align-items:center"><div class="btn" onclick="closePost()">← Back</div><b id="pTop" style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1"></b></div><h1 id="pTitle" style="font-size:26px;margin:10px 0;font-weight:800;word-break:break-word"></h1><img id="pImg" class="mainImg"><p id="pBody" style="line-height:1.7;white-space:pre-line;font-size:15px;word-break:break-word"></p><div style="display:flex;gap:8px;margin:14px 0"><div class="btn" id="likeBtn" onclick="toggleLike()">❤️ <span id="likeCount">0</span></div><div class="btn" onclick="sharePost()">↗️ Share</div></div><div class="cBox"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:14px">Comments</b><span id="cCount" style="font-size:12px;color:#888;background:#fdf8f0;padding:2px 8px;border-radius:999px">0</span></div><div id="cList" style="margin-top:8px"></div><div class="cInputWrap"><input id="commentInput" placeholder="Add a thoughtful comment..."><button class="cSend" onclick="addComment()">↑</button></div></div></div>
 <script>
 const LANGS=[['en','English','🇺🇸'],['hi','हिन्दी','🇮🇳'],['bn','বাংলা','🇧🇩'],['ta','தமிழ்','🇮🇳'],['gu','ગુજરાતી','🇮🇳'],['pa','ਪੰਜਾਬੀ','🇮🇳'],['ur','اردو','🇵🇰'],['ar','العربية','🇸🇦'],['es','Español','🇪🇸'],['fr','Français','🇫🇷'],['de','Deutsch','🇩🇪'],['pt','Português','🇧🇷'],['ru','Русский','🇷🇺'],['ja','日本語','🇯🇵'],['ko','한국어','🇰🇷'],['zh','中文','🇨🇳'],['it','Italiano','🇮🇹'],['tr','Türkçe','🇹🇷'],['id','Indonesia','🇮🇩'],['th','ไทย','🇹🇭']];
-const DB={en:{p:[["Coffee","My 6am coffee ritual","Morning coffee is prayer."],["Desk","Desk setup that calms","Clean desk = clean mind."],["Journal","Paper over pixels","Paper is peaceful."],["City","Walk through my city","Evening chai."],["Notes","Writing when no one reads","Honest writing."],["Essay","Romanticize boredom","Boredom is luxury."]]}};
-for(let l of LANGS)if(!DB[l[0]])DB[l[0]]=DB.en;
-let cur=localStorage.getItem('lang')||'en',curPost=0;
+const DB={en:{p:[["COFFEE","My 6am coffee ritual","Morning coffee is prayer. Wake at 5:30, no phone."],["DESK","Desk setup that calms","Clean desk = clean mind."],["JOURNAL","Paper over pixels","Paper is peaceful."],["CITY","Walk through my city","Muzaffarpur evenings."],["NOTES","Writing when no one reads","Honest writing."],["ESSAY","Romanticize boredom","Boredom is luxury."]]}};for(let l of LANGS)if(!DB[l[0]])DB[l[0]]=DB.en;
+let cur=localStorage.getItem('lang')||'en',curPost=0,editIdx=-1;
 const imgs=["https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600","https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600","https://images.unsplash.com/photo-1511108690759-009324a90311?w=600","https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600","https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600","https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?w=600"];
 function getUser(){return JSON.parse(localStorage.getItem('mn_user')||'null')}
-function renderAuth(){let u=getUser();document.getElementById('authBtn').innerHTML=u?`<div class="btn" onclick="doLogout()">${u.name?u.name.split(' ')[0]:'ROHIT'} | Out</div>`:`<div class="btn dark" onclick="openLogin()">Sign in</div>`;document.getElementById('userInDrawer').innerHTML=u?`<div style="display:flex;gap:10px;align-items:center"><img src="${u.pic}" style="width:36px;height:36px;border-radius:50%"><div><b>${u.name}</b><br><span style="font-size:11px;color:green">✓ Verified</span></div></div><div style="margin-top:10px" class="btn" onclick="doLogout()">Sign out</div>`:`<div class="btn dark" onclick="openLogin();closeD()">Sign in with Google</div>`;renderComments();}
+function renderAuth(){let u=getUser();document.getElementById('authBtn').innerHTML=u?`<div class="btn" onclick="doLogout()">${u.name.split(' ')[0]} | Out</div>`:`<div class="btn dark" onclick="openLogin()">Sign in</div>`;document.getElementById('userInDrawer').innerHTML=u?`<div style="display:flex;gap:10px;align-items:center"><img src="${u.pic}" style="width:38px;height:38px;border-radius:50%"><div><b>${u.name}</b><br><span style="font-size:11px;color:green">✓ ${u.email}</span></div></div>`:`<div style="font-size:13px;color:#888">Sign in to like & comment with photo</div>`;document.getElementById('drawerAuth').innerHTML=u?`<div class="menuLink" onclick="doLogout()"><span>👋 Sign out</span><span>›</span></div>`:`<div style="padding:10px 14px"><div class="btn dark" style="width:100%" onclick="openLogin();closeD()">Sign in with Google</div></div>`;renderComments();}
 function openLogin(){document.getElementById('loginModal').classList.add('open')}function closeLogin(){document.getElementById('loginModal').classList.remove('open')}
 function onGoogleLogin(r){let p=JSON.parse(atob(r.credential.split('.')[1]));localStorage.setItem('mn_user',JSON.stringify({email:p.email,name:p.name,pic:p.picture}));closeLogin();renderAuth();}
 function doLogout(){localStorage.removeItem('mn_user');renderAuth();}
 function getLikes(){return JSON.parse(localStorage.getItem('mn_likes')||'{}')}function toggleLike(){if(!getUser()){openLogin();return}let L=getLikes(),k=cur+'_'+curPost,liked=localStorage.getItem('mn_liked_'+k);if(liked){L[k]--;localStorage.removeItem('mn_liked_'+k)}else{L[k]=(L[k]||0)+1;localStorage.setItem('mn_liked_'+k,'1')}localStorage.setItem('mn_likes',JSON.stringify(L));renderLike();render();}
 function renderLike(){let L=getLikes(),k=cur+'_'+curPost;document.getElementById('likeCount').innerText=L[k]||0}
 function getComments(){return JSON.parse(localStorage.getItem('mn_comments')||'{}')}
-function addComment(){if(!getUser()){openLogin();return}let t=document.getElementById('commentInput').value.trim();if(!t)return;let A=getComments(),k=cur+'_'+curPost;A[k]=A[k]||[];let u=getUser();A[k].push({name:u.name.split(' ')[0],pic:u.pic,text:t});localStorage.setItem('mn_comments',JSON.stringify(A));document.getElementById('commentInput').value='';renderComments();render();}
-function renderComments(){let A=getComments(),k=cur+'_'+curPost,list=A[k]||[];let u=getUser();document.getElementById('commentInput').placeholder=u?`Comment as ${u.name.split(' ')[0]}...`:"Sign in to comment...";document.getElementById('cCount').innerText=list.length;document.getElementById('cList').innerHTML=list.length?list.map(c=>`<div class="cItem"><div class="cAvatar">${c.pic?`<img src="${c.pic}">`:c.name[0]}</div><div style="flex:1"><b style="font-size:13px">${c.name}</b><div style="font-size:13px;margin-top:2px;color:#3a332e;word-wrap:break-word">${c.text}</div></div></div>`).join(''):'<div style="text-align:center;padding:20px 0;color:#aaa;font-size:13px">No comments yet. Be the first ✨</div>';}
-function sharePost(){let u=location.href;if(navigator.clipboard)navigator.clipboard.writeText(u);alert('Link copied');}
-function render(){let t=DB[cur],L=getLikes(),C=getComments();document.getElementById('grid').innerHTML=t.p.map((p,i)=>`<div class="card" onclick="openPost(${i})"><img src="${imgs[i]}"><div class="cardBody"><div style="font-size:10px;color:#888">${p[0]}</div><div style="font-weight:700;font-size:13px">${p[1]}</div><div style="font-size:11px;color:#888;margin-top:3px">❤️ ${L[cur+'_'+i]||0} • 💬 ${(C[cur+'_'+i]||[]).length}</div></div></div>`).join('');document.getElementById('langList').innerHTML=LANGS.map(l=>`<div class="${l[0]==cur?'active':''}" onclick="setLang('${l[0]}')"><span>${l[2]} ${l[1]}</span><span>${l[0].toUpperCase()}</span></div>`).join('');}
+function addComment(){if(!getUser()){openLogin();return}let inp=document.getElementById('commentInput');let t=inp.value.trim();if(!t)return;let A=getComments(),k=cur+'_'+curPost;A[k]=A[k]||[];let u=getUser();if(editIdx>=0){A[k][editIdx].text=t;editIdx=-1;document.querySelector('.cSend').innerText='↑';}else{A[k].push({name:u.name.split(' ')[0],pic:u.pic,email:u.email,text:t,time:Date.now()})}localStorage.setItem('mn_comments',JSON.stringify(A));inp.value='';renderComments();render();}
+function renderComments(){let A=getComments(),k=cur+'_'+curPost,list=A[k]||[];let u=getUser();let myEmail=u?u.email:'';document.getElementById('commentInput').placeholder=u?`Comment as ${u.name.split(' ')[0]}...`:"Sign in to comment...";document.getElementById('cCount').innerText=list.length;document.getElementById('cList').innerHTML=list.length?list.map((c,i)=>`<div class="cItem"><div class="cAvatar">${c.pic?`<img src="${c.pic}">`:c.name[0]}</div><div class="cText"><div style="display:flex;gap:6px;align-items:center"><b style="font-size:13px">${c.name}</b><span style="font-size:10px;color:#aaa">${c.email==myEmail?'• You':''}</span></div><div style="font-size:13px;margin-top:2px;color:#3a332e;word-break:break-word">${c.text}</div></div><div class="cDots" onclick="toggleCM(${i})">⋯</div><div class="cMenu" id="cm-${i}">${c.email==myEmail?`<div onclick="startEdit(${i})">✏️ Edit</div><div class="del" onclick="delComment(${i})">🗑️ Delete</div>`:`<div>🚫 Not yours</div>`}</div></div>`).join(''):'<div style="text-align:center;padding:20px 0;color:#aaa;font-size:13px">No comments yet. Be the first ✨</div>';}
+function toggleCM(i){let el=document.getElementById('cm-'+i);let open=el.classList.contains('open');document.querySelectorAll('.cMenu').forEach(m=>m.classList.remove('open'));if(!open)el.classList.add('open')}
+function startEdit(i){let A=getComments(),k=cur+'_'+curPost;document.getElementById('commentInput').value=A[k][i].text;editIdx=i;document.getElementById('commentInput').focus();document.querySelector('.cSend').innerText='✔️';document.querySelectorAll('.cMenu').forEach(m=>m.classList.remove('open'))}
+function delComment(i){if(!confirm('Delete?'))return;let A=getComments(),k=cur+'_'+curPost;A[k].splice(i,1);localStorage.setItem('mn_comments',JSON.stringify(A));renderComments();render();}
+function sharePost(){if(navigator.clipboard)navigator.clipboard.writeText(location.href);alert('Link copied ✓')}
+function render(){let t=DB[cur],L=getLikes(),C=getComments();document.getElementById('grid').innerHTML=t.p.map((p,i)=>`<div class="card" onclick="openPost(${i})"><img src="${imgs[i]}"><div class="cardBody"><div style="font-size:10px;color:#888">${p[0]}</div><div style="font-weight:700;font-size:13px;word-break:break-word">${p[1]}</div><div style="font-size:11px;color:#888;margin-top:3px">❤️ ${L[cur+'_'+i]||0} • 💬 ${(C[cur+'_'+i]||[]).length}</div></div></div>`).join('');document.getElementById('langList').innerHTML=LANGS.map(l=>`<div class="${l[0]==cur?'active':''}" onclick="setLang('${l[0]}')"><span>${l[2]} ${l[1]}</span><span>${l[0].toUpperCase()}</span></div>`).join('');}
 function setLang(c){cur=c;localStorage.setItem('lang',c);render();closeD();}
-function openD(){document.getElementById('drawer').classList.add('open');document.getElementById('bg').classList.add('open');}function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('bg').classList.remove('open');}
+function openD(){document.getElementById('drawer').classList.add('open');document.getElementById('bg').classList.add('open');document.body.style.overflow='hidden'}function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('bg').classList.remove('open');document.body.style.overflow='';}
 function openPost(i){curPost=i;let p=DB[cur].p[i];document.getElementById('homeView').style.display='none';document.getElementById('postView').style.display='block';document.getElementById('pTop').innerText=p[1];document.getElementById('pTitle').innerText=p[1];document.getElementById('pImg').src=imgs[i];document.getElementById('pBody').innerText=p[2];renderLike();renderComments();window.scrollTo(0,0);}function closePost(){document.getElementById('homeView').style.display='block';document.getElementById('postView').style.display='none';render();}
 function doSearch(){let q=document.getElementById('search').value.toLowerCase().trim();if(!q){render();return;}let f=DB[cur].p.map((p,i)=>({p,i})).filter(x=>x.p[1].toLowerCase().includes(q));document.getElementById('grid').innerHTML=f.map(x=>`<div class="card" onclick="openPost(${x.i})"><img src="${imgs[x.i]}"><div class="cardBody"><b style="font-size:13px">${x.p[1]}</b></div></div>`).join('');}
+function toggleTheme(){alert('Dark mode coming soon!')}
+document.addEventListener('click',e=>{if(!e.target.closest('.cItem')){document.querySelectorAll('.cMenu').forEach(m=>m.classList.remove('open'))}})
 render();renderAuth();
 </script></body></html>
