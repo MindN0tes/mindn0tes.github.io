@@ -35,7 +35,8 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);lin
 .cArrow{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;background:rgba(255,255,255,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;font-size:18px}
 .cArrow.left{left:8px}.cArrow.right{right:8px}
 .cDots{position:absolute;bottom:44px;left:0;right:0;display:flex;gap:5px;justify-content:center;z-index:3}
-.cDot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4)}.cDot.active{background:#fff;width:16px}.musicBar{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));padding:46px 12px 12px;display:flex;gap:10px;align-items:center;color:#fff;z-index:4}
+.cDot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4)}.cDot.active{background:#fff;width:16px}
+.musicBar{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));padding:46px 12px 12px;display:flex;gap:10px;align-items:center;color:#fff;z-index:4}
 .musicBtn{width:36px;height:36px;border-radius:50%;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:200;padding:12px}.modal.open{display:flex}
 .box{background:var(--card);color:var(--text);border-radius:20px;max-width:480px;width:100%;padding:18px;border:1px solid var(--bdr);max-height:94vh;overflow-y:auto}
@@ -45,7 +46,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);lin
 .previewItem{position:relative;width:86px;height:86px;border-radius:10px;overflow:hidden;border:1px solid var(--bdr);background:#000}.previewItem img,.previewItem video{width:100%;height:100%;object-fit:cover}
 .previewTools{position:absolute;bottom:0;left:0;right:0;display:flex;gap:2px;background:rgba(0,0,0,.8);padding:2px}.previewTools span{flex:1;font-size:9px;color:#fff;text-align:center;padding:5px 0;cursor:pointer;background:rgba(255,255,255,.18);border-radius:4px}
 .musicSheet{background:#121212;color:#fff;border-radius:22px 22px 0 0;width:100%;max-width:480px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
-.musicSheetTop{padding:14px 16px;overflow-y:auto}
+.musicSheetTop{padding:14px 16px;overflow-y:auto;-webkit-user-select:none;user-select:none}
 .songArt{width:64px;height:64px;border-radius:12px;overflow:hidden;background:#222;flex-shrink:0}.songArt img{width:100%;height:100%;object-fit:cover}
 .waveWrap{position:relative;width:100%;height:54px;background:#1e1e1e;border-radius:10px;margin-top:12px;overflow:hidden}
 .waveCanvas{width:100%;height:54px}
@@ -79,45 +80,48 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);lin
 <input type="file" id="adminPicInput" accept="image/*" style="display:none" onchange="setAdminPic(this)">
 <div style="display:flex;gap:8px;align-items:center"><div id="adminPicPrev"></div><div class="btn" style="flex:1" onclick="document.getElementById('adminPicInput').click()">📷 Change Photo</div></div>
 </div>
-</div><div id="adminLoginSection"><div class="menuSec">Admin</div><div class="menuLink" onclick="openAdminLogin()"><span>Admin Login</span><span>›</span></div></div>
+</div>
+<div id="adminLoginSection"><div class="menuSec">Admin</div><div class="menuLink" onclick="openAdminLogin()"><span>Admin Login</span><span>›</span></div></div>
 <div class="menuSec">Choose Preferred Language</div>
 <div class="langBox"><div class="langHeader" onclick="toggleLangList()"><span id="curLangName">🌐 English</span><span id="langArrow">›</span></div><div class="langList" id="langList"></div></div>
 <div class="menuSec">Settings</div><div class="menuLink" onclick="toggleTheme()"><span id="themeText">🌙 Dark Mode</span><span id="tVal">Off</span></div>
-<div style="padding:20px 14px;text-align:center;color:var(--muted);font-size:11px">© 2026 MindNotes • v13 Fixed</div></div></div>
-
-<div class="modal" id="loginModal"><div class="box" style="text-align:center"><h3 style="font-family:'Fraunces',serif;font-size:20px">Welcome</h3><p style="font-size:12px;color:var(--muted);margin-top:6px">Sign in to comment & like</p>
+<div class="menuSec">Storage</div><div class="menuLink" onclick="clearFullStorage()" style="background:#ff3b30;color:#fff"><span>🧹 Clear Full Storage (if Full error)</span><span>›</span></div>
+<div style="padding:20px 14px;text-align:center;color:var(--muted);font-size:11px">© 2026 MindNotes • v14 Fixed</div></div></div><div class="modal" id="loginModal"><div class="box" style="text-align:center"><h3 style="font-family:'Fraunces',serif;font-size:20px">Welcome</h3><p style="font-size:12px;color:var(--muted);margin-top:6px">Sign in to comment & like</p>
 <div id="g_id_onload" data-client_id="803953041449-j8v0johgtcclbco4lfj56t860r9hrqo4.apps.googleusercontent.com" data-callback="onGoogleLogin"></div>
 <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" style="margin:20px auto;display:flex;justify-content:center"></div>
 <div class="btn" style="width:100%;margin-top:8px" onclick="closeLogin()">Cancel</div></div></div>
 <div class="modal" id="adminModal"><div class="box"><h3 style="font-family:'Fraunces',serif">Admin Login</h3><input id="adminPass" class="inp" type="password" placeholder="Enter password"><div style="display:flex;gap:8px;margin-top:12px"><div class="btn dark" style="flex:1" onclick="doAdminLogin()">Login</div><div class="btn" style="flex:1" onclick="closeAdmin()">Cancel</div></div></div></div>
 
 <div class="modal" id="postModal"><div class="box"><h3 style="font-family:'Fraunces',serif">New Post</h3>
-<input id="pCat" class="inp" placeholder="Category"><input id="pTitleIn" class="inp" placeholder="Title *">
+<input id="pCat" class="inp" placeholder="Category"><input id="pTitleIn" class="inp" placeholder="Title * (Required)">
 <label style="font-size:11px;color:var(--muted);margin-top:10px;display:block">📅 Date & Time</label>
 <input id="pDateTime" type="datetime-local" class="inp" style="margin-top:4px">
 <div class="upGrid">
-<div class="upBtn" onclick="document.getElementById('fileMulti').click()">📸 Photos/Videos<br><span style="font-size:10px;opacity:.6">Multi</span></div>
-<div class="upBtn" onclick="document.getElementById('fileAudio').click()">🎵 Music</div>
+<div class="upBtn" onclick="document.getElementById('fileMulti').click()">📸 Photos/Videos<br><span style="font-size:10px;opacity:.6">Multi (auto compress)</span></div>
+<div class="upBtn" onclick="document.getElementById('fileAudio').click()">🎵 Music<br><span style="font-size:9px;opacity:.6">Use Spotify link*</span></div>
 </div>
 <input type="file" id="fileMulti" accept="image/*,video/*" multiple style="display:none" onchange="handleMulti(this)">
 <input type="file" id="fileAudio" accept="audio/*" style="display:none" onchange="handleAudio(this)">
 <div id="preview" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"></div>
-<div style="margin-top:10px"><b style="font-size:12px">Spotify Link:</b><input id="spotifyLink" class="inp" placeholder="https://open.spotify.com/track/..." oninput="handleSpotify()"><div id="spotifyPreview" style="margin-top:8px"></div></div>
+<div style="margin-top:10px"><b style="font-size:12px">Spotify Link (Recommended - no storage):</b><input id="spotifyLink" class="inp" placeholder="https://open.spotify.com/track/..." oninput="handleSpotify()"><div id="spotifyPreview" style="margin-top:8px"></div></div>
 <textarea id="pBodyIn" class="inp ta" placeholder="Caption..."></textarea>
 <div class="draftBar"><div class="btn" style="flex:1;height:44px" onclick="saveAsDraft()">📝 Draft</div><div class="btn dark" style="flex:1;height:44px" onclick="savePost()">📤 Post</div></div>
 <div class="btn" style="width:100%;margin-top:8px;height:40px" onclick="closePostModal()">Cancel</div>
 </div></div>
 
-<div class="modal" id="musicModal" style="align-items:flex-end;padding:0"><div class="musicSheet">
+<div class="modal" id="musicModal" style="align-items:flex-end;padding:0"><div class="musicSheet" oncontextmenu="return false">
 <div class="musicSheetTop">
 <div style="width:32px;height:4px;background:rgba(255,255,255,.3);border-radius:99px;margin:0 auto 12px"></div>
 <div style="display:flex;gap:12px;align-items:center"><div class="songArt"><img id="sheetImg" src=""></div><div style="flex:1;text-align:left"><b id="sheetTitle" style="font-size:14px">Song</b><br><span id="sheetArtist" style="font-size:11px;opacity:.6">Artist</span></div><div style="width:46px;height:46px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer;border:1px dashed #555" onclick="cycleDur()"><span id="durCircle">30</span>s</div></div>
 <div class="waveWrap" id="waveWrap"><canvas id="waveCanvas" class="waveCanvas"></canvas><div id="waveCursor" class="trimHandle" style="left:0"></div></div>
 <div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6;margin-top:6px"><span id="sheetStart">0.0s</span><span id="sheetEnd">30.0s</span><span id="sheetTotal">/ 0s</span></div>
-<div style="margin-top:14px"><label style="font-size:11px;opacity:.7">Drag to choose start point</label><input type="range" id="sheetSlider" min="0" max="30" value="0" step="0.1" style="width:100%;margin-top:6px;accent-color:#fff" oninput="onSheetSlide()"></div>
-<div style="font-size:11px;opacity:.5;margin-top:8px">• Slider se desired part choose karo • Tap 30s to change duration (5/8/10/15/30)</div>
-</div><div style="display:flex;gap:10px;padding:12px 16px;background:#000;flex-shrink:0"><div class="btn" style="flex:1;background:#222;color:#fff;border:none;height:44px" onclick="closeMusicModal()">Cancel</div><div class="btn" style="flex:1;background:#222;color:#fff;border:none;height:44px" onclick="previewSheet()">▶️ Play</div><div class="btn dark" style="flex:1;height:44px;background:#fff;color:#000" onclick="confirmMusic()">Done ✓</div></div>
-</div></div><div class="modal" id="cropModal"><div class="box" style="max-width:520px"><h3 style="font-family:'Fraunces',serif">Crop — 4 corner drag karo</h3><p style="font-size:11px;color:var(--muted);margin-top:4px">Box ko drag karo, corners se size adjust karo</p>
+<div style="margin-top:14px"><label style="font-size:11px;opacity:.7">Drag to choose start point (Manual Scroll)</label><input type="range" id="sheetSlider" min="0" max="30" value="0" step="0.1" style="width:100%;margin-top:6px;accent-color:#fff" oninput="onSheetSlide()"></div>
+<div style="font-size:11px;opacity:.5;margin-top:8px">• Use slider for exact part • Tap 30s circle to change duration (5/8/10/15/30)</div>
+</div>
+<div style="display:flex;gap:10px;padding:12px 16px;background:#000;flex-shrink:0"><div class="btn" style="flex:1;background:#222;color:#fff;border:none;height:44px" onclick="closeMusicModal()">Cancel</div><div class="btn" style="flex:1;background:#222;color:#fff;border:none;height:44px" onclick="previewSheet()">▶️ Play</div><div class="btn dark" style="flex:1;height:44px;background:#fff;color:#000" onclick="confirmMusic()">Done ✓</div></div>
+</div></div>
+
+<div class="modal" id="cropModal"><div class="box" style="max-width:520px"><h3 style="font-family:'Fraunces',serif">Crop — 4 corner drag</h3><p style="font-size:11px;color:var(--muted);margin-top:4px">Drag box, use corners to resize</p>
 <div style="display:flex;gap:6px;margin:12px 0"><div class="btn dark" onclick="setCropRatio('1:1')">1:1</div><div class="btn" onclick="setCropRatio('4:5')">4:5</div><div class="btn" onclick="setCropRatio('16:9')">16:9</div><div class="btn" onclick="setCropRatio('free')">Free</div></div>
 <div class="cropContainer" id="cropContainer"><img id="cropImg" class="cropImg"><div id="cropBox" class="cropBox"><div class="cropHandle h-tl" data-h="tl"></div><div class="cropHandle h-tr" data-h="tr"></div><div class="cropHandle h-bl" data-h="bl"></div><div class="cropHandle h-br" data-h="br"></div></div></div>
 <div style="display:flex;gap:8px;margin-top:12px"><div class="btn" style="flex:1" onclick="closeCrop()">Cancel</div><div class="btn dark" style="flex:1" onclick="applyCrop()">Apply ✓</div></div></div></div>
@@ -132,8 +136,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);lin
 <div class="modal" id="shareModal"><div class="box" style="text-align:center"><h3>Share Post</h3><div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center"><div class="btn dark" onclick="shareWA()">WhatsApp</div><div class="btn" onclick="shareFB()">Facebook</div><div class="btn" onclick="shareX()">X</div><div class="btn" onclick="shareCopy()">Copy Link</div></div><div class="btn" style="width:100%;margin-top:12px" onclick="closeShare()">Close</div></div></div>
 
 <div id="homeView"><div style="max-width:1100px;margin:0 auto;padding:28px 14px 10px"><h1 id="mainTitle" style="font-size:28px;line-height:1.1">Slow mornings, beige thoughts & coffee.</h1><p id="mainSub" style="color:var(--muted);margin-top:10px;font-size:13px">Aesthetic blog from Muzaffarpur</p></div><div class="grid" id="grid"></div><div class="footer">© 2026 MindNotes • Crafted with beige & brown</div></div>
-
-<div id="postView"><div style="display:flex;gap:8px;align-items:center"><div class="btn ico" onclick="closePost()">←</div><b id="pTop" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Post</b><div class="btn ico" onclick="openShare()">↗</div><div id="archiveBtn" class="btn ico" style="display:none" onclick="toggleArchiveCurrent()">📦</div></div>
 <div id="postDateTag" style="margin-top:10px"></div>
 <div class="carousel" id="carousel"><div class="carouselTrack" id="cTrack"></div><div class="cArrow left" onclick="slide(-1)">‹</div><div class="cArrow right" onclick="slide(1)">›</div><div class="cDots" id="cDots"></div><div class="musicBar" id="musicBar" style="display:none"><div class="musicBtn" id="musicPlayBtn" onclick="togglePostMusic()">♪</div><div style="flex:1"><b id="musicName" style="font-size:13px;display:block">Music</b><span id="musicTime" style="font-size:11px;opacity:.8">0:30</span></div></div></div>
 <div id="authorBox" style="display:flex;gap:10px;align-items:center;margin-top:12px"></div>
@@ -144,23 +146,22 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);lin
 </div>
 <script>
 const DEFAULT_POSTS=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Morning coffee prayer.",slides:[{type:"image",src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"}],music:null,authorPic:null,date:Date.now(),archived:false}];
-let POSTS;try{let s=localStorage.getItem('mn_v13');POSTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_v12')||localStorage.getItem('mn_v11')||'null')||DEFAULT_POSTS;POSTS=POSTS.map(p=>({...p,archived:!!p.archived,date:p.date||Date.now()}));}catch{POSTS=DEFAULT_POSTS}
-let DRAFTS;try{let s=localStorage.getItem('mn_drafts_v13');DRAFTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_drafts_v12')||localStorage.getItem('mn_drafts_v11')||'[]');}catch{DRAFTS=[]}
+let POSTS;try{let s=localStorage.getItem('mn_v14')||localStorage.getItem('mn_v13');POSTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_v12')||localStorage.getItem('mn_v11')||'null')||DEFAULT_POSTS;POSTS=POSTS.map(p=>({...p,archived:!!p.archived,date:p.date||Date.now()}));}catch{POSTS=DEFAULT_POSTS}
+let DRAFTS;try{let s=localStorage.getItem('mn_drafts_v14')||localStorage.getItem('mn_drafts_v13');DRAFTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_drafts_v12')||localStorage.getItem('mn_drafts_v11')||'[]');}catch{DRAFTS=[]}
 let curPost=0,curSlide=0,editingIdx=-1,tempSlides=[],tempMusic=null,audioEl=null,sheetAudio=null,editingDraftIdx=-1,cropIdx=-1,trimIdx=-1;
 const LANG_TXT={en:{title:"Slow mornings, beige thoughts & coffee.",sub:"Aesthetic blog from Muzaffarpur",search:"Search"},hi:{title:"धीमी सुबह, सुकून भरे ख्याल और कॉफी।",sub:"मुज़फ्फरपुर से एस्थेटिक ब्लॉग",search:"खोजें"}};
 const LANGUAGES=[{code:'en',name:'English',flag:'🌐'},{code:'hi',name:'हिन्दी',flag:'🇮🇳'},{code:'bn',name:'বাংলা',flag:'🇧🇩'},{code:'bho',name:'भोजपुरी',flag:'🟠'},{code:'mai',name:'मैथिली',flag:'🔶'},{code:'ta',name:'தமிழ்',flag:'🇮🇳'},{code:'te',name:'తెలుగు',flag:'🇮🇳'},{code:'ml',name:'മലയാളം',flag:'🇮🇳'},{code:'kn',name:'ಕನ್ನಡ',flag:'🇮🇳'},{code:'mr',name:'मराठी',flag:'🇮🇳'},{code:'gu',name:'ગુજરાતી',flag:'🇮🇳'},{code:'pa',name:'ਪੰਜਾਬੀ',flag:'🇮🇳'},{code:'ur',name:'اردو',flag:'🇵🇰'},{code:'ne',name:'नेपाली',flag:'🇳🇵'}];
 let curLang=localStorage.getItem('mn_lang')||'en';
-function buildLangList(){let l=document.getElementById('langList');l.innerHTML=LANGUAGES.map(x=>`<div class="langItem ${x.code==curLang?'active':''}" onclick="setLang('${x.code}')"><span>${x.flag} ${x.name}</span><span>${x.code==curLang?'✓':'›'}</span></div>`).join('');let c=LANGUAGES.find(x=>x.code==curLang);document.getElementById('curLangName').innerText=`${c.flag} ${c.name}`;}function toggleLangList(){let list=document.getElementById('langList');let a=document.getElementById('langArrow');list.classList.toggle('open');a.innerText=list.classList.contains('open')?'‹':'›';}
+function buildLangList(){let l=document.getElementById('langList');l.innerHTML=LANGUAGES.map(x=>`<div class="langItem ${x.code==curLang?'active':''}" onclick="setLang('${x.code}')"><span>${x.flag} ${x.name}</span><span>${x.code==curLang?'✓':'›'}</span></div>`).join('');let c=LANGUAGES.find(x=>x.code==curLang);document.getElementById('curLangName').innerText=`${c.flag} ${c.name}`;}
+function toggleLangList(){let list=document.getElementById('langList');let a=document.getElementById('langArrow');list.classList.toggle('open');a.innerText=list.classList.contains('open')?'‹':'›';}
 function setLang(code){curLang=code;localStorage.setItem('mn_lang',code);buildLangList();let t=LANG_TXT[code]||LANG_TXT['en'];document.getElementById('mainTitle').innerText=t.title;document.getElementById('mainSub').innerText=t.sub;document.getElementById('search').placeholder=t.search;render();}
 function formatDate(ts){let d=new Date(ts);let now=new Date();let diff=Math.floor((now-d)/1000);if(diff<60)return'Just now';if(diff<3600)return Math.floor(diff/60)+'m ago';if(diff<86400)return Math.floor(diff/3600)+'h ago';if(diff<172800)return'Yesterday';return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+' • '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}
 function formatFullDate(ts){let d=new Date(ts);return d.toLocaleString('en-IN',{weekday:'short',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});}
-
 function getAdminPic(){return localStorage.getItem('mn_admin_pic')||null;}
 function getAdminName(){return localStorage.getItem('mn_admin_name')||'Rohit Kumar';}
-function setAdminPic(input){let f=input.files[0];if(!f)return;compressImageFile(f,300,0.8,dataUrl=>{localStorage.setItem('mn_admin_pic',dataUrl);renderAdminPic();renderAuth();alert('Photo saved ✓');});}
-function saveAdminName(){let n=document.getElementById('adminNameInput').value.trim();if(!n)return alert('Name likho');localStorage.setItem('mn_admin_name',n);let u=getUser();if(u){u.name=n;localStorage.setItem('mn_user',JSON.stringify(u));}renderAuth();alert('Name saved ✓');}
+function setAdminPic(input){let f=input.files[0];if(!f)return;compressImageFile(f,300,0.8,dataUrl=>{localStorage.setItem('mn_admin_pic',dataUrl);renderAdminPic();renderAuth();alert('Photo updated ✓');});}
+function saveAdminName(){let n=document.getElementById('adminNameInput').value.trim();if(!n)return alert('Please enter name');localStorage.setItem('mn_admin_name',n);let u=getUser();if(u){u.name=n;localStorage.setItem('mn_user',JSON.stringify(u));}renderAuth();alert('Name saved ✓');}
 function renderAdminPic(){let pic=getAdminPic();document.getElementById('adminPicPrev').innerHTML=pic?`<img src="${pic}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--bdr)">`:'<div style="width:44px;height:44px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center">👤</div>';}
-
 function compressImageFile(file,maxW,quality,cb){
  let reader=new FileReader();
  reader.onload=e=>{
@@ -181,19 +182,19 @@ function compressImageFile(file,maxW,quality,cb){
 function handleMulti(input){
  let files=[...input.files];
  if(!files.length)return;
+ if(files.length>4){alert('Max 4 photos allowed');files=files.slice(0,4);}
  files.forEach(f=>{
   if(f.type.startsWith('video')){
    let r=new FileReader();
    r.onload=e=>{tempSlides.push({type:'video',src:e.target.result,size:f.size,trim:{start:0,end:100}});renderPreview();};
    r.readAsDataURL(f);
   } else {
-   compressImageFile(f,900,0.75,dataUrl=>{tempSlides.push({type:'image',src:dataUrl,size:0});renderPreview();});
+   compressImageFile(f,600,0.55,dataUrl=>{tempSlides.push({type:'image',src:dataUrl,size:0});renderPreview();});
   }
  });
  input.value='';
 }
-function renderPreview(){document.getElementById('preview').innerHTML=tempSlides.map((s,i)=>`<div class="previewItem">${s.type=='video'?`<video src="${s.src}"></video>`:`<img src="${s.src}">`}<div class="previewTools">${s.type=='image'?`<span onclick="openCrop(${i})">Crop</span>`:`<span onclick="openVideoTrim(${i})">Trim</span>`}<span onclick="tempSlides.splice(${i},1);renderPreview()">Del</span></div></div>`).join('')+`<div style="font-size:11px;color:var(--muted);width:100%">${tempSlides.length} slides • auto compressed</div>`;}
-
+function renderPreview(){document.getElementById('preview').innerHTML=tempSlides.map((s,i)=>`<div class="previewItem">${s.type=='video'?`<video src="${s.src}"></video>`:`<img src="${s.src}">`}<div class="previewTools">${s.type=='image'?`<span onclick="openCrop(${i})">Crop</span>`:`<span onclick="openVideoTrim(${i})">Trim</span>`}<span onclick="tempSlides.splice(${i},1);renderPreview()">Del</span></div></div>`).join('')+`<div style="font-size:11px;color:var(--muted);width:100%">${tempSlides.length} slides • compressed 600px</div>`;}
 let cropState={x:50,y:50,w:200,h:200,startX:0,startY:0,mode:null,handle:null,imgW:0,imgH:0,containerRect:null};
 function openCrop(i){
  cropIdx=i;let s=tempSlides[i];
@@ -272,18 +273,17 @@ function applyCrop(){
  let tempImg=new Image();
  tempImg.onload=()=>{
   ctx.drawImage(tempImg,sx,sy,sw,sh,0,0,sw,sh);
-  tempSlides[cropIdx].src=canvas.toDataURL('image/jpeg',0.8);
+  tempSlides[cropIdx].src=canvas.toDataURL('image/jpeg',0.65);
   closeCrop();renderPreview();
  };
  tempImg.src=s.src;
-  }
-  function openVideoTrim(i){trimIdx=i;let s=tempSlides[i];document.getElementById('videoTrimModal').classList.add('open');let v=document.getElementById('trimVideo');v.src=s.src;v.onloadedmetadata=()=>{document.getElementById('vStart').max=Math.floor(v.duration*10);document.getElementById('vEnd').max=Math.floor(v.duration*10);document.getElementById('vEnd').value=Math.floor(v.duration*10);document.getElementById('vEndLabel').innerText=v.duration.toFixed(1)+'s';};}
+}
+function openVideoTrim(i){trimIdx=i;let s=tempSlides[i];document.getElementById('videoTrimModal').classList.add('open');let v=document.getElementById('trimVideo');v.src=s.src;v.onloadedmetadata=()=>{document.getElementById('vStart').max=Math.floor(v.duration*10);document.getElementById('vEnd').max=Math.floor(v.duration*10);document.getElementById('vEnd').value=Math.floor(v.duration*10);document.getElementById('vEndLabel').innerText=v.duration.toFixed(1)+'s';};}
 function closeVideoTrim(){document.getElementById('videoTrimModal').classList.remove('open');}
 function onVTrim(){let v=document.getElementById('trimVideo');let vs=parseFloat(document.getElementById('vStart').value)/10;let ve=parseFloat(document.getElementById('vEnd').value)/10;document.getElementById('vStartLabel').innerText=vs.toFixed(1)+'s';document.getElementById('vEndLabel').innerText=ve.toFixed(1)+'s';v.currentTime=vs;}
 function applyVideoTrim(){let vs=parseFloat(document.getElementById('vStart').value)/10;let ve=parseFloat(document.getElementById('vEnd').value)/10;tempSlides[trimIdx].trim={start:vs,end:ve};closeVideoTrim();renderPreview();}
-
-function handleAudio(input){let f=input.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{tempMusic={type:'file',src:e.target.result,name:f.name,art:"",artist:"Local",start:0,dur:30};openMusicSheet();};r.readAsDataURL(f);input.value='';}
-function handleSpotify(){let url=document.getElementById('spotifyLink').value.trim();if(!url.includes('spotify.com'))return;let id=url.split('track/')[1]?.split('?')[0]?.split('/')[0];if(!id)return;fetch(`https://open.spotify.com/oembed?url=https://open.spotify.com/track/${id}`).then(r=>r.json()).then(d=>{tempMusic={type:'spotify',src:url,spotifyId:id,name:d.title,artist:d.author_name,art:d.thumbnail_url,start:0,dur:30};document.getElementById('spotifyPreview').innerHTML=`<div style="display:flex;gap:8px;align-items:center;background:var(--bg);padding:8px;border-radius:10px"><img src="${d.thumbnail_url}" style="width:40px;height:40px;border-radius:6px"><div><b style="font-size:12px">${d.title}</b></div><span style="color:green;font-size:10px">✓</span></div>`;openMusicSheet();}).catch(()=>{tempMusic={type:'spotify',src:url,spotifyId:id,name:'Spotify Track',artist:'Spotify',art:'',start:0,dur:30};openMusicSheet();});}
+function handleAudio(input){let f=input.files[0];if(!f)return;if(f.size>1200000){alert('File too large ('+(f.size/1000000).toFixed(1)+' MB). Please use Spotify link instead - it uses 0 storage.');input.value='';return;}let r=new FileReader();r.onload=e=>{tempMusic={type:'file',src:e.target.result,name:f.name,art:"",artist:"Local",start:0,dur:30};openMusicSheet();};r.readAsDataURL(f);input.value='';}
+function handleSpotify(){let url=document.getElementById('spotifyLink').value.trim();if(!url.includes('spotify.com'))return;let id=url.split('track/')[1]?.split('?')[0]?.split('/')[0];if(!id)return;fetch(`https://open.spotify.com/oembed?url=https://open.spotify.com/track/${id}`).then(r=>r.json()).then(d=>{tempMusic={type:'spotify',src:url,spotifyId:id,name:d.title,artist:d.author_name,art:d.thumbnail_url,start:0,dur:30};document.getElementById('spotifyPreview').innerHTML=`<div style="display:flex;gap:8px;align-items:center;background:var(--bg);padding:8px;border-radius:10px"><img src="${d.thumbnail_url}" style="width:40px;height:40px;border-radius:6px"><div><b style="font-size:12px">${d.title}</b></div><span style="color:green;font-size:10px">✓ Loaded</span></div>`;openMusicSheet();}).catch(()=>{tempMusic={type:'spotify',src:url,spotifyId:id,name:'Spotify Track',artist:'Spotify',art:'',start:0,dur:30};openMusicSheet();});}
 function openMusicSheet(){
  if(!tempMusic)return;
  document.getElementById('musicModal').classList.add('open');
@@ -300,8 +300,7 @@ function openMusicSheet(){
    let dur=sheetAudio.duration;
    document.getElementById('sheetSlider').max=Math.max(0,dur-1);
    document.getElementById('sheetTotal').innerText='/ '+dur.toFixed(1)+'s';
-   drawWave(dur);
-   updateSheetLabels();
+   drawWave(dur);updateSheetLabels();
   };
   sheetAudio.ontimeupdate=()=>{
    let perc=(sheetAudio.currentTime / sheetAudio.duration)*100;
@@ -312,42 +311,31 @@ function openMusicSheet(){
  updateSheetLabels();
 }
 function drawWave(total){
- let c=document.getElementById('waveCanvas');
- let ctx=c.getContext('2d');
+ let c=document.getElementById('waveCanvas');let ctx=c.getContext('2d');
  let w=c.offsetWidth=document.getElementById('waveWrap').offsetWidth;
- c.width=w;c.height=54;
- ctx.clearRect(0,0,w,54);
- for(let i=0;i<w/8;i++){
-  let h=8+Math.random()*32;
-  let x=i*8;
-  let inRange=false;
-  if(sheetAudio){let pos=(tempMusic.start/sheetAudio.duration)*w;let posEnd=((tempMusic.start+tempMusic.dur)/sheetAudio.duration)*w; if(x>=pos && x<=posEnd) inRange=true;}
-  ctx.fillStyle=inRange?'#fff':'#555';
-  ctx.fillRect(x, (54-h)/2,4,h);
- }
+ c.width=w;c.height=54;ctx.clearRect(0,0,w,54);
+ for(let i=0;i<w/8;i++){let h=8+Math.random()*32;let x=i*8;ctx.fillStyle='#555';ctx.fillRect(x,(54-h)/2,4,h);}
 }
-function onSheetSlide(){
- if(!tempMusic)return;
- tempMusic.start=parseFloat(document.getElementById('sheetSlider').value);
- updateSheetLabels();
- if(sheetAudio)drawWave(sheetAudio.duration);
-}
+function onSheetSlide(){if(!tempMusic)return;tempMusic.start=parseFloat(document.getElementById('sheetSlider').value);updateSheetLabels();}
 function updateSheetLabels(){document.getElementById('sheetStart').innerText=(tempMusic?.start||0).toFixed(1)+'s';document.getElementById('sheetEnd').innerText=((tempMusic?.start||0)+(tempMusic?.dur||30)).toFixed(1)+'s';}
-function cycleDur(){let opts=[5,8,10,15,30];let idx=opts.indexOf(tempMusic.dur);tempMusic.dur=opts[(idx+1)%opts.length];document.getElementById('durCircle').innerText=tempMusic.dur;updateSheetLabels();if(sheetAudio)drawWave(sheetAudio.duration);}
-function previewSheet(){
- if(!tempMusic||tempMusic.type!='file'||!sheetAudio)return;
- if(sheetAudio.paused){sheetAudio.currentTime=tempMusic.start;sheetAudio.play().catch(()=>{});}
- else {sheetAudio.pause();}
-}
+function cycleDur(){let opts=[5,8,10,15,30];let idx=opts.indexOf(tempMusic.dur);tempMusic.dur=opts[(idx+1)%opts.length];document.getElementById('durCircle').innerText=tempMusic.dur;updateSheetLabels();}
+function previewSheet(){if(!tempMusic||tempMusic.type!='file'||!sheetAudio)return;if(sheetAudio.paused){sheetAudio.currentTime=tempMusic.start;sheetAudio.play().catch(()=>{});}else{sheetAudio.pause();}}
 function confirmMusic(){document.getElementById('musicModal').classList.remove('open');if(sheetAudio)sheetAudio.pause();}
 function closeMusicModal(){document.getElementById('musicModal').classList.remove('open');if(sheetAudio)sheetAudio.pause();}
-
 function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
 function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
 function saveAll(){
- try{localStorage.setItem('mn_v13',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v13',JSON.stringify(DRAFTS));return true;}
- catch(e){alert('Storage full! Kuch posts delete karo. Error: '+e.message);return false;}
+ try{
+  ['mn_v11','mn_v12','mn_posts','mn_drafts','mn_drafts_v11','mn_drafts_v12','mn_c','mn_c_v11'].forEach(k=>localStorage.removeItem(k));
+  localStorage.setItem('mn_v14',JSON.stringify(POSTS));localStorage.setItem('mn_v13',JSON.stringify(POSTS));
+  localStorage.setItem('mn_drafts_v14',JSON.stringify(DRAFTS));localStorage.setItem('mn_drafts_v13',JSON.stringify(DRAFTS));
+  return true;
+ }catch(e){
+  alert('Storage full! Click MENU > Clear Full Storage (red button) once, then try again.\nTip: Use Spotify link not MP3.\nError: '+e.message);
+  return false;
+ }
 }
+function clearFullStorage(){if(!confirm('Clear all local data? Posts will be reset to default.'))return;localStorage.clear();location.reload();}
 function renderAuth(){
  let u=getUser();let admin=isAdmin();let pic=getAdminPic();let name=getAdminName();
  document.getElementById('adminNameInput').value=name;
@@ -365,61 +353,66 @@ function openLogin(){document.getElementById('loginModal').classList.add('open')
 function openAdminLogin(){document.getElementById('adminModal').classList.add('open');closeD()}function closeAdmin(){document.getElementById('adminModal').classList.remove('open')}
 function doAdminLogin(){if(document.getElementById('adminPass').value==='rohit2026'){localStorage.setItem('mn_admin','1');if(!getUser())localStorage.setItem('mn_user',JSON.stringify({name:getAdminName(),email:'admin@local',pic:getAdminPic()||''}));closeAdmin();renderAuth();}else alert('Wrong password')}
 function onGoogleLogin(r){try{let p=JSON.parse(atob(r.credential.split('.')[1]));localStorage.setItem('mn_user',JSON.stringify({email:p.email,name:p.name,pic:p.picture}));closeLogin();renderAuth();}catch{}}
-function doLogout(){localStorage.removeItem('mn_user');localStorage.removeItem('mn_admin');renderAuth();}function getLikes(){try{return JSON.parse(localStorage.getItem('mn_likes')||'{}')}catch{return {}}}function toggleLike(){if(!getUser()){openLogin();return}let L=getLikes(),k='post_'+curPost;L[k]=L[k]||0;let liked=localStorage.getItem('mn_liked_'+k);if(liked){L[k]--;localStorage.removeItem('mn_liked_'+k);}else{L[k]++;localStorage.setItem('mn_liked_'+k,'1');}localStorage.setItem('mn_likes',JSON.stringify(L));renderLike();render();}
-function renderLike(){document.getElementById('likeCount').innerText=getLikes()['post_'+curPost]||0}
-function getComments(){try{return JSON.parse(localStorage.getItem('mn_c_v13')||'{}')}catch{return {}}}
-function addComment(){if(!getUser()){openLogin();return}let t=document.getElementById('commentInput').value.trim();if(!t)return;let A=getComments(),k='post_'+curPost;A[k]=A[k]||[];let u=getUser();A[k].push({name:u.name.split(' ')[0],pic:u.pic||getAdminPic()||'',text:t});localStorage.setItem('mn_c_v13',JSON.stringify(A));document.getElementById('commentInput').value='';renderComments();render();}
-function renderComments(){let A=getComments(),list=A['post_'+curPost]||[];document.getElementById('cCount').innerText=list.length;document.getElementById('cList').innerHTML=list.map(c=>`<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr2)"><div style="width:32px;height:32px;border-radius:50%;overflow:hidden;background:var(--btn);color:var(--btnT);display:flex;align-items:center;justify-content:center;font-weight:700">${c.pic?`<img src="${c.pic}" style="width:100%;height:100%;object-fit:cover">`:c.name[0]}</div><div><b style="font-size:13px">${c.name}</b><div style="font-size:13px">${c.text}</div></div></div>`).join('')||'<div style="text-align:center;padding:12px;color:var(--muted);font-size:12px">No comments</div>';}
-function render(){let L=getLikes(),C=getComments();let visible=POSTS.map((p,i)=>({...p,origIdx:i})).filter(p=>!p.archived).sort((a,b)=>(b.date||0)-(a.date||0));let html=visible.map(p=>{let i=p.origIdx;let cCount=(C['post_'+i]||[]).length;let first=p.slides&&p.slides[0];let thumb=first?first.src:'';return `<div class="card" onclick="openPost(${i})">${isAdmin()?`<div class="editBar"><span onclick="event.stopPropagation();openEdit(${i})">✏️</span><span onclick="event.stopPropagation();archivePost(${i})">📦</span><span onclick="event.stopPropagation();delPost(${i})">🗑️</span></div>`:''}<div class="slideWrap">${first&&first.type=='video'?`<video src="${thumb}" muted></video>`:`<img src="${thumb}">`}${p.slides&&p.slides.length>1?`<div class="slideCount">1/${p.slides.length}</div>`:''}${p.music?`<div class="musicBadge">🎵 ${p.music.dur}s</div>`:''}</div><div class="cardBody" style="padding:10px"><div style="display:flex;justify-content:space-between"><span style="font-size:10px;color:var(--muted)">${p.cat}</span><span style="font-size:10px;color:var(--muted)">${formatDate(p.date)}</span></div><div style="font-weight:700;font-size:13px;font-family:'Fraunces';margin-top:4px">${p.title}</div><div style="font-size:11px;color:var(--muted);margin-top:3px">❤️ ${L['post_'+i]||0} • 💬 ${cCount}</div></div></div>`}).join('');document.getElementById('grid').innerHTML=html||'<div style="text-align:center;padding:40px;color:var(--muted);grid-column:1/-1">No posts</div>';}
-function archivePost(i){if(!isAdmin())return;POSTS[i].archived=true;saveAll();render();renderAuth();}
-function unarchivePost(i){POSTS[i].archived=false;saveAll();render();renderAuth();closeArchive();openArchive();}
-function openArchive(){closeD();document.getElementById('archiveModal').classList.add('open');let archived=POSTS.map((p,i)=>({...p,origIdx:i})).filter(p=>p.archived);document.getElementById('archiveList').innerHTML=archived.length?archived.map(p=>`<div class="draftItem"><img src="${p.slides[0]?.src||''}"><div style="flex:1"><b style="font-size:13px">${p.title}</b><br><span style="font-size:10px;color:var(--muted)">${formatFullDate(p.date)}</span></div><div style="display:flex;flex-direction:column;gap:6px"><div class="btn dark" onclick="unarchivePost(${p.origIdx})">Restore</div><div class="btn" onclick="delPost(${p.origIdx})">Delete</div></div></div>`).join(''):'<div style="text-align:center;padding:20px;color:var(--muted)">No archived</div>';}
-function closeArchive(){document.getElementById('archiveModal').classList.remove('open');}
-function openD(){document.getElementById('drawer').classList.add('open');document.getElementById('bg').classList.add('open')}function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('bg').classList.remove('open');document.getElementById('langList').classList.remove('open')}
-function openPost(i){curPost=i;curSlide=0;let p=POSTS[i];document.getElementById('homeView').style.display='none';document.getElementById('postView').style.display='block';document.getElementById('pTop').innerText=p.title;document.getElementById('pTitle').innerText=p.title;document.getElementById('pBody').innerText=p.body||'';document.getElementById('authorBox').innerHTML=`<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;background:var(--btn);color:var(--btnT);display:flex;align-items:center;justify-content:center;font-weight:700">${(p.authorPic||getAdminPic())?`<img src="${p.authorPic||getAdminPic()}" style="width:100%;height:100%;object-fit:cover">`:'R'}</div><div><b style="font-size:13px">${getAdminName()}</b><br><span style="font-size:11px;color:var(--muted)">${p.cat}</span></div>`;document.getElementById('postDateTag').innerHTML=`<span class="dateTag">🕒 ${formatFullDate(p.date)}${p.archived?' • 📦 Archived':''}</span>`;document.getElementById('archiveBtn').style.display=isAdmin()?'flex':'none';document.getElementById('archiveBtn').innerText=p.archived?'↩️ Unarchive':'📦 Archive';let track=document.getElementById('cTrack');track.innerHTML=(p.slides||[]).map(s=>s.type=='video'?`<video src="${s.src}" controls></video>`:`<img src="${s.src}">`).join('');track.style.transform='translateX(0)';document.getElementById('cDots').innerHTML=(p.slides||[]).map((_,idx)=>`<div class="cDot ${idx==0?'active':''}"></div>`).join('');setupMusic(p);renderLike();renderComments();window.scrollTo(0,0)}
-function toggleArchiveCurrent(){if(!isAdmin())return;POSTS[curPost].archived=!POSTS[curPost].archived;saveAll();closePost();render();renderAuth();}
-function slide(dir){let total=(POSTS[curPost].slides||[]).length;if(total<=1)return;curSlide=(curSlide+dir+total)%total;document.getElementById('cTrack').style.transform=`translateX(-${curSlide*100}%)`;document.querySelectorAll('.cDot').forEach((d,i)=>d.classList.toggle('active',i==curSlide));}
-function setupMusic(p){let bar=document.getElementById('musicBar');if(!p.music){bar.style.display='none';if(audioEl){audioEl.pause();audioEl=null}return}bar.style.display='flex';document.getElementById('musicName').innerText=p.music.name||'Music';document.getElementById('musicTime').innerText=`0:${p.music.dur}s`;if(p.music.type=='spotify'){bar.innerHTML=`<div style="flex:1"><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${p.music.spotifyId}" width="100%" height="80" frameBorder="0" allow="autoplay"></iframe></div>`;return}if(audioEl)audioEl.pause();audioEl=new Audio(p.music.src);audioEl.currentTime=p.music.start||0;let end=(p.music.start||0)+(p.music.dur||30);audioEl.ontimeupdate=()=>{if(audioEl.currentTime>=end){audioEl.currentTime=p.music.start||0;audioEl.pause();document.getElementById('musicPlayBtn').innerText='♪'}document.getElementById('musicTime').innerText=`${Math.floor(audioEl.currentTime)}s / ${p.music.dur}s`;};audioEl.play().catch(()=>{});document.getElementById('musicPlayBtn').innerText='⏸️';}
-function togglePostMusic(){if(!audioEl)return;if(audioEl.paused){audioEl.play();document.getElementById('musicPlayBtn').innerText='⏸️'}else{audioEl.pause();document.getElementById('musicPlayBtn').innerText='♪'}}
-function closePost(){document.getElementById('homeView').style.display='block';document.getElementById('postView').style.display='none';if(audioEl){audioEl.pause();audioEl=null}render();}
-function doSearch(){let q=document.getElementById('search').value.toLowerCase();if(!q){render();return}let f=POSTS.map((p,i)=>({p,i})).filter(x=>!x.p.archived&&x.p.title.toLowerCase().includes(q));document.getElementById('grid').innerHTML=f.map(x=>`<div class="card" onclick="openPost(${x.i})"><div class="slideWrap"><img src="${x.p.slides[0]?.src||''}"></div><div class="cardBody" style="padding:10px"><b style="font-size:13px">${x.p.title}</b></div></div>`).join('');}
-function openPostModal(){if(!isAdmin())return;tempSlides=[];tempMusic=null;editingDraftIdx=-1;document.getElementById('preview').innerHTML='';document.getElementById('spotifyPreview').innerHTML='';document.getElementById('spotifyLink').value='';let now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());document.getElementById('pDateTime').value=now.toISOString().slice(0,16);document.getElementById('postModal').classList.add('open');editingIdx=-1;document.getElementById('pCat').value='';document.getElementById('pTitleIn').value='';document.getElementById('pBodyIn').value='';closeD();}
-function openEdit(i){if(!isAdmin())return;let p=POSTS[i];tempSlides=[...(p.slides||[])];tempMusic=p.music||null;editingIdx=i;editingDraftIdx=-1;document.getElementById('postModal').classList.add('open');document.getElementById('pCat').value=p.cat;document.getElementById('pTitleIn').value=p.title;document.getElementById('pBodyIn').value=p.body;if(p.date){let d=new Date(p.date);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());document.getElementById('pDateTime').value=d.toISOString().slice(0,16);}renderPreview();}
-function closePostModal(){document.getElementById('postModal').classList.remove('open')}
-function saveAsDraft(){
- if(!isAdmin())return;
- let cat=document.getElementById('pCat').value||'NOTES';
- let title=document.getElementById('pTitleIn').value.trim()||'Untitled Draft';
- let body=document.getElementById('pBodyIn').value.trim();
- let ts=document.getElementById('pDateTime').value?new Date(document.getElementById('pDateTime').value).getTime():Date.now();
- if(!tempSlides.length){alert('Add 1 photo/video');return;}
- let draft={cat,title,body,slides:tempSlides,music:tempMusic,authorPic:getAdminPic(),date:ts,time:Date.now()};
- if(editingDraftIdx>=0)DRAFTS[editingDraftIdx]=draft;else DRAFTS.unshift(draft);
- if(saveAll()){closePostModal();renderAuth();alert('Draft saved ✓');}
-}
-function openDrafts(){closeD();document.getElementById('draftModal').classList.add('open');document.getElementById('draftList').innerHTML=DRAFTS.length?DRAFTS.map((d,i)=>`<div class="draftItem"><img src="${d.slides[0]?.src||''}"><div style="flex:1"><b style="font-size:13px">${d.title}</b><br><span style="font-size:10px;color:var(--muted)">${formatDate(d.date)}</span></div><div style="display:flex;flex-direction:column;gap:6px"><div class="btn dark" onclick="publishDraft(${i})">Post</div><div class="btn" onclick="editDraft(${i})">Edit</div><div class="btn" onclick="deleteDraft(${i})">Del</div></div></div>`).join(''):'<div style="text-align:center;padding:20px;color:var(--muted)">No drafts</div>';}
-function closeDrafts(){document.getElementById('draftModal').classList.remove('open');}
-function publishDraft(i){let d=DRAFTS[i];POSTS.unshift({cat:d.cat,title:d.title,body:d.body,slides:d.slides,music:d.music,authorPic:d.authorPic,date:d.date,archived:false});DRAFTS.splice(i,1);if(saveAll()){closeDrafts();render();renderAuth();alert('Posted ✓');}}
-function editDraft(i){let d=DRAFTS[i];tempSlides=[...(d.slides||[])];tempMusic=d.music||null;editingDraftIdx=i;closeDrafts();document.getElementById('postModal').classList.add('open');document.getElementById('pCat').value=d.cat;document.getElementById('pTitleIn').value=d.title;document.getElementById('pBodyIn').value=d.body;if(d.date){let dt=new Date(d.date);dt.setMinutes(dt.getMinutes()-dt.getTimezoneOffset());document.getElementById('pDateTime').value=dt.toISOString().slice(0,16);}renderPreview();}
-function deleteDraft(i){if(!confirm('Delete draft?'))return;DRAFTS.splice(i,1);saveAll();openDrafts();renderAuth();}
-function savePost(){
- if(!isAdmin())return;
- let cat=document.getElementById('pCat').value||'NOTES';
- let title=document.getElementById('pTitleIn').value.trim();
- let body=document.getElementById('pBodyIn').value.trim();
- let ts=document.getElementById('pDateTime').value?new Date(document.getElementById('pDateTime').value).getTime():Date.now();
- if(!title){alert('Title likho');return;}
- if(!tempSlides.length){alert('Add 1 photo');return;}
- let post={cat,title,body,slides:tempSlides,music:tempMusic,authorPic:getAdminPic(),date:ts,archived:false};
- if(editingIdx>=0){post.archived=POSTS[editingIdx].archived;POSTS[editingIdx]=post;}else POSTS.unshift(post);
- if(editingDraftIdx>=0){DRAFTS.splice(editingDraftIdx,1);}
- if(saveAll()){closePostModal();render();renderAuth();alert('Posted ✓');}
-}
-function delPost(i){if(!isAdmin())return;if(!confirm('Delete permanently?'))return;POSTS.splice(i,1);saveAll();render();renderAuth();if(document.getElementById('postView').style.display!='none')closePost();}
-function toggleTheme(){let d=document.documentElement.classList.toggle('dark');document.body.classList.toggle('dark');localStorage.setItem('mn_dark',d?'1':'0');document.getElementById('tVal').innerText=d?'On':'Off';}
-(function(){let d=localStorage.getItem('mn_dark')=='1';if(d){document.documentElement.classList.add('dark');document.body.classList.add('dark');document.getElementById('tVal').innerText='On';}buildLangList();let t=LANG_TXT[curLang]||LANG_TXT['en'];document.getElementById('mainTitle').innerText=t.title;document.getElementById('mainSub').innerText=t.sub;render();renderAuth();})();
-document.getElementById('carousel').addEventListener('touchstart',e=>{window._sx=e.touches[0].clientX});
-document.getElementById('carousel').addEventListener('touchend',e=>{let diff=e.changedTouches[0].clientX-window._sx;if(Math.abs(diff)>50)slide(diff<0?1:-1)});
-function openShare(){document.getElementById('shareModal').classList.add('open')}function closeShare(){document.getElementById('shareModal').classList.remove('open')}
-function shareWA(){window.open(`https://wa.me/?text=${encodeURIComponent(POSTS[curPost].title+' '+location.href)}`,'_blank')}function shareFB(){window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}`,'_blank')}function shareX(){window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(POSTS[curPost].title)}`,'_blank')}function shareCopy(){navigator.clipboard.writeText(location.href);alert('Copied')}
+function doLogout(){localStorage.removeItem('mn_user');localStorage.removeItem('mn_admin');renderAuth();}
+function getLikes(){try{return JSON.parse(localStorage.getItem('mn_likes')||'{}')}catch{return {}}}function toggleLike(){if(!getUser()){openLogin();return}let L=getLikes(),k='post_'+curPost;L[k]=L[k]||0;let liked=localStorage.getItem('mn_liked_'+k);if(liked){L[k]--;localStorage.removeItem('mn_liked_'+k);}else{L[k]++;localStorage.setItem('mn_liked
+<div id="postView"><div style="display:flex;gap:8px;align-items:center"><div class="btn ico" onclick="closePost()">←</div><b id="pTop" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Post</b><div class="btn ico" onclick="openShare()">↗</div><div id="archiveBtn" class="btn ico" style="display:none" onclick="toggleArchiveCurrent()">📦</div></div><div id="postDateTag" style="margin-top:10px"></div>
+<div class="carousel" id="carousel"><div class="carouselTrack" id="cTrack"></div><div class="cArrow left" onclick="slide(-1)">‹</div><div class="cArrow right" onclick="slide(1)">›</div><div class="cDots" id="cDots"></div><div class="musicBar" id="musicBar" style="display:none"><div class="musicBtn" id="musicPlayBtn" onclick="togglePostMusic()">♪</div><div style="flex:1"><b id="musicName" style="font-size:13px;display:block">Music</b><span id="musicTime" style="font-size:11px;opacity:.8">0:30</span></div></div></div>
+<div id="authorBox" style="display:flex;gap:10px;align-items:center;margin-top:12px"></div>
+<h1 id="pTitle" style="font-family:'Fraunces',serif;font-size:22px;margin-top:12px;line-height:1.2"></h1>
+<p id="pBody" style="margin-top:12px;white-space:pre-wrap;font-size:15px;line-height:1.7;color:var(--muted)"></p>
+<div style="display:flex;gap:8px;margin-top:14px;align-items:center"><div class="btn" onclick="toggleLike()">❤️ <span id="likeCount">0</span></div><div class="btn" onclick="document.getElementById('commentInput').focus()">💬 <span id="cCount">0</span></div></div>
+<div class="cBox"><b style="font-size:14px">Comments</b><div id="cList" style="margin-top:8px"></div><div class="cInput"><input id="commentInput" placeholder="Add comment..."><div class="btn dark" onclick="addComment()" style="height:32px">Post</div></div></div>
+</div><script>
+const DEFAULT_POSTS=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Morning coffee prayer.",slides:[{type:"image",src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"}],music:null,authorPic:null,date:Date.now(),archived:false}];
+let POSTS;try{let s=localStorage.getItem('mn_v14')||localStorage.getItem('mn_v13');POSTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_v12')||localStorage.getItem('mn_v11')||'null')||DEFAULT_POSTS;POSTS=POSTS.map(p=>({...p,archived:!!p.archived,date:p.date||Date.now()}));}catch{POSTS=DEFAULT_POSTS}
+let DRAFTS;try{let s=localStorage.getItem('mn_drafts_v14')||localStorage.getItem('mn_drafts_v13');DRAFTS=s?JSON.parse(s):JSON.parse(localStorage.getItem('mn_drafts_v12')||localStorage.getItem('mn_drafts_v11')||'[]');}catch{DRAFTS=[]}
+let curPost=0,curSlide=0,editingIdx=-1,tempSlides=[],tempMusic=null,audioEl=null,sheetAudio=null,editingDraftIdx=-1,cropIdx=-1,trimIdx=-1;
+const LANG_TXT={en:{title:"Slow mornings, beige thoughts & coffee.",sub:"Aesthetic blog from Muzaffarpur",search:"Search"},hi:{title:"धीमी सुबह, सुकून भरे ख्याल और कॉफी।",sub:"मुज़फ्फरपुर से एस्थेटिक ब्लॉग",search:"खोजें"}};
+const LANGUAGES=[{code:'en',name:'English',flag:'🌐'},{code:'hi',name:'हिन्दी',flag:'🇮🇳'},{code:'bn',name:'বাংলা',flag:'🇧🇩'},{code:'bho',name:'भोजपुरी',flag:'🟠'},{code:'mai',name:'मैथिली',flag:'🔶'}];
+let curLang=localStorage.getItem('mn_lang')||'en';
+function buildLangList(){let l=document.getElementById('langList');l.innerHTML=LANGUAGES.map(x=>`<div class="langItem ${x.code==curLang?'active':''}" onclick="setLang('${x.code}')"><span>${x.flag} ${x.name}</span><span>${x.code==curLang?'✓':'›'}</span></div>`).join('');let c=LANGUAGES.find(x=>x.code==curLang);document.getElementById('curLangName').innerText=`${c.flag} ${c.name}`;}
+function toggleLangList(){let list=document.getElementById('langList');let a=document.getElementById('langArrow');list.classList.toggle('open');a.innerText=list.classList.contains('open')?'‹':'›';}
+function setLang(code){curLang=code;localStorage.setItem('mn_lang',code);buildLangList();let t=LANG_TXT[code]||LANG_TXT['en'];document.getElementById('mainTitle').innerText=t.title;document.getElementById('mainSub').innerText=t.sub;document.getElementById('search').placeholder=t.search;render();}
+function formatDate(ts){let d=new Date(ts);let now=new Date();let diff=Math.floor((now-d)/1000);if(diff<60)return'Just now';if(diff<3600)return Math.floor(diff/60)+'m ago';if(diff<86400)return Math.floor(diff/3600)+'h ago';return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});}
+function formatFullDate(ts){let d=new Date(ts);return d.toLocaleString('en-IN',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});}
+function getAdminPic(){return localStorage.getItem('mn_admin_pic')||null;}
+function getAdminName(){return localStorage.getItem('mn_admin_name')||'Rohit Kumar';}
+function setAdminPic(input){let f=input.files[0];if(!f)return;compressImageFile(f,300,0.8,dataUrl=>{localStorage.setItem('mn_admin_pic',dataUrl);renderAdminPic();renderAuth();alert('Photo updated');});}
+function saveAdminName(){let n=document.getElementById('adminNameInput').value.trim();if(!n)return alert('Please enter name');localStorage.setItem('mn_admin_name',n);renderAuth();alert('Saved');}
+function renderAdminPic(){let pic=getAdminPic();document.getElementById('adminPicPrev').innerHTML=pic?`<img src="${pic}" style="width:44px;height:44px;border-radius:50%;object-fit:cover">`:'👤';}
+function compressImageFile(file,maxW,quality,cb){let r=new FileReader();r.onload=e=>{let img=new Image();img.onload=()=>{let c=document.createElement('canvas');let w=img.width>maxW?maxW:img.width;let h=w/(img.width/img.height);c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',quality));};img.src=e.target.result;};r.readAsDataURL(file);}
+function handleMulti(input){let files=[...input.files];if(!files.length)return;if(files.length>4){alert('Max 4 photos');files=files.slice(0,4);}files.forEach(f=>{if(f.type.startsWith('video')){let r=new FileReader();r.onload=e=>{tempSlides.push({type:'video',src:e.target.result});renderPreview();};r.readAsDataURL(f);}else{compressImageFile(f,600,0.55,d=>{tempSlides.push({type:'image',src:d});renderPreview();});}});input.value='';}
+function renderPreview(){document.getElementById('preview').innerHTML=tempSlides.map((s,i)=>`<div class="previewItem">${s.type=='video'?`<video src="${s.src}"></video>`:`<img src="${s.src}">`}<div class="previewTools"><span onclick="openCrop(${i})">Crop</span><span onclick="tempSlides.splice(${i},1);renderPreview()">Del</span></div></div>`).join('');}
+function handleAudio(input){let f=input.files[0];if(!f)return;if(f.size>1200000){alert('File too large. Use Spotify link (0 storage)');input.value='';return;}let r=new FileReader();r.onload=e=>{tempMusic={type:'file',src:e.target.result,name:f.name,art:"",artist:"Local",start:0,dur:30};openMusicSheet();};r.readAsDataURL(f);input.value='';}
+function handleSpotify(){let url=document.getElementById('spotifyLink').value.trim();let id=url.split('track/')[1]?.split('?')[0];if(!id)return;tempMusic={type:'spotify',src:url,spotifyId:id,name:'Spotify Track',artist:'Spotify',art:'',start:0,dur:30};openMusicSheet();}
+function openMusicSheet(){if(!tempMusic)return;document.getElementById('musicModal').classList.add('open');document.getElementById('sheetTitle').innerText=tempMusic.name;document.getElementById('sheetSlider').value=tempMusic.start;}
+function onSheetSlide(){tempMusic.start=parseFloat(document.getElementById('sheetSlider').value);}
+function confirmMusic(){document.getElementById('musicModal').classList.remove('open');}
+function closeMusicModal(){document.getElementById('musicModal').classList.remove('open');}
+function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
+function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
+function saveAll(){try{localStorage.setItem('mn_v14',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v14',JSON.stringify(DRAFTS));return true;}catch(e){alert('Storage full! Click MENU > Clear Full Storage');return false;}}
+function clearFullStorage(){if(!confirm('Clear all local data?'))return;localStorage.clear();location.reload();}<div id="postDateTag" style="margin-top:10px"></div>
+<div class="carousel" id="carousel"><div class="carouselTrack" id="cTrack"></div><div class="cArrow left" onclick="slide(-1)">‹</div><div class="cArrow right" onclick="slide(1)">›</div><div class="cDots" id="cDots"></div><div class="musicBar" id="musicBar" style="display:none"><div class="musicBtn" id="musicPlayBtn" onclick="togglePostMusic()">♪</div><div style="flex:1"><b id="musicName" style="font-size:13px;display:block">Music</b><span id="musicTime" style="font-size:11px;opacity:.8">0:30</span></div></div></div>
+<div id="authorBox" style="display:flex;gap:10px;align-items:center;margin-top:12px"></div>
+<h1 id="pTitle" style="font-family:'Fraunces',serif;font-size:22px;margin-top:12px"></h1>
+<p id="pBody" style="margin-top:12px;white-space:pre-wrap;font-size:15px"></p>
+<div style="display:flex;gap:8px;margin-top:14px"><div class="btn" onclick="toggleLike()">❤️ <span id="likeCount">0</span></div><div class="btn" onclick="document.getElementById('commentInput').focus()">💬 <span id="cCount">0</span></div></div>
+<div class="cBox"><b>Comments</b><div id="cList"></div><div class="cInput"><input id="commentInput" placeholder="Add comment..."><div class="btn dark" onclick="addComment()">Post</div></div></div>
+</div>
+<script>
+let curPost=0,curSlide=0,tempSlides=[],tempMusic=null,audioEl=null;
+function renderAuth(){document.getElementById('adminSection').style.display=localStorage.getItem('mn_admin')==='1'?'block':'none';render();}
+function render(){let grid=document.getElementById('grid');grid.innerHTML=POSTS.map((p,i)=>`<div class="card" onclick="openPost(${i})"><div class="slideWrap"><img src="${p.slides[0]?.src||''}"><div class="slideCount">1/${p.slides.length}</div></div><div style="padding:10px"><b style="font-size:13px">${p.title}</b><div style="font-size:10px;color:gray">${p.cat}</div></div></div>`).join('');}
+function openPost(i){curPost=i;document.getElementById('homeView').style.display='none';document.getElementById('postView').style.display='block';let p=POSTS[i];document.getElementById('pTop').innerText=p.title;document.getElementById('pTitle').innerText=p.title;document.getElementById('pBody').innerText=p.body;document.getElementById('postDateTag').innerHTML=new Date(p.date).toLocaleString();let track=document.getElementById('cTrack');track.innerHTML=p.slides.map(s=>`<img src="${s.src}">`).join('');}
+function closePost(){document.getElementById('homeView').style.display='block';document.getElementById('postView').style.display='none';}
+function slide(d){curSlide=(curSlide+d+POSTS[curPost].slides.length)%POSTS[curPost].slides.length;document.getElementById('cTrack').style.transform=`translateX(-${curSlide*100}%)`;}
+function openD(){document.getElementById('drawer').classList.add('open');document.getElementById('bg').classList.add('open');}
+function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('bg').classList.remove('open');}
+function openPostModal(){tempSlides=[];document.getElementById('postModal').classList.add('open');closeD();}
+function closePostModal(){document.getElementById('postModal').classList.remove('open');}
+function savePost(){let t=document.getElementById('pTitleIn').value;if(!t){alert('Please enter Title');return;}if(!tempSlides.length){alert('Add 1 photo');return;}POSTS.unshift({cat:document.getElementById('pCat').value||'NOTES',title:t,body:document.getElementById('pBodyIn').value,slides:tempSlides,music:tempMusic,date:document.getElementById('pDateTime').value?new Date(document.getElementById('pDateTime').value).getTime():Date.now(),archived:false});localStorage.setItem('mn_v14',JSON.stringify(POSTS));closePostModal();render();alert('Posted');}
+function toggleTheme(){document.body.classList.toggle('dark');}
+function clearFullStorage(){localStorage.clear();location.reload();}
+(function(){localStorage.removeItem('mn_v11');localStorage.removeItem('mn_v12');localStorage.removeItem('mn_v13');render();renderAuth();})();
 </script></body></html>
