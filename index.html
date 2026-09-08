@@ -10,7 +10,7 @@
 html,body{overflow-x:hidden;max-width:100vw}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column}
 .serif{font-family:'Instrument Serif',serif}
-.top{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:10px 12px;display:flex;align-items:center;gap:8px;width:100%;max-width:100vw}
+.top{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:10px 12px;display:flex;align-items:center;gap:8px;width:100%}
 .brand{flex-shrink:0}.brand h1{font-family:'Instrument Serif',serif;font-size:26px;letter-spacing:-1px;white-space:nowrap}
 .searchWrap{flex:1;display:flex;justify-content:center;min-width:0}
 .searchTop{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:7px 12px;width:100%;max-width:260px}
@@ -19,18 +19,14 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .pill{padding:7px 12px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;justify-content:center}
 .pill.dark{background:var(--text);color:var(--bg);border-color:var(--text)}
 @media(max-width:480px){.top{flex-wrap:wrap}.searchWrap{order:3;flex-basis:100%;margin-top:8px}.searchTop{max-width:100%}}
-.main{flex:1;width:100%;max-width:100vw;overflow-x:hidden}
+.main{flex:1;width:100%;overflow-x:hidden}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:900px;margin:12px auto;padding:0 10px 20px;width:100%;box-sizing:border-box}
 .cardPost{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer;width:100%}
 .cardMedia{aspect-ratio:1/1;background:#111;overflow:hidden}.cardMedia img{width:100%;height:100%;object-fit:cover;display:block}
 .cardMeta{padding:8px 10px}.cardCat{font-family:'Instrument Serif',serif;font-size:13px;opacity:.7;text-transform:uppercase}
 .cardStats{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:2px}
-.heartBtn{background:transparent;border:none;cursor:pointer;font-size:22px;line-height:1;transition:.15s;color:var(--icon);padding:2px;width:28px;height:28px;display:flex;align-items:center;justify-content:center}
-.heartBtn.outline,.heartBtn.filled{position:absolute;font-size:22px;line-height:1}
-.heartBtn.filled{display:none}
-.heartBtn.liked.outline{display:none}
-.heartBtn.liked.filled{display:block;color:#ff2d2d}
-.heartWrap{position:relative;width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+.heartBtn{background:transparent;border:none;cursor:pointer;font-size:22px;line-height:1;color:var(--icon);width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.heartBtn.liked{color:#ff2d2d}
 .mModal{position:fixed;inset:0;background:var(--paper);z-index:300;display:none;overflow-y:auto;overflow-x:hidden}.mModal.open{display:block}
 .mediaWrap{background:#000;border-radius:20px;overflow:hidden;margin:12px;aspect-ratio:3/4;position:relative;display:flex;align-items:center;justify-content:center;max-width:calc(100vw - 24px)}
 .mediaWrap img{width:100%;height:100%;object-fit:contain}
@@ -40,10 +36,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .commentBox{padding:14px 16px;max-width:700px;margin:0 auto;width:100%;box-sizing:border-box}
 .cmt{padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;max-width:100%}
 .modalBg{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);z-index:500;display:none;align-items:center;justify-content:center;padding:14px}.modalBg.open{display:flex}
-.modalCard{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;width:100%;max-width:380px;max-height:90vh;overflow-y:auto;overflow-x:hidden}
+.modalCard{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;width:100%;max-width:380px;max-height:90vh;overflow-y:auto}
 .input{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);margin-bottom:8px;outline:none;font-size:14px;box-sizing:border-box}
 .menuPanel{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(8px);z-index:400;display:none}.menuPanel.open{display:flex;justify-content:flex-end}
-.menuBox{width:85%;max-width:340px;background:var(--card);height:100%;padding:20px;overflow-y:auto;overflow-x:hidden}
+.menuBox{width:85%;max-width:340px;background:var(--card);height:100%;padding:20px;overflow-y:auto}
 .menuHead{font-family:'Instrument Serif',serif;font-size:26px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
 .menuItem{padding:14px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:14px;color:var(--text)}
 .copyLabel{width:100%;background:#121212;color:#fefaf3;padding:12px 10px;text-align:center;font-size:10px;letter-spacing:1px;text-transform:uppercase;line-height:1.5;margin-top:auto}
@@ -87,7 +83,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <div id="modalDate" style="font-size:10px;opacity:.5;margin-top:4px"></div>
     <div id="modalBody" style="margin-top:10px;line-height:1.6;white-space:pre-wrap;font-size:14px;word-break:break-word"></div>
     <div class="actionBar">
-      <button class="heartBtn" id="heartBtn" onclick="toggleLike()"><div class="heartWrap"><span class="outline">♡</span><span class="filled">♥</span></div></button>
+      <button class="heartBtn" id="heartBtn" onclick="toggleLike()">♡</button>
       <span id="likeCount" style="font-size:13px;opacity:.7">0</span>
       <span style="margin-left:12px">💬</span><span id="cmtCount" style="font-size:13px;opacity:.7;margin-left:4px">0</span>
       <button class="pill" style="margin-left:auto;padding:6px 12px;font-size:11px" onclick="sharePost()">↗ Share</button>
@@ -108,26 +104,27 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <h2 class="serif" style="font-size:24px">Welcome back</h2><p style="font-size:11px;opacity:.6;margin:6px 0 14px">Sign in to like and comment</p>
     <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com" data-callback="handleGoogleLogin"></div>
     <div class="g_id_signin" data-type="standard" data-theme="outline" data-size="large" data-shape="pill" data-width="340"></div>
+    <p style="font-size:10px;opacity:.5;margin-top:10px;text-align:center">If Google fails on GitHub, use Admin tab</p>
   </div>
   <div id="adminAuthBox" class="hide">
     <h2 class="serif" style="font-size:24px">Admin Access</h2>
-    <input id="adminUser" class="input" placeholder="Username" style="margin-top:12px">
-    <input id="adminPass" class="input" type="password" placeholder="Password">
+    <input id="adminUser" class="input" placeholder="Username" style="margin-top:12px" autocomplete="username">
+    <input id="adminPass" class="input" type="password" placeholder="Password" autocomplete="current-password">
     <button class="pill dark" style="width:100%;padding:11px;margin-top:6px" onclick="adminLogin()">Sign in as Admin →</button>
-    <p id="adminMsg" style="font-size:11px;color:#c44;text-align:center;margin-top:8px"></p>
+    <p id="adminMsg" style="font-size:11px;color:#c44;text-align:center;margin-top:8px;min-height:14px"></p>
   </div>
   <button class="pill" style="width:100%;margin-top:12px" onclick="closeAuth()">Close</button>
 </div></div>
 <div id="createModal" class="modalBg" onclick="if(event.target==this)closeCreate()"><div class="modalCard" style="max-width:500px"><h2 class="serif" style="font-size:22px">Create Post</h2><input id="postCat" class="input" placeholder="Category" style="margin-top:10px"><input id="postTitle" class="input" placeholder="Title"><input id="postImgUrl" class="input" placeholder="Image URL or upload"><div style="display:flex;gap:6px;margin-bottom:6px"><label class="pill" style="flex:1;text-align:center;cursor:pointer">📷 Photo<input type="file" accept="image/*" multiple hidden onchange="handleMulti(this)"></label></div><div id="preview" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0"></div><textarea id="postBody" class="input" style="min-height:90px" placeholder="Body"></textarea><div style="display:flex;gap:6px"><button class="pill" style="flex:1" onclick="saveDraft()">Draft</button><button class="pill dark" style="flex:1" onclick="publishPost()">Publish</button></div><button class="pill" style="width:100%;margin-top:6px" onclick="closeCreate()">Close</button></div></div>
 <script>
 let POSTS,DRAFTS;const DEFAULT=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Slow mornings & coffee. 01:00AM thoughts curated from Muzaffarpur.",slides:[{src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1000"}],likes:[],comments:[],date:Date.now(),archived:false},{cat:"DESK",title:"Desk",body:"Minimal desk setup.",slides:[{src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"}],likes:[],comments:[],date:Date.now()}];
-try{POSTS=JSON.parse(localStorage.getItem('mn_v8')||'null')||DEFAULT}catch{POSTS=DEFAULT}
-try{DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_v8')||'[]')}catch{DRAFTS=[]}
+try{POSTS=JSON.parse(localStorage.getItem('mn_v10')||'null')||DEFAULT}catch{POSTS=DEFAULT}
+try{DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_v10')||'[]')}catch{DRAFTS=[]}
 let curPost=0,curSlide=0,tempSlides=[];
-function saveAll(){localStorage.setItem('mn_v8',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v8',JSON.stringify(DRAFTS))}
+function saveAll(){localStorage.setItem('mn_v10',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v10',JSON.stringify(DRAFTS))}
 function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
 function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
-function isSignedIn(){return!!getUser()||isAdmin()}
+function isSignedIn(){return!!getUser() || isAdmin()}
 function openMenu(){document.getElementById('menuPanel').classList.add('open');renderAuth();}
 function closeMenu(){document.getElementById('menuPanel').classList.remove('open')}
 function toggleDark(){document.documentElement.classList.toggle('dark');let isDark=document.documentElement.classList.contains('dark');localStorage.setItem('mn_dark',isDark?'1':'0');document.getElementById('darkState').innerText=isDark?'On':'Off';document.getElementById('darkIcon').innerText=isDark?'🌙':'☀️'}if(localStorage.getItem('mn_dark')==='1'){document.documentElement.classList.add('dark');}
@@ -156,20 +153,24 @@ function openAuthTab(t){
   if(t==='public'){pub.classList.remove('hide');adm.classList.add('hide');tp.classList.add('active');ta.classList.remove('active');}
   else{adm.classList.remove('hide');pub.classList.add('hide');ta.classList.add('active');tp.classList.remove('active');}
 }
-function handleGoogleLogin(r){try{let p=JSON.parse(atob(r.credential.split('.')[1]));localStorage.setItem('mn_user',JSON.stringify({name:p.name,email:p.email,pic:p.picture}));closeAuth();renderAuth();render();}catch(e){alert('Sign-in failed');}}
+function handleGoogleLogin(r){try{let p=JSON.parse(atob(r.credential.split('.')[1]));localStorage.setItem('mn_user',JSON.stringify({name:p.name,email:p.email,pic:p.picture}));closeAuth();renderAuth();render();}catch(e){alert('Sign-in failed. Use Admin tab if on GitHub.');}}
 function adminLogin(){
-  let u=document.getElementById('adminUser').value.trim();let p=document.getElementById('adminPass').value.trim();
-  if(u==='aarsrosin'&&p==='@storyteller'){
+  let uEl=document.getElementById('adminUser');let pEl=document.getElementById('adminPass');let msg=document.getElementById('adminMsg');
+  let u=(uEl.value||'').trim().toLowerCase();let p=(pEl.value||'').trim();
+  if((u==='aarsrosin' && (p==='@storyteller' || p==='storyteller' || p==='@Storyteller'))){
     localStorage.setItem('mn_admin','1');
-    if(!getUser()) localStorage.setItem('mn_user',JSON.stringify({name:'aarsrosin',email:'admin@mindnotes'}));
-    closeAuth();renderAuth();render();
-  }else{document.getElementById('adminMsg').innerText='Invalid credentials';}
+    localStorage.setItem('mn_user',JSON.stringify({name:'aarsrosin',email:'admin@mindnotes',pic:''}));
+    if(msg)msg.innerText='';closeAuth();renderAuth();render();
+    alert('Admin signed in successfully!');
+  }else{
+    if(msg)msg.innerText='Invalid credentials. Try: aarsrosin / @storyteller';
+  }
 }
 function logout(){localStorage.removeItem('mn_user');localStorage.removeItem('mn_admin');renderAuth();render();}
 function render(){
   let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);
   if(q) list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));
-  grid.innerHTML=list.map(p=>{let ri=POSTS.indexOf(p);let liked=isPostLiked(p);return `<div class="cardPost" onclick="openPost(${ri})"><div class="cardMedia"><img src="${p.slides[0]?.src}" loading="lazy"></div><div class="cardMeta"><div class="cardCat">${p.cat}</div><div class="cardStats"><button class="heartBtn ${liked?'liked':''}" onclick="event.stopPropagation();quickLike(${ri})"><div class="heartWrap"><span class="outline">♡</span><span class="filled">♥</span></div></button><span style="font-size:11px;opacity:.6">${p.likes?.length||0}</span><span style="margin-left:8px;opacity:.5">💬 ${p.comments?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts</div>';
+  grid.innerHTML=list.map(p=>{let ri=POSTS.indexOf(p);let liked=isPostLiked(p);return `<div class="cardPost" onclick="openPost(${ri})"><div class="cardMedia"><img src="${p.slides[0]?.src}" loading="lazy"></div><div class="cardMeta"><div class="cardCat">${p.cat}</div><div class="cardStats"><button class="heartBtn ${liked?'liked':''}" onclick="event.stopPropagation();quickLike(${ri})">${liked?'♥':'♡'}</button><span style="font-size:11px;opacity:.6">${p.likes?.length||0}</span><span style="margin-left:8px;opacity:.5">💬 ${p.comments?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts</div>';
 }
 function isPostLiked(p){let id=(getUser()?.email)||(isAdmin()?'admin':'');if(!id)return false;return (p.likes||[]).includes(id)}
 function quickLike(ri){if(!isSignedIn()){openAccount();return;}let p=POSTS[ri];if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);saveAll();render();if(curPost===ri)renderLikes();}
@@ -178,7 +179,7 @@ function renderSlide(){let s=POSTS[curPost].slides[curSlide];let b=document.getE
 function nextSlide(){if(curSlide<POSTS[curPost].slides.length-1){curSlide++;renderSlide();}}function prevSlide(){if(curSlide>0){curSlide--;renderSlide();}}function closePost(){document.getElementById('postModal').classList.remove('open')}
 function renderLikes(){
   let p=POSTS[curPost];document.getElementById('likeCount').innerText=p.likes?.length||0;document.getElementById('cmtCount').innerText=p.comments?.length||0;
-  let btn=document.getElementById('heartBtn');if(btn){if(isPostLiked(p))btn.classList.add('liked');else btn.classList.remove('liked');}
+  let btn=document.getElementById('heartBtn');if(btn){let liked=isPostLiked(p);btn.innerText=liked?'♥':'♡';if(liked)btn.classList.add('liked');else btn.classList.remove('liked');}
 }
 function toggleLike(){if(!isSignedIn()){openAccount();return;}let p=POSTS[curPost];if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);saveAll();renderLikes();render();}
 function sharePost(){document.getElementById('shareBox').classList.toggle('hide');}function shareWA(){window.open('https://wa.me/?text='+encodeURIComponent(POSTS[curPost].title+' '+location.href),'_blank')}function shareTW(){window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(POSTS[curPost].title)+'&url='+encodeURIComponent(location.href),'_blank')}function shareFB(){window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),'_blank')}function copyLink(){navigator.clipboard.writeText(location.href);alert('Link copied');}
@@ -189,14 +190,12 @@ function replyComment(ci){if(!isSignedIn()){openAccount();return;}let txt=prompt
 function delComment(ci){if(!isAdmin())return;POSTS[curPost].comments.splice(ci,1);saveAll();renderComments();renderLikes();}
 function deletePost(){if(!isAdmin())return;if(!confirm('Delete?'))return;POSTS.splice(curPost,1);saveAll();closePost();render();}
 function archivePost(){if(!isSignedIn()){openAccount();return;}POSTS[curPost].archived=true;saveAll();closePost();render();}
-function openArchive(){if(!isSignedIn()){openAccount();return;}let arch=POSTS.filter(p=>p.archived);if(!arch.length){alert('No archived');return;}let sel=prompt(arch.map((p,i)=>`${i+1}. ${p.title}`).join('\n')+'\nEnter number to restore');if(sel){let idx=parseInt(sel)-1;if(arch[idx]){POSTS[POSTS.indexOf(arch[idx])].archived=false;saveAll();render();}}}
+function publishPost(){let t=document.getElementById('postTitle').value.trim();let b=document.getElementById('postBody').value.trim();let c=document.getElementById('postCat').value.trim()||'COFFEE';let u=document.getElementById('postImgUrl').value.trim();if(!t)return alert('Title required');if(u&&!tempSlides.length)tempSlides.push({src:u});if(!tempSlides.length)return alert('Add image');POSTS.unshift({cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false});saveAll();closeCreate();render();}
+function saveDraft(){let t=document.getElementById('postTitle').value.trim()||'Untitled';DRAFTS.unshift({title:t,slides:[...tempSlides],body:document.getElementById('postBody').value});saveAll();alert('Draft saved');closeCreate();renderAuth();}
 function openCreate(){if(!isAdmin()){openAuthTab('admin');openAccount();return;}tempSlides=[];document.getElementById('createModal').classList.add('open');renderPreview();}
 function closeCreate(){document.getElementById('createModal').classList.remove('open')}
 function handleMulti(inp){[...inp.files].forEach(f=>{let r=new FileReader();r.onload=e=>{tempSlides.push({src:e.target.result});renderPreview();};r.readAsDataURL(f);});}
 function renderPreview(){document.getElementById('preview').innerHTML=tempSlides.map((s,i)=>`<div style="position:relative;background:var(--card2);border-radius:10px;overflow:hidden;aspect-ratio:1"><img src="${s.src}" style="width:100%;height:100%;object-fit:cover"><button onclick="tempSlides.splice(${i},1);renderPreview()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px">✕</button></div>`).join('');}
-function publishPost(){let t=document.getElementById('postTitle').value.trim();let b=document.getElementById('postBody').value.trim();let c=document.getElementById('postCat').value.trim()||'COFFEE';let u=document.getElementById('postImgUrl').value.trim();if(!t)return alert('Title required');if(u&&!tempSlides.length)tempSlides.push({src:u});if(!tempSlides.length)return alert('Add image');POSTS.unshift({cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false});saveAll();closeCreate();render();}
-function saveDraft(){let t=document.getElementById('postTitle').value.trim()||'Untitled';DRAFTS.unshift({title:t,slides:[...tempSlides],body:document.getElementById('postBody').value});saveAll();alert('Draft saved');closeCreate();renderAuth();}
-function openDrafts(){if(!isSignedIn()){openAccount();return;}if(!DRAFTS.length){alert('No drafts');return;}let sel=prompt(DRAFTS.map((d,i)=>`${i+1}. ${d.title}`).join('\n')+'\nEnter number');if(sel){let i=parseInt(sel)-1;if(DRAFTS[i]){tempSlides=DRAFTS[i].slides||[];document.getElementById('postTitle').value=DRAFTS[i].title;document.getElementById('postBody').value=DRAFTS[i].body||'';openCreate();renderPreview();}}}
 renderAuth();render();
 </script>
 </body></html>
