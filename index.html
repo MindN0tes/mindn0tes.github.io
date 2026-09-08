@@ -7,6 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <style>
 :root{--bg:#fefaf3;--card:#fff;--card2:#f6eee3;--text:#121212;--border:#efe6d8;--paper:#fdf8f0;--accent:#121212}
 :root.dark{--bg:#0e0e0e;--card:#1a1a1a;--card2:#242424;--text:#f4efe7;--border:#2a2a2a;--paper:#121212;--accent:#f4efe7}
@@ -135,15 +136,44 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" onclick="applyQuickCrop('cover')">Free</button><button class="pill" onclick="applyQuickCrop('contain')">Fit</button><button class="pill" onclick="applyQuickCrop('1/1')">1:1</button><button class="pill" onclick="applyQuickCrop('4/5')">4:5</button><button class="pill" id="muteBtn" onclick="toggleMute()">🔊 Mute</button><button class="pill dark" onclick="openCropper()">↔️ Drag Crop</button></div>
     </div>
   </div>
+
   <div class="musicBox">
     <h4 style="font-size:13px;margin-bottom:8px">🎵 Add Music</h4>
-    <div style="display:flex;gap:6px;margin-bottom:8px"><label class="pill" style="flex:1">From Phone<input type="file" id="musicFile" accept="audio/*" hidden onchange="handleMusicFile(this)"></label><button class="pill" onclick="openSpotifySearch()">Spotify Search</button></div>
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <label class="pill" style="flex:1">From Phone<input type="file" id="musicFile" accept="audio/*" hidden onchange="handleMusicFile(this)"></label>
+      <button class="pill" onclick="openSpotifySearch()">Spotify Search</button>
+    </div>
     <div id="spotifyBox" class="hide" style="margin-bottom:8px"><input id="spotifyQuery" class="input" placeholder="Search song..."><button class="pill dark" style="width:100%" onclick="searchSpotify()">Search</button><div id="spotifyResults" style="margin-top:8px"></div></div>
-    <div id="musicPreview" class="hide">
-      <audio id="musicAudio" style="width:100%" controls ontimeupdate="onMusicTimeUpdate()" onloadedmetadata="onMusicLoaded()"></audio>
-      <div style="display:flex;gap:6px;align-items:center;margin-top:8px"><button class="pill dark" id="musicPlayBtn" onclick="toggleMusic()">▶️ Play</button><span id="musicName" style="font-size:10px;flex:1"></span><button class="pill" onclick="removeMusic()">✕</button></div>
+
+    <div id="musicPreview" class="hide" style="margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span id="musicName" style="font-size:11px;font-weight:600;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <div style="display:flex;gap:6px">
+          <button class="pill small musicLenBtn" data-sec="15" onclick="setClipLength(15)">15s</button>
+          <button class="pill small musicLenBtn dark" data-sec="30" onclick="setClipLength(30)">30s</button>
+          <button class="pill small musicLenBtn" data-sec="60" onclick="setClipLength(60)">60s</button>
+        </div>
+      </div>
+      <div id="musicWaveWrap" style="position:relative;height:68px;background:#0e0e0e;border-radius:10px;overflow:hidden;touch-action:none;cursor:pointer">
+        <canvas id="musicWaveCanvas" style="width:100%;height:100%"></canvas>
+        <div id="musicSelection" style="position:absolute;top:0;height:100%;background:rgba(138,92,255,.35);border-left:2px solid #8a5cff;border-right:2px solid #8a5cff;pointer-events:none"></div>
+        <div id="musicStartHandle" style="position:absolute;top:0;width:12px;height:100%;background:#8a5cff;cursor:ew-resize;border-radius:4px;transform:translateX(-50%)"></div>
+        <div id="musicEndHandle" style="position:absolute;top:0;width:12px;height:100%;background:#8a5cff;cursor:ew-resize;border-radius:4px;transform:translateX(-50%)"></div>
+        <div id="musicPlayLine" style="position:absolute;top:0;width:2px;height:100%;background:#fff;display:none;pointer-events:none"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6;margin-top:4px">
+        <span id="musicStartLabel">0:00</span>
+        <span id="musicDuration">0:00</span>
+        <span id="musicEndLabel">0:30</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px;align-items:center">
+        <button class="pill dark" id="musicPlayBtn" onclick="toggleMusic()">▶ Play</button>
+        <button class="pill" onclick="removeMusic()" style="color:#c44">✕ Remove</button>
+      </div>
+      <audio id="musicAudio" hidden ontimeupdate="onMusicTimeUpdate()" onended="musicPreviewEnded()"></audio>
     </div>
   </div>
+
   <div style="display:flex;gap:8px;margin-top:14px"><button class="pill" style="flex:1" onclick="saveDraft()">Draft</button><button class="pill" style="flex:1" onclick="saveSchedule()">Schedule</button><button class="pill dark" style="flex:1;padding:14px;font-weight:600" onclick="publishPost()">Publish ✓</button></div>
   <div id="publishStatus" style="font-size:11px;margin-top:8px"></div>
 </div></div>
@@ -158,7 +188,8 @@ const firebaseConfig = {
   appId: "1:173337692340:web:e8531e2cf9096c5d016fe1"
 };
 firebase.initializeApp(firebaseConfig);
-const cloudRef = firebase.database().ref('mindnotes-cloud')
+const cloudRef = firebase.database().ref('mindnotes-cloud');
+const storage = firebase.storage();
 
 const DB_NAME='MindNotesDB_v21'; const DB_VER=1;
 function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{let db=e.target.result;if(!db.objectStoreNames.contains('posts'))db.createObjectStore('posts',{keyPath:'id'});if(!db.objectStoreNames.contains('drafts'))db.createObjectStore('drafts',{keyPath:'id'});if(!db.objectStoreNames.contains('deleted'))db.createObjectStore('deleted',{keyPath:'id'});if(!db.objectStoreNames.contains('contacts'))db.createObjectStore('contacts',{keyPath:'id'});if(!db.objectStoreNames.contains('blocked'))db.createObjectStore('blocked',{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
@@ -176,49 +207,27 @@ async function loadAll(){
     BLOCKED=b.map(x=>x.name||x.id);
     DELETED=await idbGetAll('deleted');
   }catch(e){
-    console.error('Local DB load failed:',e);
-    POSTS=[];
-    DRAFTS=[];
-    CONTACTS=[];
-    BLOCKED=[];
-    DELETED=[];
+    POSTS=[];DRAFTS=[];CONTACTS=[];BLOCKED=[];DELETED=[];
   }
-
   POSTS.sort((a,b)=>(b.date||0)-(a.date||0));
-  renderAuth();
-  render();
-
+  renderAuth();render();
   cloudRef.on('value', async snap=>{
     try{
       const val=snap.val() || {};
       const cloudPosts=Object.values(val).filter(p=>p && p.id).sort((a,b)=>(b.date||0)-(a.date||0));
-
       const db=await openDB();
       await new Promise((resolve,reject)=>{
         const tx=db.transaction('posts','readwrite');
         const store=tx.objectStore('posts');
         store.clear();
-        cloudPosts.forEach(p=>{
-          store.put(p);
-        });
-        tx.oncomplete=resolve;
-        tx.onerror=()=>reject(tx.error);
-        tx.onabort=()=>reject(tx.error || new Error('IndexedDB transaction aborted'));
+        cloudPosts.forEach(p=>store.put(p));
+        tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
       });
       db.close();
-
       POSTS=cloudPosts;
-      if(curPostId &&!POSTS.some(p=>p.id===curPostId)){
-        closePost();
-        curPostId=null;
-      }
-      render();
-      renderAuth();
-    }catch(e){
-      console.error('Firebase sync failed:',e);
-    }
-  },err=>{
-    console.error('Firebase read failed:',err);
+      if(curPostId &&!POSTS.some(p=>p.id===curPostId)){closePost();curPostId=null;}
+      render();renderAuth();
+    }catch(e){console.error(e);}
   });
 }
 function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
@@ -270,17 +279,26 @@ function openAdminProfile(){if(!isAdmin()){alert('Only admin');return;}document.
 function closeAdminProfile(){document.getElementById('adminProfileModal').classList.remove('open')}
 function changeAvatar(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{localStorage.setItem('mn_avatar',e.target.result);renderAuth();};r.readAsDataURL(f);}
 function updateUsername(){let n=document.getElementById('newUsername').value.trim();if(!n)return;localStorage.setItem('mn_custom_name',n);let u=getUser();if(u){u.name=n;localStorage.setItem('mn_user',JSON.stringify(u));}renderAuth();alert('Updated');}
-function render(){let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);if(q)list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));grid.innerHTML=list.map(p=>{let liked=isPostLiked(p);let first=p.slides[0];let media=first? (first.type==='video'?`<video src="${first.src}" muted></video>`:`<img src="${first.src}" loading="lazy">`) : '<div style="height:100px;background:var(--card2)"></div>';return `<div class="cardPost" onclick="openPost('${p.id}')"><div class="cardMedia">${media}${p.music?`<div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:3px 6px;border-radius:10px">♪ ${p.music.name.substring(0,12)}</div>`:''}</div><div style="padding:8px 10px"><div style="font-size:10px;letter-spacing:1px;opacity:.6;text-transform:uppercase">${p.cat}</div><div style="display:flex;gap:6px;margin-top:4px;align-items:center"><button class="heartBtn ${liked?'liked':''}" onclick="event.stopPropagation();quickLike('${p.id}')">${liked?'♥':'♡'}</button><span style="font-size:11px">${p.likes?.length||0}</span><span style="margin-left:8px;opacity:.5">💬 ${p.comments?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts yet</div>';}
+function render(){let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);if(q)list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));grid.innerHTML=list.map(p=>{let liked=isPostLiked(p);let first=p.slides[0];let media=first? (first.type==='video'?`<video src="${first.src}" muted></video>`:`<img src="${first.src}" loading="lazy">`) : '<div style="height:100px;background:var(--card2)"></div>';return `<div class="cardPost" onclick="openPost('${p.id}')"><div class="cardMedia">${media}${p.music?`<div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:3px 6px;border-radius:10px">♪ ${escapeHtml((p.music.name||'').substring(0,12))}</div>`:''}</div><div style="padding:8px 10px"><div style="font-size:10px;letter-spacing:1px;opacity:.6;text-transform:uppercase">${p.cat}</div><div style="display:flex;gap:6px;margin-top:4px;align-items:center"><button class="heartBtn ${liked?'liked':''}" onclick="event.stopPropagation();quickLike('${p.id}')">${liked?'♥':'♡'}</button><span style="font-size:11px">${p.likes?.length||0}</span><span style="margin-left:8px;opacity:.5">💬 ${p.comments?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts yet</div>';}
 function isPostLiked(p){let id=(getUser()?.email)||'';if(!id)return false;return (p.likes||[]).includes(id)}
 async function quickLike(id){if(!isSignedIn()){openAccount();return;}let p=POSTS.find(x=>x.id===id);if(!p)return;if(!p.likes)p.likes=[];let uid=(getUser()?.email)||'admin';let idx=p.likes.indexOf(uid);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(uid);await idbPut('posts',p); cloudRef.child(p.id).set(p); render();}
-let curPostId=null,curSlide=0,tempSlides=[],editIdx=-1,tempMusic=null,clipLength=60,cropper=null,selectedCropIndex=-1;
+let curPostId=null,curSlide=0,tempSlides=[],editIdx=-1,tempMusic=null,cropper=null,selectedCropIndex=-1;
+
+let musicFileObject = null;
+let musicObjectURL = null;
+let musicDuration = 0;
+let musicStart = 0;
+let musicEnd = 0;
+let clipLength = 30;
+let musicDragging = null;
+
 function openPost(id){curPostId=id;curSlide=0;let p=POSTS.find(x=>x.id===id);if(!p)return;document.getElementById('postModal').classList.add('open');document.getElementById('modalTitle').innerText=p.title;document.getElementById('modalCat').innerText=p.cat;document.getElementById('modalDate').innerText=new Date(p.date).toLocaleString();document.getElementById('modalBody').innerText=p.body;document.getElementById('delBtn').classList.toggle('hide',!isAdmin());document.getElementById('archBtn').classList.toggle('hide',!isAdmin());renderSlide();renderLikes();renderComments();renderMusicPlayer(p);}
 function getCurPost(){return POSTS.find(x=>x.id===curPostId)}
 function renderSlide(){let p=getCurPost();if(!p)return;let s=p.slides[curSlide];let b=document.getElementById('slideBox');if(!s)return;b.innerHTML=s.type==='video'?`<video src="${s.src}" controls ${s.muted?'muted':''} style="width:100%;height:100%;object-fit:${s.crop||'contain'}"></video>`:`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop||'contain'}">`;}
 function nextSlide(){let p=getCurPost();if(curSlide<p.slides.length-1){curSlide++;renderSlide();}}function prevSlide(){if(curSlide>0){curSlide--;renderSlide();}}function closePost(){let a=document.getElementById('modalAudio');if(a){a.pause();}document.getElementById('postModal').classList.remove('open')}
 function renderLikes(){let p=getCurPost();if(!p)return;document.getElementById('likeCount').innerText=p.likes?.length||0;document.getElementById('cmtCount').innerText=p.comments?.length||0;let btn=document.getElementById('heartBtn');if(btn){btn.innerText=isPostLiked(p)?'♥':'♡';btn.classList.toggle('liked',isPostLiked(p));}}
 async function toggleLike(){if(!isSignedIn()){openAccount();return;}let p=getCurPost();if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);await idbPut('posts',p); cloudRef.child(p.id).set(p); renderLikes();render();}
-function renderComments(){let list=document.getElementById('commentsList');let p=getCurPost();if(!p)return;if(!p.comments)p.comments=[];list.innerHTML=p.comments.map((c,ci)=>`<div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0">👤</div><div style="flex:1"><b style="font-size:13px">${c.name}</b><div style="font-size:13px;margin-top:2px">${c.text}</div><div style="display:flex;gap:6px;margin-top:6px"><button class="pill" style="padding:4px 10px;font-size:11px" onclick="likeComment(${ci})">♡ ${c.likes?.length||0}</button>${isAdmin()?`<button class="pill" style="padding:4px 10px;font-size:11px" onclick="blockUser('${c.name}')">Block</button><button class="pill" style="padding:4px 10px;font-size:11px;color:#c44" onclick="delComment(${ci})">Delete</button>`:''}</div></div></div>`).join('')||'<div style="text-align:center;padding:20px;opacity:.5;font-size:13px">No comments yet</div>';}
+function renderComments(){let list=document.getElementById('commentsList');let p=getCurPost();if(!p)return;if(!p.comments)p.comments=[];list.innerHTML=p.comments.map((c,ci)=>`<div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0">👤</div><div style="flex:1"><b style="font-size:13px">${escapeHtml(c.name)}</b><div style="font-size:13px;margin-top:2px">${escapeHtml(c.text)}</div><div style="display:flex;gap:6px;margin-top:6px"><button class="pill" style="padding:4px 10px;font-size:11px" onclick="likeComment(${ci})">♡ ${c.likes?.length||0}</button>${isAdmin()?`<button class="pill" style="padding:4px 10px;font-size:11px" onclick="blockUser('${c.name}')">Block</button><button class="pill" style="padding:4px 10px;font-size:11px;color:#c44" onclick="delComment(${ci})">Delete</button>`:''}</div></div></div>`).join('')||'<div style="text-align:center;padding:20px;opacity:.5;font-size:13px">No comments yet</div>';}
 async function addComment(){if(!isSignedIn()){openAccount();return;}let input=document.getElementById('commentInput');let txt=input.value.trim();if(!txt){alert('Write a comment');return;}let p=getCurPost();if(!p.comments)p.comments=[];let u=getUser();p.comments.unshift({name:u?.name||'Guest',text:txt,date:Date.now(),likes:[]});input.value='';await idbPut('posts',p); cloudRef.child(p.id).set(p); renderComments();renderLikes();render();}
 async function likeComment(ci){if(!isSignedIn()){openAccount();return;}let p=getCurPost();let c=p.comments[ci];if(!c.likes)c.likes=[];let id=(getUser()?.email)||'admin';let idx=c.likes.indexOf(id);if(idx>=0)c.likes.splice(idx,1);else c.likes.push(id);await idbPut('posts',p); cloudRef.child(p.id).set(p); renderComments();}
 async function delComment(ci){if(!isAdmin())return;let p=getCurPost();p.comments.splice(ci,1);await idbPut('posts',p); cloudRef.child(p.id).set(p); renderComments();renderLikes();render();}
@@ -309,9 +327,9 @@ async function unblockUser(n){await idbDelete('blocked',n);BLOCKED=BLOCKED.filte
 function openContactSidebar(){closeMenu();renderContacts();document.getElementById('contactModal').classList.add('open')}
 function closeContactSidebar(){document.getElementById('contactModal').classList.remove('open')}
 async function sendContact(){let n=document.getElementById('contactName').value.trim(),e=document.getElementById('contactEmail').value.trim(),m=document.getElementById('contactMsg').value.trim();if(!n||!m)return alert('Name & message required');let obj={id:'c_'+Date.now(),name:n,email:e,msg:m,date:Date.now()};await idbPut('contacts',obj);CONTACTS=await idbGetAll('contacts');document.getElementById('contactName').value='';document.getElementById('contactEmail').value='';document.getElementById('contactMsg').value='';renderContacts();alert('Message sent');}
-function renderContacts(){let box=document.getElementById('contactList');if(!CONTACTS.length){box.innerHTML='';return;}if(!isAdmin()){box.innerHTML=`<div style="font-size:11px;opacity:.6;margin-top:8px">${CONTACTS.length} message(s) sent</div>`;return;}box.innerHTML=CONTACTS.map(c=>`<div style="background:var(--card2);padding:10px;border-radius:10px;margin-top:8px"><b style="font-size:12px">${c.name} • ${c.email}</b><div style="font-size:13px;margin-top:4px">${c.msg}</div><div style="font-size:9px;opacity:.5;margin-top:4px">${new Date(c.date).toLocaleString()} <button onclick="deleteContact('${c.id}')" style="float:right;background:none;border:none;color:#c44;cursor:pointer">Delete</button></div></div>`).join('');}
+function renderContacts(){let box=document.getElementById('contactList');if(!CONTACTS.length){box.innerHTML='';return;}if(!isAdmin()){box.innerHTML=`<div style="font-size:11px;opacity:.6;margin-top:8px">${CONTACTS.length} message(s) sent</div>`;return;}box.innerHTML=CONTACTS.map(c=>`<div style="background:var(--card2);padding:10px;border-radius:10px;margin-top:8px"><b style="font-size:12px">${c.name} • ${c.email}</b><div style="font-size:13px;margin-top:4px">${escapeHtml(c.msg)}</div><div style="font-size:9px;opacity:.5;margin-top:4px">${new Date(c.date).toLocaleString()} <button onclick="deleteContact('${c.id}')" style="float:right;background:none;border:none;color:#c44;cursor:pointer">Delete</button></div></div>`).join('');}
 async function deleteContact(id){await idbDelete('contacts',id);CONTACTS=CONTACTS.filter(x=>x.id!==id);renderContacts();}
-function openCreate(){if(!isAdmin()){alert('Only admin');return;}closeMenu();tempSlides=[];selectedCropIndex=-1;editIdx=-1;tempMusic=null;clipLength=60;document.getElementById('postTitle').value='';document.getElementById('postBody').value='';document.getElementById('postCat').value='';document.getElementById('preview').innerHTML='';document.getElementById('musicPreview').classList.add('hide');document.getElementById('editTools').classList.add('hide');document.getElementById('cropperArea').classList.add('hide');document.getElementById('publishStatus').innerText='';document.getElementById('uploadStatus').innerText='';closeCropper();document.getElementById('createModal').classList.add('open');}
+function openCreate(){if(!isAdmin()){alert('Only admin');return;}closeMenu();tempSlides=[];selectedCropIndex=-1;editIdx=-1;tempMusic=null;musicFileObject=null;clipLength=30;if(musicObjectURL){URL.revokeObjectURL(musicObjectURL);musicObjectURL=null;}document.getElementById('postTitle').value='';document.getElementById('postBody').value='';document.getElementById('postCat').value='';document.getElementById('preview').innerHTML='';document.getElementById('musicPreview').classList.add('hide');document.getElementById('editTools').classList.add('hide');document.getElementById('cropperArea').classList.add('hide');document.getElementById('publishStatus').innerText='';document.getElementById('uploadStatus').innerText='';closeCropper();document.getElementById('createModal').classList.add('open');}
 function closeCreate(){closeCropper();document.getElementById('createModal').classList.remove('open')}
 function handleMedia(inp){let files=[...inp.files];if(!files.length)return;document.getElementById('uploadStatus').innerText=`Processing ${files.length} file(s)...`;let processed=0;files.forEach(f=>{if(f.type.startsWith('image/')){let reader=new FileReader();reader.onload=e=>{compressImage(e.target.result,1280,0.75,compressed=>{tempSlides.push({src:compressed,type:'image',crop:'cover',muted:false,original:e.target.result});processed++;if(processed===files.length){renderPreview();document.getElementById('uploadStatus').innerText=`${tempSlides.length} items ready`;}});};reader.readAsDataURL(f);}else{let reader=new FileReader();reader.onload=e=>{tempSlides.push({src:e.target.result,type:'video',crop:'cover',muted:false});processed++;if(processed===files.length){renderPreview();document.getElementById('uploadStatus').innerText=`${tempSlides.length} items ready`;}};reader.readAsDataURL(f);}});inp.value='';}
 function compressImage(src,maxSize,quality,cb){let img=new Image();img.onload=()=>{let canvas=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxSize||h>maxSize){if(w>h){h=h*maxSize/w;w=maxSize;}else{w=w*maxSize/h;h=maxSize;}}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);cb(canvas.toDataURL('image/jpeg',quality));};img.src=src;}
@@ -322,35 +340,251 @@ function toggleMute(){if(editIdx<0)return;if(tempSlides[editIdx].type!=='video')
 function openCropper(){if(editIdx<0||tempSlides[editIdx].type==='video'){alert('Select image');return;}let src=tempSlides[editIdx].original||tempSlides[editIdx].src;document.getElementById('cropperArea').classList.remove('hide');let img=document.getElementById('cropImage');img.src=src;setTimeout(()=>{if(cropper)cropper.destroy();cropper=new Cropper(img,{viewMode:1,dragMode:'move',aspectRatio:NaN,autoCropArea:0.8,movable:true,zoomable:true,scalable:true,rotatable:true,guides:true,center:true,highlight:true,background:false,cropBoxMovable:true,cropBoxResizable:true});},100);}
 function closeCropper(){document.getElementById('cropperArea').classList.add('hide');if(cropper){cropper.destroy();cropper=null;}}
 function applyCropper(){if(!cropper||selectedCropIndex<0)return;let canvas=cropper.getCroppedCanvas({width:1280,height:1280,fillColor:'#fff'});let cropped=canvas.toDataURL('image/jpeg',0.8);tempSlides[selectedCropIndex].src=cropped;renderPreview();closeCropper();}
-function setAspect(r){if(!cropper)return;cropper.setAspectRatio(r);document.querySelectorAll('.cropBtns.pill').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
+function setAspect(r){if(!cropper)return;cropper.setAspectRatio(r);}
 function rotateCropper(){if(!cropper)return;cropper.rotate(90);}
+
+// --- NEW MUSIC LOGIC ---
 function handleMusicFile(inp){
-  let f=inp.files[0];if(!f)return;
-  let reader=new FileReader();
-  reader.onload=e=>{
-    tempMusic={src:e.target.result,name:f.name,type:'local'};
-    renderTempMusic();
-  };
-  reader.readAsDataURL(f);
+  const f = inp.files && inp.files[0];
+  if(!f) return;
+  if(!f.type.startsWith('audio/')){ alert('Please select an audio file.'); return; }
+  musicFileObject = f;
+  if(musicObjectURL){ URL.revokeObjectURL(musicObjectURL); }
+  musicObjectURL = URL.createObjectURL(f);
+  tempMusic = { src: musicObjectURL, name: f.name, type: 'local', start: 0, end: 30, file: f };
+  const audio = document.getElementById('musicAudio');
+  audio.src = musicObjectURL;
+  audio.load();
+  document.getElementById('musicPreview').classList.remove('hide');
+  document.getElementById('musicName').textContent = f.name;
+  renderMusicWave();
+  updateMusicButtons();
 }
-function renderTempMusic(){if(!tempMusic)return;document.getElementById('musicPreview').classList.remove('hide');let a=document.getElementById('musicAudio');a.src=tempMusic.src;a.load();document.getElementById('musicName').innerText=tempMusic.name;}
-function onMusicLoaded(){}
-function onMusicTimeUpdate(){}
-function seekToPercent(p){}
-function updateShade(){}
-function updateTimeLabels(){}
-function toggleMusic(){let a=document.getElementById('musicAudio');if(a.paused){a.play();document.getElementById('musicPlayBtn').innerText='⏸️ Pause';}else{a.pause();document.getElementById('musicPlayBtn').innerText='▶️ Play';}}
-function removeMusic(){tempMusic=null;document.getElementById('musicPreview').classList.add('hide');let a=document.getElementById('musicAudio');a.pause();a.src='';}
-function setClipLength(s){clipLength=s;}
+function formatMusicTime(sec){
+  if(!isFinite(sec)) return '0:00';
+  sec = Math.max(0, Math.floor(sec));
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return m + ':' + String(s).padStart(2,'0');
+}
+function onMusicLoaded(){
+  const audio = document.getElementById('musicAudio');
+  if(!audio ||!isFinite(audio.duration)) return;
+  musicDuration = audio.duration;
+  let desired = clipLength;
+  if(desired > musicDuration){ desired = musicDuration; }
+  musicStart = 0;
+  musicEnd = desired;
+  document.getElementById('musicDuration').textContent = formatMusicTime(musicDuration);
+  updateMusicSelection();
+  drawMusicWave();
+}
+function setClipLength(sec){
+  clipLength = sec;
+  updateMusicButtons();
+  if(!musicDuration) return;
+  if(musicStart + sec <= musicDuration){ musicEnd = musicStart + sec; }
+  else{ musicEnd = musicDuration; musicStart = Math.max(0, musicEnd - sec); }
+  updateMusicSelection();
+  updateMusicLabels();
+}
+function updateMusicSelection(){
+  if(!musicDuration) return;
+  const wrap = document.getElementById('musicWaveWrap');
+  if(!wrap) return;
+  const width = wrap.clientWidth;
+  const startX = (musicStart / musicDuration) * width;
+  const endX = (musicEnd / musicDuration) * width;
+  const selection = document.getElementById('musicSelection');
+  selection.style.left = startX + 'px';
+  selection.style.width = Math.max(2,endX-startX) + 'px';
+  document.getElementById('musicStartHandle').style.left = startX + 'px';
+  document.getElementById('musicEndHandle').style.left = endX + 'px';
+  updateMusicLabels();
+}
+function updateMusicLabels(){
+  const a = document.getElementById('musicStartLabel');
+  const b = document.getElementById('musicEndLabel');
+  if(a) a.textContent = formatMusicTime(musicStart);
+  if(b) b.textContent = formatMusicTime(musicEnd);
+  if(tempMusic){ tempMusic.start = musicStart; tempMusic.end = musicEnd; }
+}
+function updateMusicButtons(){
+  document.querySelectorAll('.musicLenBtn').forEach(btn=>{
+    const sec = Number(btn.dataset.sec);
+    if(sec === clipLength){ btn.classList.add('dark'); }else{ btn.classList.remove('dark'); }
+  });
+}
+function toggleMusic(){
+  const audio = document.getElementById('musicAudio');
+  if(!audio ||!musicDuration) return;
+  if(audio.paused){
+    if(audio.currentTime < musicStart || audio.currentTime >= musicEnd){ audio.currentTime = musicStart; }
+    audio.play().catch(()=>{});
+    document.getElementById('musicPlayBtn').textContent = '⏸ Pause';
+  }else{
+    audio.pause();
+    document.getElementById('musicPlayBtn').textContent = '▶ Play';
+  }
+}
+function musicPreviewEnded(){
+  const btn = document.getElementById('musicPlayBtn');
+  if(btn) btn.textContent = '▶ Play';
+}
+function onMusicTimeUpdate(){
+  const audio = document.getElementById('musicAudio');
+  if(!audio) return;
+  if(audio.currentTime >= musicEnd){
+    audio.pause();
+    audio.currentTime = musicStart;
+    const btn = document.getElementById('musicPlayBtn');
+    if(btn) btn.textContent = '▶ Play';
+  }
+  const line = document.getElementById('musicPlayLine');
+  if(line && musicDuration){
+    line.style.display = 'block';
+    line.style.left = ((audio.currentTime / musicDuration) * 100) + '%';
+  }
+}
+function removeMusic(){
+  const audio = document.getElementById('musicAudio');
+  if(audio){ audio.pause(); audio.removeAttribute('src'); audio.load(); }
+  if(musicObjectURL){ URL.revokeObjectURL(musicObjectURL); musicObjectURL = null; }
+  musicFileObject = null;
+  tempMusic = null;
+  document.getElementById('musicPreview').classList.add('hide');
+  const input = document.getElementById('musicFile');
+  if(input) input.value = '';
+}
+function drawMusicWave(){
+  const canvas = document.getElementById('musicWaveCanvas');
+  const wrap = document.getElementById('musicWaveWrap');
+  if(!canvas ||!wrap) return;
+  const ctx = canvas.getContext('2d');
+  const rect = wrap.getBoundingClientRect();
+  canvas.width = Math.max(300, Math.floor(rect.width * devicePixelRatio));
+  canvas.height = Math.floor(rect.height * devicePixelRatio);
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  const w = rect.width; const h = rect.height;
+  ctx.clearRect(0,0,w,h);
+  const bars = Math.floor(w / 4);
+  for(let i=0;i<bars;i++){
+    const x = i * 4;
+    const seed = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
+    const amp = 8 + seed * (h *.32);
+    ctx.fillStyle = 'rgba(255,255,255,.42)';
+    ctx.fillRect(x,(h-amp)/2,2,amp);
+  }
+  updateMusicSelection();
+}
+function renderMusicWave(){
+  const audio = document.getElementById('musicAudio');
+  if(!audio) return;
+  audio.onloadedmetadata = function(){ onMusicLoaded(); drawMusicWave(); };
+}
+function initMusicSlider(){
+  const wrap = document.getElementById('musicWaveWrap');
+  const startHandle = document.getElementById('musicStartHandle');
+  const endHandle = document.getElementById('musicEndHandle');
+  if(!wrap ||!startHandle ||!endHandle) return;
+  function getTimeFromEvent(e){
+    const rect = wrap.getBoundingClientRect();
+    let clientX;
+    if(e.touches && e.touches.length){ clientX = e.touches[0].clientX; }else{ clientX = e.clientX; }
+    let percent = (clientX - rect.left) / rect.width;
+    percent = Math.max(0,Math.min(1,percent));
+    return percent * musicDuration;
+  }
+  function move(e){
+    if(!musicDragging ||!musicDuration) return;
+    e.preventDefault();
+    const time = getTimeFromEvent(e);
+    if(musicDragging === 'start'){ musicStart = Math.max(0, Math.min(time, musicEnd - 1)); }
+    else{ musicEnd = Math.min(musicDuration, Math.max(time, musicStart + 1)); }
+    updateMusicSelection();
+  }
+  function stop(){ musicDragging = null; }
+  startHandle.addEventListener('pointerdown',e=>{ musicDragging = 'start'; startHandle.setPointerCapture?.(e.pointerId); });
+  endHandle.addEventListener('pointerdown',e=>{ musicDragging = 'end'; endHandle.setPointerCapture?.(e.pointerId); });
+  wrap.addEventListener('pointermove',move);
+  window.addEventListener('pointerup',stop);
+  wrap.addEventListener('pointerdown',e=>{
+    if(e.target === startHandle || e.target === endHandle || startHandle.contains(e.target) || endHandle.contains(e.target)) return;
+    const time = getTimeFromEvent(e);
+    const ds = Math.abs(time - musicStart);
+    const de = Math.abs(time - musicEnd);
+    musicDragging = ds < de? 'start' : 'end';
+    move(e);
+  });
+}
+document.addEventListener('DOMContentLoaded',()=>{ setTimeout(initMusicSlider,500); });
+
+function renderTempMusic(){
+  if(!tempMusic) return;
+  // legacy draft support
+  if(musicFileObject) return;
+  document.getElementById('musicPreview').classList.remove('hide');
+  document.getElementById('musicName').textContent = tempMusic.name||'Music';
+  const a=document.getElementById('musicAudio');
+  if(a){ a.src=tempMusic.src; a.load(); }
+}
+
+async function uploadMusicToStorage(){
+  if(!musicFileObject){ return tempMusic; }
+  const safeName = musicFileObject.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path = 'mindnotes-music/' + Date.now() + '_' + safeName;
+  const ref = storage.ref().child(path);
+  const uploadTask = ref.put(musicFileObject);
+  await new Promise((resolve,reject)=>{
+    uploadTask.on('state_changed',
+      snapshot=>{
+        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        console.log('Music upload:', percent + '%');
+        document.getElementById('publishStatus').innerText = 'Uploading music: ' + percent + '%';
+      },
+      error=>reject(error),
+      ()=>resolve()
+    );
+  });
+  const url = await ref.getDownloadURL();
+  return { src:url, name:musicFileObject.name, type:'local', start:musicStart, end:musicEnd };
+}
+function escapeHtml(str){
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
 function openSpotifySearch(){document.getElementById('spotifyBox').classList.toggle('hide');}
-function searchSpotify(){let q=document.getElementById('spotifyQuery').value.trim();if(!q)return;document.getElementById('spotifyResults').innerHTML=`<div class="listItem"><div style="flex:1"><div style="font-size:12px;font-weight:600">🎵 ${q}</div></div><button class="pill dark" onclick="tempMusic={src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',name:'${q}',type:'spotify'};renderTempMusic()">Add</button></div>`;}
+function searchSpotify(){let q=document.getElementById('spotifyQuery').value.trim();if(!q)return;document.getElementById('spotifyResults').innerHTML=`<div class="listItem"><div style="flex:1"><div style="font-size:12px;font-weight:600">🎵 ${escapeHtml(q)}</div></div><button class="pill dark" onclick="tempMusic={src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',name:'${escapeHtml(q)}',type:'spotify',start:0,end:30};renderTempMusic()">Add</button></div>`;}
+
 function renderMusicPlayer(p){
-  let box=document.getElementById('modalMusicPlayer');
-  if(!p.music||!p.music.src){box.classList.add('hide');return;}
+  const box = document.getElementById('modalMusicPlayer');
+  if(!box) return;
+  if(!p.music ||!p.music.src){ box.classList.add('hide'); return; }
   box.classList.remove('hide');
-  box.innerHTML=`<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px"><audio id="modalAudio" src="${p.music.src}" autoplay controls style="width:100%"></audio><div style="font-size:11px;opacity:.6;margin-top:6px">🎵 ${p.music.name} • Auto-playing</div></div>`;
-  setTimeout(()=>{let a=document.getElementById('modalAudio'); if(a){a.play().catch(()=>{});}},600);
+  const start = Number(p.music.start || 0);
+  const end = Number(p.music.end || 0);
+  box.innerHTML = `
+    <div style="background:var(--card2); border:1px solid var(--border); border-radius:14px; padding:10px;">
+      <audio id="modalAudio" src="${p.music.src}" controls preload="metadata" style="width:100%"></audio>
+      <div style="font-size:11px; opacity:.6; margin-top:6px;">
+        🎵 ${escapeHtml(p.music.name || 'Music')} • ${formatMusicTime(start)} – ${formatMusicTime(end)}
+      </div>
+    </div>
+  `;
+  const audio = document.getElementById('modalAudio');
+  if(!audio) return;
+  audio.addEventListener('loadedmetadata',()=>{
+    audio.currentTime = start;
+    audio.play().catch(()=>{});
+  },{once:true});
+  audio.addEventListener('timeupdate',()=>{
+    if(end > start && audio.currentTime >= end){
+      audio.pause();
+      audio.currentTime = start;
+    }
+  });
 }
+
 async function publishPost(){
   let t=document.getElementById('postTitle').value.trim();
   let b=document.getElementById('postBody').value.trim();
@@ -360,7 +594,21 @@ async function publishPost(){
   if(!tempSlides.length){status.innerText='❌ Add media';return;}
   status.innerText='Publishing...';
   try{
-    let newPost={id:'p_'+Date.now()+'_'+Math.random().toString(36).slice(2),cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false,music:tempMusic};
+    let finalMusic = null;
+    if(musicFileObject){
+      try{ finalMusic = await uploadMusicToStorage(); }
+      catch(err){
+        console.error(err);
+        alert('Music upload failed: ' + (err.message || 'Please check Firebase Storage.'));
+        status.innerText='❌ Music upload failed';
+        return;
+      }
+    }else if(tempMusic){
+      finalMusic = {...tempMusic };
+      delete finalMusic.file;
+    }
+
+    let newPost={id:'p_'+Date.now()+'_'+Math.random().toString(36).slice(2),cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false,music:finalMusic};
     await idbPut('posts',newPost);
     await cloudRef.child(newPost.id).set(newPost);
     POSTS.unshift(newPost);
