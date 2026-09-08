@@ -1,217 +1,220 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>MindNotes. — 01:00AM thoughts</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fefaf3;--card:#fff;--card2:#f6eee3;--text:#121212;--border:#efe6d8;--paper:#fdf8f0;--icon:#121212;--accent:#121212}
-:root.dark{--bg:#0e0e0e;--card:#1a1a1a;--card2:#242424;--text:#f4efe7;--border:#2a2a2a;--paper:#121212;--icon:#f4efe7;--accent:#f4efe7}
+:root{--bg:#fefaf3;--card:#fff;--card2:#f6eee3;--text:#121212;--border:#efe6d8;--paper:#fdf8f0;--accent:#121212}
+:root.dark{--bg:#0e0e0e;--card:#1a1a1a;--card2:#242424;--text:#f4efe7;--border:#2a2a2a;--paper:#121212;--accent:#f4efe7}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column}
 .serif{font-family:'Instrument Serif',serif}
 .top{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:10px 12px;display:flex;align-items:center;gap:8px}
-.brand h1{font-family:'Instrument Serif',serif;font-size:26px;letter-spacing:-1px}
+.brand h1{font-size:26px;letter-spacing:-1px}
 .searchWrap{flex:1;display:flex;justify-content:center}
 .searchTop{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:7px 12px;width:100%;max-width:260px}
 .searchTop input{border:none;background:transparent;outline:none;width:100%;font-size:13px;color:var(--text)}
 .pill{padding:8px 14px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
 .pill.dark{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.pill.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:900px;margin:12px auto;padding:0 10px 20px;width:100%}
 .cardPost{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer}
 .cardMedia{aspect-ratio:1/1;background:#111;overflow:hidden;position:relative}.cardMedia img,.cardMedia video{width:100%;height:100%;object-fit:cover;display:block}
-.cardMeta{padding:8px 10px}.cardCat{font-family:'Instrument Serif',serif;font-size:11px;letter-spacing:1px;opacity:.6;text-transform:uppercase}
-.cardStats{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:4px}
-.heartBtn{background:transparent;border:none;cursor:pointer;font-size:20px;color:var(--icon);width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+.cardMeta{padding:8px 10px}.cardCat{font-size:10px;letter-spacing:1px;opacity:.6;text-transform:uppercase}
+.heartBtn{background:transparent;border:none;cursor:pointer;font-size:20px;width:28px;height:28px}
 .heartBtn.liked{color:#ff2d2d}
 .modalBg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);z-index:500;display:none;align-items:center;justify-content:center;padding:12px}.modalBg.open{display:flex}
-.modalCard{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+.modalCard{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto}
 .input{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);margin-bottom:8px;outline:none;font-size:14px}
 .mModal{position:fixed;inset:0;background:var(--paper);z-index:300;display:none;overflow-y:auto}.mModal.open{display:block}
 .mediaWrap{background:#000;border-radius:20px;overflow:hidden;margin:12px;aspect-ratio:3/4;position:relative;display:flex;align-items:center;justify-content:center}
 .mediaWrap img,.mediaWrap video{width:100%;height:100%;object-fit:contain}
 .navArrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:#fff;color:#111;border:none;cursor:pointer}
 .navArrow.left{left:10px}.navArrow.right{right:10px}
-.actionBar{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center}
 .menuPanel{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(10px);z-index:400;display:none}.menuPanel.open{display:flex;justify-content:flex-end}
 .menuBox{width:86%;max-width:360px;background:var(--card);height:100%;padding:20px;overflow-y:auto}
-.menuHead{font-family:'Instrument Serif',serif;font-size:28px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.menuHead{font-size:28px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
 .menuItem{padding:15px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:14px}
 .hide{display:none!important}
 .adminProfileBox{background:var(--card2);border:1px solid var(--border);border-radius:18px;padding:14px;display:flex;gap:12px;align-items:center;margin-bottom:12px}
-.avatar{width:52px;height:52px;border-radius:50%;background:var(--border);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
+.avatar{width:52px;height:52px;border-radius:50%;background:var(--border);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .avatar img{width:100%;height:100%;object-fit:cover}
-.musicBox{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px;margin:8px 0}
+.musicBox{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:12px;margin:8px 0}
 .range{width:100%;accent-color:var(--text)}
-.footerFull{background:#0a0a0a;color:#aaa;padding:28px 16px;text-align:center;border-top:1px solid var(--border);margin-top:auto}
-.footerFull.copy{font-family:'Instrument Serif',serif;font-size:18px;color:#fff;margin-bottom:10px}
+.footerFull{background:#0a0a0a;color:#aaa;padding:28px 16px;text-align:center;margin-top:auto}
+.footerFull.copy{font-size:18px;color:#fff;margin-bottom:10px}
 .footerFull a{color:#aaa;text-decoration:none;margin:0 8px;font-size:12px}
-.contactBox{max-width:700px;margin:24px auto;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:20px;width:calc(100% - 24px)}
+.listItem{display:flex;gap:10px;align-items:center;padding:10px;background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:8px}
+.listItem img{width:48px;height:48px;border-radius:8px;object-fit:cover}
 </style></head><body>
 <div class="top">
-  <div class="brand"><h1>MindNotes.</h1></div>
+  <div class="brand"><h1 class="serif">MindNotes.</h1></div>
   <div class="searchWrap"><div class="searchTop"><span>🔍</span><input id="search" placeholder="Search posts" oninput="render()"></div></div>
   <div style="display:flex;gap:6px"><button class="pill" onclick="toggleDark()"><span id="darkIcon">☀️</span></button><button class="pill dark" id="signBtn" onclick="openAccount()">Sign in</button><button class="pill" onclick="openMenu()">☰</button></div>
 </div>
 <div id="menuPanel" class="menuPanel" onclick="if(event.target==this)closeMenu()"><div class="menuBox">
-  <div class="menuHead"><span>Menu</span><button class="pill" onclick="closeMenu()">✕</button></div>
+  <div class="menuHead"><span class="serif">Menu</span><button class="pill" onclick="closeMenu()">✕</button></div>
   <div id="authBox"></div>
   <button id="menuSignBtn" class="pill dark" style="width:100%;padding:12px;margin-bottom:12px" onclick="openAccount()">Sign in</button>
   <div class="menuItem" onclick="openAdminProfile()"><span>Admin Profile</span><span>›</span></div>
-  <div class="menuItem" id="archiveMenuItem" onclick="openArchive()"><span>Archive</span><span id="archiveCount" style="opacity:.6;font-size:11px"></span></div>
+  <div class="menuItem" id="archiveMenuItem" onclick="openArchive()"><span>Archive</span><span id="archiveCount"></span></div>
   <div class="menuItem" id="draftMenuItem" onclick="openDrafts()"><span>Drafts</span><span id="draftCount"></span></div>
   <div class="menuItem" id="createMenuItem" onclick="openCreate()"><span>+ Create Post</span><span>›</span></div>
   <div class="menuItem" id="blockedMenuItem" onclick="openBlocked()"><span>Blocked Users</span><span>›</span></div>
   <div class="menuItem" onclick="toggleDark()"><span>Dark Mode</span><span id="darkState">Off</span></div>
-  <div class="menuItem" onclick="document.getElementById('contactSec').scrollIntoView({behavior:'smooth'});closeMenu()"><span>Contact</span><span>›</span></div>
+  <div class="menuItem" onclick="openContactSidebar()"><span>Contact</span><span>›</span></div>
 </div></div>
 <div class="grid" id="grid"></div>
-<div class="contactBox" id="contactSec">
-  <h2 class="serif" style="font-size:24px">Contact</h2><p style="font-size:12px;opacity:.6;margin:6px 0 12px">Leave a message for Aars Rosin</p>
-  <input id="contactName" class="input" placeholder="Your name">
-  <input id="contactEmail" class="input" placeholder="Your email">
-  <textarea id="contactMsg" class="input" style="min-height:90px" placeholder="Your message..."></textarea>
-  <button class="pill dark" style="width:100%;padding:12px" onclick="sendContact()">Send Message</button>
-  <div id="contactList" style="margin-top:16px"></div>
-</div>
-<div class="footerFull">
-  <div class="copy">©2026 Aars Rosin | MindNotes</div>
-  <div style="margin-top:8px"><a href="#" onclick="alert('Privacy Policy')">Privacy Policy</a> <a href="#" onclick="alert('Terms of Use')">Terms of Use</a> <a href="#" onclick="alert('Cookies Policy')">Cookies Policy</a> <a href="#" onclick="alert('Cookies Settings')">Cookies Settings</a></div>
-  <div style="margin-top:12px;font-size:10px;opacity:.5">Press • 01:00AM Thoughts • Made with ♡ in Muzaffarpur</div>
-</div>
+<div class="footerFull"><div class="copy serif">©2026 Aars Rosin | MindNotes</div><div><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Cookies Policy</a><a href="#">Cookies Settings</a></div></div>
+
 <div id="postModal" class="mModal">
   <div style="padding:10px;display:flex;gap:6px;position:sticky;top:0;background:var(--paper);z-index:10;border-bottom:1px solid var(--border)"><button class="pill" onclick="closePost()">Back</button><div style="flex:1"></div><button id="archBtn" class="pill hide" onclick="archivePost()">Archive</button><button id="delBtn" class="pill hide" style="color:#c44" onclick="deletePost()">Delete</button></div>
   <div class="mediaWrap" id="slideBox"></div><button class="navArrow left" onclick="prevSlide()">‹</button><button class="navArrow right" onclick="nextSlide()">›</button>
-  <div style="padding:0 16px;max-width:700px;margin:0 auto">
-    <div id="modalCat" style="font-size:10px;letter-spacing:2px;opacity:.6;text-transform:uppercase;margin-top:10px"></div>
-    <h1 id="modalTitle" class="serif" style="font-size:32px;margin-top:6px;word-break:break-word"></h1>
-    <div id="modalMusicPlayer" class="hide" style="margin-top:10px"></div>
-    <div id="modalDate" style="font-size:10px;opacity:.5;margin-top:4px"></div>
-    <div id="modalBody" style="margin-top:10px;line-height:1.6;white-space:pre-wrap;font-size:14px;word-break:break-word"></div>
-    <div class="actionBar"><button class="heartBtn" id="heartBtn" onclick="toggleLike()">♡</button><span id="likeCount">0</span><span style="margin-left:12px">💬</span><span id="cmtCount" style="margin-left:4px">0</span><button class="pill" style="margin-left:auto" onclick="alert('Link copied: '+location.href)">↗ Share</button></div>
-    <div style="padding:12px 0"><input id="commentInput" class="input" placeholder="Add a comment..." style="display:inline-block;width:75%"><button class="pill dark" style="width:22%;margin-left:2%" onclick="addComment()">Post</button><div id="commentsList" style="margin-top:12px"></div></div>
-  </div>
+  <div style="padding:0 16px;max-width:700px;margin:0 auto"><div id="modalCat"></div><h1 id="modalTitle" class="serif" style="font-size:32px;margin-top:6px"></h1><div id="modalMusicPlayer" class="hide"></div><div id="modalDate" style="font-size:10px;opacity:.5"></div><div id="modalBody" style="margin-top:10px;line-height:1.6;white-space:pre-wrap"></div><div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><button class="heartBtn" id="heartBtn" onclick="toggleLike()">♡</button><span id="likeCount">0</span><span>💬</span><span id="cmtCount">0</span></div><div style="padding:12px 0"><input id="commentInput" class="input" placeholder="Add a comment..." style="width:75%;display:inline-block"><button class="pill dark" style="width:22%;margin-left:2%" onclick="addComment()">Post</button><div id="commentsList"></div></div></div>
 </div>
-<div id="adminProfileModal" class="modalBg" onclick="if(event.target==this)closeAdminProfile()"><div class="modalCard" style="max-width:420px">
-  <h2 class="serif" style="font-size:22px">Admin Profile</h2>
-  <div class="adminProfileBox" style="margin-top:12px"><div class="avatar" id="adminAvatar"><span>👤</span></div><div><div id="adminNameDisplay" style="font-weight:600">aarsrosin</div><div style="font-size:11px;opacity:.6">Admin • Active</div></div><button class="pill" style="margin-left:auto" onclick="document.getElementById('avatarInput').click()">Change</button><input type="file" id="avatarInput" accept="image/*" hidden onchange="changeAvatar(this)"></div>
-  <label style="font-size:11px;opacity:.7">Change Username</label><input id="newUsername" class="input" placeholder="New username"><button class="pill dark" style="width:100%;margin-bottom:12px" onclick="updateUsername()">Update Username</button>
-  <label style="font-size:11px;opacity:.7">Change Photo</label><div style="display:flex;gap:6px"><button class="pill" style="flex:1" onclick="document.getElementById('avatarInput').click()">Upload Photo</button><button class="pill" style="flex:1;color:#c44" onclick="removeAvatar()">Remove</button></div>
-  <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px"><h3 style="font-size:13px;margin-bottom:8px">Quick Actions</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="pill" onclick="closeAdminProfile();openArchive()">Recover Posts</button><button class="pill" onclick="closeAdminProfile();openBlocked()">Blocked List</button><button class="pill" style="color:#c44" onclick="if(confirm('Delete all posts?')){POSTS=[];saveAll();render();closeAdminProfile()}">Delete All</button><button class="pill" onclick="logout()">Logout</button></div></div>
-  <button class="pill" style="width:100%;margin-top:14px" onclick="closeAdminProfile()">Close</button>
-</div></div>
+
+<div id="adminProfileModal" class="modalBg" onclick="if(event.target==this)closeAdminProfile()"><div class="modalCard"><h2 class="serif" style="font-size:22px">Admin Profile</h2><div class="adminProfileBox" style="margin-top:12px"><div class="avatar" id="adminAvatar">👤</div><div><div id="adminNameDisplay">aarsrosin</div></div><button class="pill" style="margin-left:auto" onclick="document.getElementById('avatarInput').click()">Change</button><input type="file" id="avatarInput" accept="image/*" hidden onchange="changeAvatar(this)"></div><input id="newUsername" class="input" placeholder="New username"><button class="pill dark" style="width:100%;margin-bottom:12px" onclick="updateUsername()">Update Username</button><button class="pill" style="width:100%" onclick="closeAdminProfile()">Close</button></div></div>
+
 <div id="authModal" class="modalBg" onclick="if(event.target==this)closeAuth()"><div class="modalCard">
   <div style="display:flex;gap:6px;margin-bottom:14px"><button id="tabPublic" class="pill dark" style="flex:1" onclick="openAuthTab('public')">Public</button><button id="tabAdmin" class="pill" style="flex:1" onclick="openAuthTab('admin')">Admin</button></div>
-  <div id="publicAuthBox"><h2 class="serif" style="font-size:22px">Welcome back</h2><p style="font-size:11px;opacity:.6;margin:6px 0">Sign in to like and comment</p><button class="pill" style="width:100%;padding:12px;margin-top:10px" onclick="alert('Add Google Client ID')">Sign in with Google</button></div>
+  <div id="publicAuthBox">
+    <h2 class="serif" style="font-size:22px">Welcome back</h2><p style="font-size:11px;opacity:.6;margin:6px 0 12px">Sign in to like, comment & save</p>
+    <div id="g_id_onload" data-client_id="YOUR_CLIENT_ID.apps.googleusercontent.com" data-callback="handleGoogleLogin"></div><div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-size="large" data-width="320"></div>
+    <div style="margin:12px 0;border-top:1px solid var(--border);padding-top:12px">
+      <p style="font-size:11px;opacity:.6;margin-bottom:8px">Or continue with Gmail (works on GitHub Pages)</p>
+      <input id="publicEmail" class="input" placeholder="Enter your Gmail"><input id="publicName" class="input" placeholder="Your name"><button class="pill dark" style="width:100%;padding:12px" onclick="publicEmailLogin()">Continue with Gmail →</button>
+    </div>
+  </div>
   <div id="adminAuthBox" class="hide"><h2 class="serif" style="font-size:22px">Admin Access</h2><p id="adminError" style="font-size:11px;color:#ff4444;min-height:14px;margin:8px 0"></p><input id="adminUser" class="input" placeholder="Username - aarsrosin"><input id="adminPass" class="input" type="password" placeholder="Password - @storyteller"><button class="pill dark" style="width:100%;padding:12px" onclick="adminLogin()">Sign in as Admin →</button></div>
   <button class="pill" style="width:100%;margin-top:12px" onclick="closeAuth()">Close</button>
 </div></div>
+
+<div id="archiveModal" class="modalBg" onclick="if(event.target==this)closeArchive()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Archived Posts</h2><button class="pill" onclick="closeArchive()">✕</button></div><div id="archiveList"></div></div></div>
+<div id="draftsModal" class="modalBg" onclick="if(event.target==this)closeDrafts()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Drafts</h2><button class="pill" onclick="closeDrafts()">✕</button></div><div id="draftsList"></div></div></div>
+<div id="blockedModal" class="modalBg" onclick="if(event.target==this)closeBlocked()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Blocked Users</h2><button class="pill" onclick="closeBlocked()">✕</button></div><div id="blockedList"></div></div></div>
+<div id="contactModal" class="modalBg" onclick="if(event.target==this)closeContactSidebar()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Contact Aars Rosin</h2><button class="pill" onclick="closeContactSidebar()">✕</button></div><input id="contactName" class="input" placeholder="Your name"><input id="contactEmail" class="input" placeholder="Your email"><textarea id="contactMsg" class="input" style="min-height:90px" placeholder="Your message..."></textarea><button class="pill dark" style="width:100%;padding:12px" onclick="sendContact()">Send Message</button><div id="contactList" style="margin-top:16px"></div></div></div>
+
 <div id="createModal" class="modalBg" onclick="if(event.target==this)closeCreate()"><div class="modalCard" style="max-width:600px">
-  <h2 class="serif" style="font-size:22px">Create Post — Ultimate</h2>
-  <div style="display:flex;gap:6px;margin:10px 0"><input id="postCat" class="input" style="margin:0" placeholder="Category"><input id="scheduleTime" class="input" type="datetime-local" style="margin:0"></div>
-  <input id="postTitle" class="input" placeholder="Title"><textarea id="postBody" class="input" style="min-height:80px" placeholder="Caption"></textarea>
-  <div style="border:1px dashed var(--border);border-radius:14px;padding:10px;margin:8px 0">
-    <div style="display:flex;gap:6px;flex-wrap:wrap"><label class="pill dark" style="flex:1">📷 Photos / 🎥 Videos<input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden onchange="handleMedia(this)"></label><button class="pill" onclick="document.getElementById('mediaInput').click()">+ Add</button><button class="pill" onclick="tempSlides=[];renderPreview()">Clear</button></div>
-    <div id="preview" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px"></div>
-    <div id="editTools" class="hide" style="margin-top:10px;background:var(--card2);padding:10px;border-radius:12px"><h4 style="font-size:12px;margin-bottom:6px">Edit: <span id="editIndex">0</span></h4><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" onclick="applyCrop('cover')">Free Crop</button><button class="pill" onclick="applyCrop('contain')">Fit</button><button class="pill" onclick="applyCrop('1/1')">1:1</button><button class="pill" onclick="applyCrop('4/5')">4:5</button><button class="pill" id="muteBtn" onclick="toggleMute()">🔊 Mute</button><button class="pill" onclick="trimVideo()">✂️ Trim</button></div><div id="trimBox" class="hide"><label style="font-size:10px">Trim <span id="trimStartVal">0s</span> - <span id="trimEndVal">0s</span></label><div style="display:flex;gap:6px"><input type="range" id="trimStart" class="range" min="0" max="100" value="0" oninput="updateTrim()"><input type="range" id="trimEnd" class="range" min="0" max="100" value="100" oninput="updateTrim()"></div></div></div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:10px"><h2 class="serif" style="font-size:22px">Create Post</h2><button class="pill" onclick="closeCreate()">✕</button></div>
+  <div style="display:flex;gap:6px;margin-bottom:8px"><input id="postCat" class="input" style="margin:0" placeholder="Category"><input id="scheduleTime" class="input" type="datetime-local" style="margin:0"></div>
+  <input id="postTitle" class="input" placeholder="Title"><textarea id="postBody" class="input" style="min-height:70px" placeholder="Caption"></textarea>
+  <div style="border:1px dashed var(--border);border-radius:14px;padding:10px;margin:8px 0"><div style="display:flex;gap:6px"><label class="pill dark" style="flex:1">📷 Photos / 🎥 Videos<input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden onchange="handleMedia(this)"></label><button class="pill" onclick="document.getElementById('mediaInput').click()">+ Add</button><button class="pill" onclick="tempSlides=[];renderPreview()">Clear</button></div><div id="preview" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px"></div><div id="editTools" class="hide" style="margin-top:10px;background:var(--card2);padding:10px;border-radius:12px"><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" onclick="applyCrop('cover')">Free Crop</button><button class="pill" onclick="applyCrop('contain')">Fit</button><button class="pill" onclick="applyCrop('1/1')">1:1</button><button class="pill" onclick="applyCrop('4/5')">4:5</button><button class="pill" id="muteBtn" onclick="toggleMute()">🔊 Mute</button></div></div></div>
+  <div class="musicBox">
+    <h4 style="font-size:13px;margin-bottom:8px">🎵 Add Music to Post</h4>
+    <div style="display:flex;gap:6px;margin-bottom:8px"><label class="pill" style="flex:1">From Phone<input type="file" id="musicFile" accept="audio/*" hidden onchange="handleMusicFile(this)"></label><button class="pill" onclick="openSpotifySearch()">Spotify Search</button></div>
+    <div id="spotifyBox" class="hide" style="margin-bottom:8px"><input id="spotifyQuery" class="input" placeholder="Search song..."><button class="pill dark" style="width:100%" onclick="searchSpotify()">Search</button><div id="spotifyResults" style="margin-top:8px"></div></div>
+    <div id="musicPreview" class="hide">
+      <audio id="musicAudio" style="width:100%" controls ontimeupdate="onMusicTimeUpdate()" onloadedmetadata="onMusicLoaded()"></audio>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:8px"><button class="pill dark" id="musicPlayBtn" onclick="toggleMusic()">▶️ Play from selected part</button><span id="musicName" style="font-size:10px;flex:1"></span><button class="pill" onclick="removeMusic()">✕</button></div>
+      <div style="margin-top:10px"><label style="font-size:11px;font-weight:600">Choose clip length:</label><div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0"><button class="pill" onclick="setClipLength(8)">8s</button><button class="pill" onclick="setClipLength(15)">15s</button><button class="pill" onclick="setClipLength(20)">20s</button><button class="pill" onclick="setClipLength(25)">25s</button><button class="pill" onclick="setClipLength(35)">35s</button><button class="pill active" onclick="setClipLength(60)">60s</button></div><label style="font-size:11px">Drag to choose which part plays:</label><input type="range" id="musicRange" class="range" min="0" max="100" value="30" oninput="seekToPercent(this.value)"><div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6"><span id="rangeStart">0:30</span><span id="rangeEnd">1:30 (60s clip)</span></div><div style="background:linear-gradient(90deg,#ddd,#222);height:32px;border-radius:10px;position:relative;margin-top:6px;overflow:hidden"><div id="musicShade" style="position:absolute;top:2px;bottom:2px;left:30%;width:30%;background:rgba(255,255,255,.5);border:2px solid #fff;border-radius:8px;pointer-events:none"></div></div></div>
+    </div>
   </div>
-  <div class="musicBox"><h4 style="font-size:12px;margin-bottom:6px">🎵 Add Music — Like Instagram</h4><div style="display:flex;gap:6px"><label class="pill" style="flex:1">From Phone<input type="file" id="musicFile" accept="audio/*" hidden onchange="handleMusicFile(this)"></label><button class="pill" onclick="document.getElementById('musicFile').click()">Local</button><button class="pill" onclick="openSpotifySearch()">Spotify</button></div><div id="musicPreview" class="hide" style="margin-top:10px"><audio id="musicAudio" controls style="width:100%"></audio><div style="display:flex;gap:8px;align-items:center;margin-top:6px"><button class="pill" id="musicPlayBtn" onclick="toggleMusic()">▶️ Play</button><span id="musicName" style="font-size:11px;flex:1"></span><button class="pill" onclick="removeMusic()">✕</button></div><label style="font-size:10px;margin-top:6px;display:block">Choose part (Instagram shade):</label><div style="background:linear-gradient(90deg,var(--border),var(--text));height:28px;border-radius:8px;position:relative;margin-top:4px;overflow:hidden"><div id="musicShade" style="position:absolute;top:0;bottom:0;left:30%;width:30%;background:rgba(255,255,255,.4);border:2px solid #fff;border-radius:6px"></div></div><input type="range" id="musicRange" class="range" min="0" max="100" value="30" oninput="updateMusicRange(this.value)"></div><div id="spotifyBox" class="hide" style="margin-top:8px"><input id="spotifyQuery" class="input" placeholder="Search Spotify song..."><button class="pill" style="width:100%" onclick="searchSpotify()">Search & Add 30s Preview</button><div id="spotifyResults" style="margin-top:8px"></div></div></div>
-  <div style="display:flex;gap:8px;margin-top:12px"><button class="pill" style="flex:1" onclick="saveDraft()">Draft</button><button class="pill" style="flex:1" onclick="saveSchedule()">Schedule</button><button class="pill dark" style="flex:1" onclick="publishPost()">Publish</button></div><button class="pill" style="width:100%;margin-top:8px" onclick="closeCreate()">Close</button>
+  <div style="display:flex;gap:8px;margin-top:12px"><button class="pill" style="flex:1" onclick="saveDraft()">Draft</button><button class="pill" style="flex:1" onclick="saveSchedule()">Schedule</button><button class="pill dark" style="flex:1" onclick="publishPost()">Publish</button></div>
 </div></div>
+
 <script>
-let POSTS,DRAFTS,BLOCKED,CONTACTS,SCHEDULED; const DEFAULT=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Slow mornings & coffee. 01:00AM thoughts.",slides:[{src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1000",type:"image",crop:"cover",muted:false}],likes:[],comments:[],date:Date.now(),archived:false,music:null}];
-try{POSTS=JSON.parse(localStorage.getItem('mn_v12')||'null')||DEFAULT}catch{POSTS=DEFAULT}
-try{DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_v12')||'[]')}catch{DRAFTS=[]}
-try{BLOCKED=JSON.parse(localStorage.getItem('mn_blocked_v12')||'[]')}catch{BLOCKED=[]}
-try{CONTACTS=JSON.parse(localStorage.getItem('mn_contacts_v12')||'[]')}catch{CONTACTS=[]}
-try{SCHEDULED=JSON.parse(localStorage.getItem('mn_scheduled_v12')||'[]')}catch{SCHEDULED=[]}
-let curPost=0,curSlide=0,tempSlides=[],editIdx=-1,tempMusic=null;
-function saveAll(){localStorage.setItem('mn_v12',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v12',JSON.stringify(DRAFTS));localStorage.setItem('mn_blocked_v12',JSON.stringify(BLOCKED));localStorage.setItem('mn_contacts_v12',JSON.stringify(CONTACTS));localStorage.setItem('mn_scheduled_v12',JSON.stringify(SCHEDULED));}
+let POSTS,DRAFTS,BLOCKED,CONTACTS;const DEFAULT=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Slow mornings & coffee.",slides:[{src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1000",type:"image",crop:"cover"}],likes:[],comments:[],date:Date.now(),archived:false,music:null}];
+try{POSTS=JSON.parse(localStorage.getItem('mn_v13')||'null')||DEFAULT}catch{POSTS=DEFAULT}
+try{DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_v13')||'[]')}catch{DRAFTS=[]}
+try{BLOCKED=JSON.parse(localStorage.getItem('mn_blocked_v13')||'[]')}catch{BLOCKED=[]}
+try{CONTACTS=JSON.parse(localStorage.getItem('mn_contacts_v13')||'[]')}catch{CONTACTS=[]}
+let curPost=0,curSlide=0,tempSlides=[],editIdx=-1,tempMusic=null,clipLength=60;
+function saveAll(){localStorage.setItem('mn_v13',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v13',JSON.stringify(DRAFTS));localStorage.setItem('mn_blocked_v13',JSON.stringify(BLOCKED));localStorage.setItem('mn_contacts_v13',JSON.stringify(CONTACTS));}
 function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
 function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
-function isSignedIn(){return!!getUser() || isAdmin()}
+function isSignedIn(){return!!getUser()||isAdmin()}
 function openMenu(){document.getElementById('menuPanel').classList.add('open');renderAuth();}
 function closeMenu(){document.getElementById('menuPanel').classList.remove('open')}
-function toggleDark(){document.documentElement.classList.toggle('dark');let d=document.documentElement.classList.contains('dark');localStorage.setItem('mn_dark',d?'1':'0');renderAuth();}if(localStorage.getItem('mn_dark')==='1')document.documentElement.classList.add('dark');
+function toggleDark(){document.documentElement.classList.toggle('dark');localStorage.setItem('mn_dark',document.documentElement.classList.contains('dark')?'1':'0');renderAuth();}if(localStorage.getItem('mn_dark')==='1')document.documentElement.classList.add('dark');
 function renderAuth(){
   let u=getUser();let b=document.getElementById('authBox');let s=document.getElementById('signBtn');let ms=document.getElementById('menuSignBtn');
-  let arch=document.getElementById('archiveMenuItem'),dr=document.getElementById('draftMenuItem'),cr=document.getElementById('createMenuItem'),bl=document.getElementById('blockedMenuItem');
   let signed=isSignedIn();
-  if(arch)arch.style.display=signed?'flex':'none';if(dr)dr.style.display=signed?'flex':'none';if(cr)cr.style.display=isAdmin()?'flex':'none';if(bl)bl.style.display=isAdmin()?'flex':'none';
+  document.getElementById('archiveMenuItem').style.display=signed?'flex':'none';
+  document.getElementById('draftMenuItem').style.display=signed?'flex':'none';
+  document.getElementById('createMenuItem').style.display=isAdmin()?'flex':'none';
+  document.getElementById('blockedMenuItem').style.display=isAdmin()?'flex':'none';
   if(u||isAdmin()){
     let name=localStorage.getItem('mn_custom_name')||(u?u.name:'aarsrosin');let pic=localStorage.getItem('mn_avatar')||'';
-    if(s){s.innerText=name.split(' ')[0]; s.onclick=()=>openMenu()}
+    if(s){s.innerText=name.split(' ')[0];s.onclick=()=>openMenu()}
     if(ms)ms.style.display='none';
     b.innerHTML=`<div class="adminProfileBox"><div class="avatar">${pic?`<img src="${pic}">`:'👤'}</div><div><div style="font-weight:600;font-size:13px">${name} • Admin</div><div style="font-size:10px;opacity:.6">Active • ${POSTS.length} posts</div></div><button class="pill" style="margin-left:auto" onclick="logout()">Logout</button></div>`;
-    document.getElementById('adminNameDisplay').innerText=name; document.getElementById('adminAvatar').innerHTML=pic?`<img src="${pic}">`:'👤';
+    document.getElementById('adminNameDisplay').innerText=name;document.getElementById('adminAvatar').innerHTML=pic?`<img src="${pic}">`:'👤';
   }else{
-    if(s){s.innerText='Sign in'; s.onclick=()=>openAccount()}
-    if(ms){ms.innerText='Sign in'; ms.style.display='block'; ms.onclick=()=>openAccount()}
+    if(s){s.innerText='Sign in';s.onclick=()=>openAccount()}
+    if(ms){ms.innerText='Sign in';ms.style.display='block';ms.onclick=()=>openAccount()}
     b.innerHTML='';
   }
-  let dc=document.getElementById('draftCount');if(dc)dc.innerText=DRAFTS.length?` (${DRAFTS.length})`:''; let ac=document.getElementById('archiveCount');if(ac)ac.innerText=POSTS.filter(p=>p.archived).length?` (${POSTS.filter(p=>p.archived).length})`:'';
-  document.getElementById('darkState').innerText=document.documentElement.classList.contains('dark')?'On':'Off'; document.getElementById('darkIcon').innerText=document.documentElement.classList.contains('dark')?'🌙':'☀️';
+  document.getElementById('draftCount').innerText=DRAFTS.length?` (${DRAFTS.length})`:'';document.getElementById('archiveCount').innerText=POSTS.filter(p=>p.archived).length?` (${POSTS.filter(p=>p.archived).length})`:'';
+  document.getElementById('darkState').innerText=document.documentElement.classList.contains('dark')?'On':'Off';document.getElementById('darkIcon').innerText=document.documentElement.classList.contains('dark')?'🌙':'☀️';
 }
 function openAccount(){openAuthTab('public');document.getElementById('authModal').classList.add('open')}
 function closeAuth(){document.getElementById('authModal').classList.remove('open')}
 function openAuthTab(t){document.getElementById('publicAuthBox').classList.toggle('hide',t!=='public');document.getElementById('adminAuthBox').classList.toggle('hide',t!=='admin');document.getElementById('tabPublic').classList.toggle('dark',t==='public');document.getElementById('tabAdmin').classList.toggle('dark',t==='admin')}
-function adminLogin(){
-  let u=(document.getElementById('adminUser').value||'').trim().toLowerCase();let p=(document.getElementById('adminPass').value||'').trim();let err=document.getElementById('adminError');
-  if(u==='aarsrosin' && (p==='@storyteller' || p==='storyteller')){
-    localStorage.setItem('mn_admin','1');localStorage.setItem('mn_user',JSON.stringify({name:localStorage.getItem('mn_custom_name')||'aarsrosin',email:'admin@mindnotes'})); err.innerText='';closeAuth();renderAuth();render();
-  }else{
-    err.innerText = u!== 'aarsrosin'? '❌ Wrong username: use aarsrosin' : '❌ Wrong password: use @storyteller';
-  }
-}
+function handleGoogleLogin(r){try{let p=JSON.parse(atob(r.credential.split('.')[1]));localStorage.setItem('mn_user',JSON.stringify({name:p.name,email:p.email}));closeAuth();renderAuth();render();}catch(e){alert('Use email login below');}}
+function publicEmailLogin(){let email=document.getElementById('publicEmail').value.trim();let name=document.getElementById('publicName').value.trim();if(!email||!name)return alert('Enter name & Gmail');localStorage.setItem('mn_user',JSON.stringify({name:name,email:email}));closeAuth();renderAuth();render();}
+function adminLogin(){let u=document.getElementById('adminUser').value.trim().toLowerCase();let p=document.getElementById('adminPass').value.trim();let err=document.getElementById('adminError');if(u==='aarsrosin'&&(p==='@storyteller'||p==='storyteller')){localStorage.setItem('mn_admin','1');localStorage.setItem('mn_user',JSON.stringify({name:localStorage.getItem('mn_custom_name')||'aarsrosin',email:'admin'}));err.innerText='';closeAuth();renderAuth();render();}else{err.innerText=u!=='aarsrosin'?'❌ Wrong username: use aarsrosin':'❌ Wrong password: use @storyteller';}}
 function logout(){localStorage.removeItem('mn_user');localStorage.removeItem('mn_admin');closeMenu();renderAuth();render();}
 function openAdminProfile(){if(!isAdmin()){openAuthTab('admin');openAccount();return;}document.getElementById('adminProfileModal').classList.add('open')}
 function closeAdminProfile(){document.getElementById('adminProfileModal').classList.remove('open')}
 function changeAvatar(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{localStorage.setItem('mn_avatar',e.target.result);renderAuth();};r.readAsDataURL(f);}
 function removeAvatar(){localStorage.removeItem('mn_avatar');renderAuth();}
-function updateUsername(){let n=document.getElementById('newUsername').value.trim();if(!n)return alert('Enter new username');localStorage.setItem('mn_custom_name',n);localStorage.setItem('mn_user',JSON.stringify({name:n,email:'admin@mindnotes'}));renderAuth();alert('Username updated to '+n);}
-function render(){
-  let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);
-  if(q) list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));
-  grid.innerHTML=list.map(p=>{let ri=POSTS.indexOf(p);let liked=isPostLiked(p);let first=p.slides[0];let media=first? (first.type==='video'?`<video src="${first.src}" muted loop></video>`:`<img src="${first.src}" loading="lazy">`) : '';return `<div class="cardPost" onclick="openPost(${ri})"><div class="cardMedia">${media}${p.music?'<div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:3px 6px;border-radius:10px">♪ ${p.music.name||"Music"}</div>':''}</div><div class="cardMeta"><div class="cardCat">${p.cat} • ${p.slides.length} items</div><div class="cardStats"><button class="heartBtn ${liked?"liked":""}" onclick="event.stopPropagation();quickLike(${ri})">${liked?"♥":"♡"}</button><span style="font-size:11px;opacity:.6">${p.likes?.length||0}</span><span style="margin-left:8px;opacity:.5">💬 ${p.comments?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts</div>';
-  renderContacts();
-}
-function isPostLiked(p){let id=(getUser()?.email)||(isAdmin()?'admin':'');if(!id)return false;return (p.likes||[]).includes(id)}
-function quickLike(ri){if(!isSignedIn()){openAccount();return;}let p=POSTS[ri];if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);saveAll();render();if(curPost===ri)renderLikes();}
+function updateUsername(){let n=document.getElementById('newUsername').value.trim();if(!n)return;localStorage.setItem('mn_custom_name',n);localStorage.setItem('mn_user',JSON.stringify({name:n,email:'admin'}));renderAuth();alert('Updated');}
+function render(){let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);if(q)list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));grid.innerHTML=list.map(p=>{let ri=POSTS.indexOf(p);let liked=isPostLiked(p);let first=p.slides[0];let media=first.type==='video'?`<video src="${first.src}" muted></video>`:`<img src="${first.src}">`;return `<div class="cardPost" onclick="openPost(${ri})"><div class="cardMedia">${media}${p.music?`<div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:3px 6px;border-radius:10px">♪ ${p.music.name}</div>`:''}</div><div class="cardMeta"><div class="cardCat">${p.cat}</div><div style="display:flex;gap:6px;margin-top:4px"><button class="heartBtn ${liked?'liked':''}" onclick="event.stopPropagation();quickLike(${ri})">${liked?'♥':'♡'}</button><span>${p.likes?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts</div>';}
+function isPostLiked(p){let id=(getUser()?.email)||(isAdmin()?'admin':'');return (p.likes||[]).includes(id)}
+function quickLike(ri){if(!isSignedIn()){openAccount();return;}let p=POSTS[ri];if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);saveAll();render();}
 function openPost(i){curPost=i;curSlide=0;let p=POSTS[i];document.getElementById('postModal').classList.add('open');document.getElementById('modalTitle').innerText=p.title;document.getElementById('modalCat').innerText=p.cat;document.getElementById('modalDate').innerText=new Date(p.date).toLocaleString();document.getElementById('modalBody').innerText=p.body;document.getElementById('delBtn').classList.toggle('hide',!isAdmin());document.getElementById('archBtn').classList.toggle('hide',!isSignedIn());renderSlide();renderLikes();renderComments();renderMusicPlayer(p);}
-function renderSlide(){let p=POSTS[curPost];let s=p.slides[curSlide];let b=document.getElementById('slideBox');if(!s)return;if(s.type==='video'){b.innerHTML=`<video src="${s.src}" controls ${s.muted?"muted":""} style="width:100%;height:100%;object-fit:${s.crop||"contain"}"></video>`}else{b.innerHTML=`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop||"contain"}">`;}}
+function renderSlide(){let s=POSTS[curPost].slides[curSlide];let b=document.getElementById('slideBox');if(!s)return;b.innerHTML=s.type==='video'?`<video src="${s.src}" controls ${s.muted?'muted':''}></video>`:`<img src="${s.src}">`;}
 function nextSlide(){if(curSlide<POSTS[curPost].slides.length-1){curSlide++;renderSlide();}}function prevSlide(){if(curSlide>0){curSlide--;renderSlide();}}function closePost(){document.getElementById('postModal').classList.remove('open')}
-function renderLikes(){let p=POSTS[curPost];document.getElementById('likeCount').innerText=p.likes?.length||0;document.getElementById('cmtCount').innerText=p.comments?.length||0;let btn=document.getElementById('heartBtn');if(btn){let liked=isPostLiked(p);btn.innerText=liked?'♥':'♡';btn.classList.toggle('liked',liked);}}
+function renderLikes(){let p=POSTS[curPost];document.getElementById('likeCount').innerText=p.likes?.length||0;document.getElementById('cmtCount').innerText=p.comments?.length||0;let btn=document.getElementById('heartBtn');btn.innerText=isPostLiked(p)?'♥':'♡';btn.classList.toggle('liked',isPostLiked(p));}
 function toggleLike(){if(!isSignedIn()){openAccount();return;}let p=POSTS[curPost];if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);saveAll();renderLikes();render();}
-function renderComments(){let list=document.getElementById('commentsList');let p=POSTS[curPost];if(!p.comments)p.comments=[];list.innerHTML=p.comments.map((c,ci)=>`<div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center">👤</div><div style="flex:1"><b style="font-size:12px">${c.name}</b><div style="font-size:13px;margin-top:2px">${c.text}</div><div style="display:flex;gap:6px;margin-top:6px"><button class="pill" style="padding:3px 8px;font-size:10px" onclick="likeComment(${ci})">♡ ${c.likes?.length||0}</button><button class="pill" style="padding:3px 8px;font-size:10px" onclick="blockUser('${c.name}')">Block</button>${isAdmin()?`<button class="pill" style="padding:3px 8px;font-size:10px;color:#c44" onclick="delComment(${ci})">Delete</button>`:''}</div></div></div>`).join('')||'<div style="opacity:.5;font-size:12px">No comments yet</div>';}
-function addComment(){if(!isSignedIn()){openAccount();return;}let txt=document.getElementById('commentInput').value.trim();if(!txt)return;let p=POSTS[curPost];if(!p.comments)p.comments=[];let u=getUser();p.comments.unshift({name:u?.name||localStorage.getItem('mn_custom_name')||'aarsrosin',text:txt,date:Date.now(),likes:[]});document.getElementById('commentInput').value='';saveAll();renderComments();renderLikes();render();}
-function likeComment(ci){if(!isSignedIn()){openAccount();return;}let c=POSTS[curPost].comments[ci];if(!c.likes)c.likes=[];let id=(getUser()?.email)||'admin';let idx=c.likes.indexOf(id);if(idx>=0)c.likes.splice(idx,1);else c.likes.push(id);saveAll();renderComments();}
-function delComment(ci){if(!isAdmin())return;POSTS[curPost].comments.splice(ci,1);saveAll();renderComments();}
-function blockUser(name){if(!isAdmin())return;if(!confirm('Block '+name+'?'))return;BLOCKED.push(name);saveAll();render();alert(name+' blocked');}
-function openBlocked(){if(!isAdmin()){openAccount();return;}if(!BLOCKED.length){alert('No blocked users');return;}let sel=prompt(BLOCKED.map((n,i)=>`${i+1}. ${n}`).join('\n')+'\nEnter number to unblock');if(sel){let idx=parseInt(sel)-1;if(BLOCKED[idx]){BLOCKED.splice(idx,1);saveAll();render();alert('Unblocked');}}}
-function deletePost(){if(!isAdmin())return;if(!confirm('Delete this post?'))return;POSTS.splice(curPost,1);saveAll();closePost();render();}
-function archivePost(){if(!isSignedIn()){openAccount();return;}POSTS[curPost].archived=true;saveAll();closePost();render();}
-function openArchive(){if(!isSignedIn()){openAccount();return;}let arch=POSTS.filter(p=>p.archived);if(!arch.length){alert('No archived posts');return;}let sel=prompt(arch.map((p,i)=>`${i+1}. ${p.title}`).join('\n')+'\nEnter number to recover');if(sel){let idx=parseInt(sel)-1;if(arch[idx]){if(confirm('Recover? OK=Recover Cancel=Delete Permanently')){POSTS[POSTS.indexOf(arch[idx])].archived=false;}else{POSTS.splice(POSTS.indexOf(arch[idx]),1);}saveAll();render();}}}
-function openDrafts(){if(!isSignedIn()){openAccount();return;}if(!DRAFTS.length){alert('No drafts');return;}let sel=prompt(DRAFTS.map((d,i)=>`${i+1}. ${d.title}`).join('\n')+'\nEnter number');if(sel){let i=parseInt(sel)-1;if(DRAFTS[i]){tempSlides=DRAFTS[i].slides||[];tempMusic=DRAFTS[i].music||null;document.getElementById('postTitle').value=DRAFTS[i].title;document.getElementById('postBody').value=DRAFTS[i].body||'';document.getElementById('postCat').value=DRAFTS[i].cat||'';openCreate();renderPreview();if(tempMusic)renderTempMusic();}}}
-function openCreate(){if(!isAdmin()){openAuthTab('admin');openAccount();return;}closeMenu();tempSlides=[];tempMusic=null;editIdx=-1;document.getElementById('postTitle').value='';document.getElementById('postBody').value='';document.getElementById('postCat').value='';document.getElementById('preview').innerHTML='';document.getElementById('musicPreview').classList.add('hide');document.getElementById('editTools').classList.add('hide');document.getElementById('createModal').classList.add('open');}
+function renderComments(){let list=document.getElementById('commentsList');let p=POSTS[curPost];if(!p.comments)p.comments=[];list.innerHTML=p.comments.map((c,ci)=>`<div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:8px"><div>👤</div><div style="flex:1"><b>${c.name}</b><div>${c.text}</div><div style="display:flex;gap:6px;margin-top:4px"><button class="pill" style="padding:3px 8px;font-size:10px" onclick="likeComment(${ci})">♡ ${c.likes?.length||0}</button><button class="pill" style="padding:3px 8px;font-size:10px" onclick="blockUser('${c.name}')">Block</button>${isAdmin()?`<button class="pill" style="padding:3px 8px;font-size:10px;color:#c44" onclick="delComment(${ci})">Delete</button>`:''}</div></div></div>`).join('')||'No comments';}
+function addComment(){if(!isSignedIn()){openAccount();return;}let txt=document.getElementById('commentInput').value.trim();if(!txt)return;let p=POSTS[curPost];if(!p.comments)p.comments=[];let u=getUser();p.comments.unshift({name:u?.name||'aarsrosin',text:txt,date:Date.now(),likes:[]});document.getElementById('commentInput').value='';saveAll();renderComments();renderLikes();render();}
+function likeComment(ci){let c=POSTS[curPost].comments[ci];if(!c.likes)c.likes=[];let id=(getUser()?.email)||'admin';let idx=c.likes.indexOf(id);if(idx>=0)c.likes.splice(idx,1);else c.likes.push(id);saveAll();renderComments();}
+function delComment(ci){POSTS[curPost].comments.splice(ci,1);saveAll();renderComments();}
+function blockUser(n){if(!isAdmin())return;BLOCKED.push(n);saveAll();render();alert(n+' blocked');}
+function deletePost(){POSTS.splice(curPost,1);saveAll();closePost();render();}
+function archivePost(){POSTS[curPost].archived=true;saveAll();closePost();render();}
+function openArchive(){if(!isSignedIn()){openAccount();return;}renderArchiveList();document.getElementById('archiveModal').classList.add('open')}
+function closeArchive(){document.getElementById('archiveModal').classList.remove('open')}
+function renderArchiveList(){let arch=POSTS.filter(p=>p.archived);let box=document.getElementById('archiveList');if(!arch.length){box.innerHTML='No archived posts';return;}box.innerHTML=arch.map(p=>{let idx=POSTS.indexOf(p);return `<div class="listItem"><img src="${p.slides[0]?.src}"><div style="flex:1"><div style="font-weight:600">${p.title}</div></div><button class="pill dark" onclick="recoverPost(${idx})">Recover</button><button class="pill" style="color:#c44" onclick="deleteArchived(${idx})">Delete</button></div>`}).join('');}
+function recoverPost(idx){POSTS[idx].archived=false;saveAll();renderArchiveList();render();alert('Recovered');}
+function deleteArchived(idx){POSTS.splice(idx,1);saveAll();renderArchiveList();render();}
+function openDrafts(){renderDraftsList();document.getElementById('draftsModal').classList.add('open')}
+function closeDrafts(){document.getElementById('draftsModal').classList.remove('open')}
+function renderDraftsList(){let box=document.getElementById('draftsList');if(!DRAFTS.length){box.innerHTML='No drafts';return;}box.innerHTML=DRAFTS.map((d,i)=>`<div class="listItem"><div style="flex:1"><div style="font-weight:600">${d.title}</div></div><button class="pill dark" onclick="loadDraft(${i})">Load</button><button class="pill" onclick="deleteDraft(${i})">✕</button></div>`).join('');}
+function loadDraft(i){let d=DRAFTS[i];tempSlides=d.slides||[];tempMusic=d.music||null;document.getElementById('postTitle').value=d.title;document.getElementById('postBody').value=d.body||'';document.getElementById('postCat').value=d.cat||'';closeDrafts();openCreate();renderPreview();if(tempMusic)renderTempMusic();}
+function deleteDraft(i){DRAFTS.splice(i,1);saveAll();renderDraftsList();renderAuth();}
+function openBlocked(){renderBlockedList();document.getElementById('blockedModal').classList.add('open')}
+function closeBlocked(){document.getElementById('blockedModal').classList.remove('open')}
+function renderBlockedList(){let box=document.getElementById('blockedList');if(!BLOCKED.length){box.innerHTML='No blocked users';return;}box.innerHTML=BLOCKED.map((n,i)=>`<div class="listItem"><div style="flex:1">${n}</div><button class="pill" onclick="unblockUser(${i})">Unblock</button></div>`).join('');}
+function unblockUser(i){BLOCKED.splice(i,1);saveAll();renderBlockedList();render();}
+function openContactSidebar(){closeMenu();renderContacts();document.getElementById('contactModal').classList.add('open')}
+function closeContactSidebar(){document.getElementById('contactModal').classList.remove('open')}
+function sendContact(){let n=document.getElementById('contactName').value.trim(),e=document.getElementById('contactEmail').value.trim(),m=document.getElementById('contactMsg').value.trim();if(!n||!m)return alert('Name & message required');CONTACTS.unshift({name:n,email:e,msg:m,date:Date.now()});saveAll();document.getElementById('contactName').value='';document.getElementById('contactEmail').value='';document.getElementById('contactMsg').value='';renderContacts();alert('Message sent');}
+function renderContacts(){let box=document.getElementById('contactList');if(!CONTACTS.length){box.innerHTML='';return;}if(!isAdmin()){box.innerHTML=`<div style="font-size:11px;opacity:.6">${CONTACTS.length} message(s) sent</div>`;return;}box.innerHTML=CONTACTS.map((c,i)=>`<div style="background:var(--card2);padding:8px;border-radius:10px;margin-top:6px"><b>${c.name}</b><div>${c.msg}</div><div style="font-size:9px;opacity:.5">${new Date(c.date).toLocaleString()} <button onclick="CONTACTS.splice(${i},1);saveAll();renderContacts()" style="float:right;background:none;border:none;color:#c44">Delete</button></div></div>`).join('');}
+function openCreate(){if(!isAdmin()){openAuthTab('admin');openAccount();return;}closeMenu();tempSlides=[];tempMusic=null;editIdx=-1;clipLength=60;document.getElementById('postTitle').value='';document.getElementById('postBody').value='';document.getElementById('postCat').value='';document.getElementById('preview').innerHTML='';document.getElementById('musicPreview').classList.add('hide');document.getElementById('editTools').classList.add('hide');document.getElementById('createModal').classList.add('open');}
 function closeCreate(){document.getElementById('createModal').classList.remove('open')}
-function handleMedia(inp){[...inp.files].forEach(f=>{let r=new FileReader();r.onload=e=>{let type=f.type.startsWith('video')?'video':'image';tempSlides.push({src:e.target.result,type:type,crop:'cover',muted:false,trim:null,quality:'10K'});renderPreview();};r.readAsDataURL(f);});}
-function renderPreview(){let p=document.getElementById('preview');p.innerHTML=tempSlides.map((s,i)=>`<div style="position:relative;background:var(--card2);border-radius:12px;overflow:hidden;aspect-ratio:1;border:${editIdx===i?'2px solid var(--text)':'1px solid var(--border)'}" onclick="selectEdit(${i})">${s.type==='video'?`<video src="${s.src}" muted style="width:100%;height:100%;object-fit:${s.crop}"></video><div style="position:absolute;bottom:4px;left:4px;background:#000;color:#fff;font-size:8px;padding:2px 5px;border-radius:6px">${s.muted?'🔇':'🔊'} ${s.quality}</div>`:`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop}">`}<button onclick="event.stopPropagation();tempSlides.splice(${i},1);renderPreview()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:22px;height:22px">✕</button></div>`).join('');}
-function selectEdit(i){editIdx=i;document.getElementById('editTools').classList.remove('hide');document.getElementById('editIndex').innerText=i+1;renderPreview();}
+function handleMedia(inp){[...inp.files].forEach(f=>{let r=new FileReader();r.onload=e=>{tempSlides.push({src:e.target.result,type:f.type.startsWith('video')?'video':'image',crop:'cover',muted:false});renderPreview();};r.readAsDataURL(f);});}
+function renderPreview(){let p=document.getElementById('preview');p.innerHTML=tempSlides.map((s,i)=>`<div style="position:relative;background:var(--card2);border-radius:12px;overflow:hidden;aspect-ratio:1;border:${editIdx===i?'2px solid var(--text)':'1px solid var(--border)'}" onclick="selectEdit(${i})">${s.type==='video'?`<video src="${s.src}" muted style="width:100%;height:100%;object-fit:${s.crop}"></video>`:`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop}">`}<button onclick="event.stopPropagation();tempSlides.splice(${i},1);renderPreview()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:20px;height:20px">✕</button></div>`).join('');}
+function selectEdit(i){editIdx=i;document.getElementById('editTools').classList.remove('hide');renderPreview();}
 function applyCrop(v){if(editIdx<0)return;tempSlides[editIdx].crop=v;renderPreview();}
 function toggleMute(){if(editIdx<0)return;tempSlides[editIdx].muted=!tempSlides[editIdx].muted;renderPreview();}
-function trimVideo(){document.getElementById('trimBox').classList.toggle('hide');}
-function updateTrim(){let s=document.getElementById('trimStart').value,e=document.getElementById('trimEnd').value;document.getElementById('trimStartVal').innerText=s+'s';document.getElementById('trimEndVal').innerText=e+'s';if(editIdx>=0)tempSlides[editIdx].trim={start:s,end:e};}
-function handleMusicFile(inp){let f=inp.files[0];if(!f)return;tempMusic={src:URL.createObjectURL(f),name:f.name,type:'local',start:30,end:60};renderTempMusic();}
-function renderTempMusic(){if(!tempMusic)return;document.getElementById('musicPreview').classList.remove('hide');document.getElementById('musicAudio').src=tempMusic.src;document.getElementById('musicName').innerText=tempMusic.name;}
-function toggleMusic(){let a=document.getElementById('musicAudio');if(a.paused){a.play();document.getElementById('musicPlayBtn').innerText='⏸️ Pause';}else{a.pause();document.getElementById('musicPlayBtn').innerText='▶️ Play';}}
-function removeMusic(){tempMusic=null;document.getElementById('musicPreview').classList.add('hide');}
-function updateMusicRange(v){let shade=document.getElementById('musicShade');shade.style.left=v+'%';if(tempMusic){tempMusic.start=v;tempMusic.end=parseInt(v)+30;}}
+function handleMusicFile(inp){let f=inp.files[0];if(!f)return;tempMusic={src:URL.createObjectURL(f),name:f.name,type:'local'};renderTempMusic();}
+function renderTempMusic(){if(!tempMusic)return;document.getElementById('musicPreview').classList.remove('hide');let a=document.getElementById('musicAudio');a.src=tempMusic.src;a.load();document.getElementById('musicName').innerText=tempMusic.name;}
+function onMusicLoaded(){updateShade();}
+function onMusicTimeUpdate(){let a=document.getElementById('musicAudio');if(!a.duration)return;let clipEnd=(a._clipStart||0)+clipLength;if(a.currentTime>=clipEnd){a.pause();a.currentTime=a._clipStart||0;document.getElementById('musicPlayBtn').innerText='▶️ Play from selected part';}}
+function seekToPercent(p){let a=document.getElementById('musicAudio');if(!a.duration)return;let startTime=(p/100)*a.duration;a._clipStart=startTime;a.currentTime=startTime;a.play();document.getElementById('musicPlayBtn').innerText='⏸️ Pause';updateShade();updateTimeLabels();}
+function updateShade(){let range=document.getElementById('musicRange');let shade=document.getElementById('musicShade');let a=document.getElementById('musicAudio');if(!a||!a.duration)return;let pct=parseFloat(range.value);shade.style.left=pct+'%';let widthPct=(clipLength/a.duration)*100;if(widthPct>40)widthPct=40;shade.style.width=widthPct+'%';}
+function updateTimeLabels(){let a=document.getElementById('musicAudio');if(!a.duration)return;let start=a._clipStart||0;document.getElementById('rangeStart').innerText=Math.floor(start/60)+':'+String(Math.floor(start%60)).padStart(2,'0');document.getElementById('rangeEnd').innerText=Math.floor((start+clipLength)/60)+':'+String(Math.floor((start+clipLength)%60)).padStart(2,'0')+` (${clipLength}s clip)`;}
+function toggleMusic(){let a=document.getElementById('musicAudio');if(a.paused){a.play();document.getElementById('musicPlayBtn').innerText='⏸️ Pause';}else{a.pause();document.getElementById('musicPlayBtn').innerText='▶️ Play from selected part';}}
+function removeMusic(){tempMusic=null;document.getElementById('musicPreview').classList.add('hide');let a=document.getElementById('musicAudio');a.pause();a.src='';}
+function setClipLength(s){clipLength=s;document.querySelectorAll('[onclick^="setClipLength"]').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');updateShade();updateTimeLabels();let a=document.getElementById('musicAudio');if(a&&a._clipStart!==undefined){a.currentTime=a._clipStart;a.play();}}
 function openSpotifySearch(){document.getElementById('spotifyBox').classList.toggle('hide');}
-function searchSpotify(){let q=document.getElementById('spotifyQuery').value.trim();if(!q)return;let res=document.getElementById('spotifyResults');res.innerHTML=`<div style="padding:8px;background:var(--card2);border-radius:10px;font-size:12px">🎵 ${q} <button class="pill" style="margin-top:6px" onclick="tempMusic={src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',name:'${q} (Spotify)',type:'spotify',start:30,end:60};renderTempMusic()">Use 30s Clip</button></div>`;}
-function renderMusicPlayer(p){let box=document.getElementById('modalMusicPlayer');if(!p.music){box.classList.add('hide');return;}box.classList.remove('hide');box.innerHTML=`<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px;display:flex;gap:10px;align-items:center"><button class="pill" onclick="let a=document.getElementById('modalAudio');a.paused?a.play():a.pause()">▶️</button><div style="flex:1"><div style="font-size:11px;font-weight:600">♪ ${p.music.name}</div><div style="font-size:9px;opacity:.6">From ${p.music.type}</div></div><audio id="modalAudio" src="${p.music.src}" style="display:none"></audio></div>`;}
+function searchSpotify(){let q=document.getElementById('spotifyQuery').value.trim();if(!q)return;document.getElementById('spotifyResults').innerHTML=`<div class="listItem"><div style="flex:1"><div style="font-size:12px;font-weight:600">🎵 ${q}</div></div><button class="pill dark" onclick="tempMusic={src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',name:'${q} (Spotify)',type:'spotify'};renderTempMusic()">Add</button></div>`;}
+function renderMusicPlayer(p){let box=document.getElementById('modalMusicPlayer');if(!p.music){box.classList.add('hide');return;}box.classList.remove('hide');box.innerHTML=`<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px;display:flex;gap:10px;align-items:center"><button class="pill dark" onclick="let a=document.getElementById('modalAudio');a.paused?a.play():a.pause()">▶️ ${p.music.name}</button><audio id="modalAudio" src="${p.music.src}"></audio></div>`;}
 function publishPost(){let t=document.getElementById('postTitle').value.trim();let b=document.getElementById('postBody').value.trim();let c=document.getElementById('postCat').value.trim()||'LIFE';if(!t)return alert('Title required');if(!tempSlides.length)return alert('Add media');POSTS.unshift({cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false,music:tempMusic});saveAll();closeCreate();render();}
 function saveDraft(){let t=document.getElementById('postTitle').value.trim()||'Untitled';DRAFTS.unshift({title:t,body:document.getElementById('postBody').value,cat:document.getElementById('postCat').value,slides:[...tempSlides],music:tempMusic});saveAll();alert('Saved to Drafts');closeCreate();renderAuth();}
-function saveSchedule(){let dt=document.getElementById('scheduleTime').value;if(!dt)return alert('Select date & time');let t=document.getElementById('postTitle').value.trim()||'Untitled';SCHEDULED.push({title:t,body:document.getElementById('postBody').value,cat:document.getElementById('postCat').value,slides:[...tempSlides],music:tempMusic,scheduledFor:dt});saveAll();alert('Scheduled for '+dt);closeCreate();}
-function sendContact(){let n=document.getElementById('contactName').value.trim(),e=document.getElementById('contactEmail').value.trim(),m=document.getElementById('contactMsg').value.trim();if(!n||!m)return alert('Name & message required');CONTACTS.unshift({name:n,email:e,msg:m,date:Date.now()});saveAll();document.getElementById('contactName').value='';document.getElementById('contactEmail').value='';document.getElementById('contactMsg').value='';renderContacts();alert('Message sent!');}
-function renderContacts(){let box=document.getElementById('contactList');if(!CONTACTS.length){box.innerHTML='';return;}if(!isAdmin()){box.innerHTML=`<div style="font-size:11px;opacity:.6">${CONTACTS.length} message(s) sent</div>`;return;}box.innerHTML=`<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px"><h4 style="font-size:12px">Inbox (${CONTACTS.length})</h4>`+CONTACTS.map((c,i)=>`<div style="background:var(--card2);padding:8px;border-radius:10px;margin-top:6px"><b style="font-size:11px">${c.name}</b><div style="font-size:12px">${c.msg}</div><div style="font-size:9px;opacity:.5">${new Date(c.date).toLocaleString()} <button onclick="CONTACTS.splice(${i},1);saveAll();renderContacts()" style="float:right;background:none;border:none;color:#c44;cursor:pointer">Delete</button></div></div>`).join('')+`</div>`;}
+function saveSchedule(){let dt=document.getElementById('scheduleTime').value;if(!dt)return alert('Select time');let t=document.getElementById('postTitle').value.trim()||'Untitled';let newPost={cat:(document.getElementById('postCat').value||'LIFE').toUpperCase(),title:t,body:document.getElementById('postBody').value,slides:[...tempSlides],likes:[],comments:[],date:new Date(dt).getTime(),archived:false,music:tempMusic};let delay=new Date(dt).getTime()-Date.now();if(delay>0){setTimeout(()=>{POSTS.unshift(newPost);saveAll();render();},delay);alert('Scheduled for '+dt);}else{POSTS.unshift(newPost);saveAll();render();}closeCreate();}
 renderAuth();render();
 </script>
 </body></html>
