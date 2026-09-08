@@ -18,7 +18,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .searchTop input{border:none;background:transparent;outline:none;width:100%;font-size:13px;color:var(--text)}
 .pill{padding:8px 14px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
 .pill.dark{background:var(--accent);color:var(--bg);border-color:var(--accent)}
-.pill.active{background:var(--accent);color:var(--bg)}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:900px;margin:12px auto;padding:0 10px 20px;width:100%}
 .cardPost{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer}
 .cardMedia{aspect-ratio:1/1;background:#111;overflow:hidden;position:relative}.cardMedia img,.cardMedia video{width:100%;height:100%;object-fit:cover;display:block}
@@ -47,7 +46,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .listItem{display:flex;gap:10px;align-items:center;padding:10px;background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:8px}
 .listItem img{width:48px;height:48px;border-radius:8px;object-fit:cover}
 .badge{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--border);margin-left:6px}
-.badge.admin{background:#121212;color:#fff}.dark.badge.admin{background:#fff;color:#000}
+.badge.admin{background:#121212;color:#fff}
 .cropContainer{width:100%;max-height:400px;background:#111;border-radius:12px;overflow:hidden;margin:10px 0}
 .commentRow{display:flex;gap:8px;align-items:center;margin-top:12px}
 .commentRow input{flex:1;margin:0}
@@ -69,14 +68,15 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <div class="menuItem" id="adminProfileItem" onclick="openAdminProfile()"><span>Admin Profile</span><span>›</span></div>
   <div class="menuItem" id="archiveMenuItem" onclick="openArchive()"><span>Archive</span><span id="archiveCount"></span></div>
   <div class="menuItem" id="draftMenuItem" onclick="openDrafts()"><span>Drafts</span><span id="draftCount"></span></div>
+  <div class="menuItem" id="deletedMenuItem" onclick="openDeleted()"><span>Recently Deleted</span><span id="deletedCount"></span></div>
   <div class="menuItem" id="createMenuItem" onclick="openCreate()"><span>+ Create Post</span><span>›</span></div>
   <div class="menuItem" id="blockedMenuItem" onclick="openBlocked()"><span>Blocked Users</span><span>›</span></div>
   <div class="menuItem" onclick="toggleDark()"><span>Dark Mode</span><span id="darkState">Off</span></div>
   <div class="menuItem" onclick="openContactSidebar()"><span>Contact</span><span>›</span></div>
+  <div class="menuItem" onclick="clearAllData()" style="color:#c44"><span>Clear Cache (Fix Storage)</span><span>›</span></div>
 </div></div>
 <div class="grid" id="grid"></div>
 <div class="footerFull"><div class="copy serif">©2026 Aars Rosin | MindNotes</div><div><a href="#">Privacy Policy</a><a href="#">Terms of Use</a><a href="#">Cookies Policy</a><a href="#">Cookies Settings</a></div></div>
-
 <div id="postModal" class="mModal">
   <div style="padding:10px;display:flex;gap:6px;position:sticky;top:0;background:var(--paper);z-index:10;border-bottom:1px solid var(--border)"><button class="pill" onclick="closePost()">Back</button><div style="flex:1"></div><button id="archBtn" class="pill hide" onclick="archivePost()">Archive</button><button id="delBtn" class="pill hide" style="color:#c44" onclick="deletePost()">Delete</button></div>
   <div class="mediaWrap" id="slideBox"></div><button class="navArrow left" onclick="prevSlide()">‹</button><button class="navArrow right" onclick="nextSlide()">›</button>
@@ -91,9 +91,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <div id="commentsList" style="margin-top:14px"></div>
   </div>
 </div>
-
 <div id="adminProfileModal" class="modalBg" onclick="if(event.target==this)closeAdminProfile()"><div class="modalCard"><h2 class="serif" style="font-size:22px">Admin Profile</h2><div class="adminProfileBox" style="margin-top:12px"><div class="avatar" id="adminAvatar">👤</div><div><div id="adminNameDisplay">aarsrosin</div><div id="adminRoleDisplay" style="font-size:11px;opacity:.6">Admin • Active</div></div><button class="pill" style="margin-left:auto" onclick="document.getElementById('avatarInput').click()">Change</button><input type="file" id="avatarInput" accept="image/*" hidden onchange="changeAvatar(this)"></div><input id="newUsername" class="input" placeholder="New display name"><button class="pill dark" style="width:100%;margin-bottom:12px" onclick="updateUsername()">Update Username</button><button class="pill" style="width:100%" onclick="closeAdminProfile()">Close</button></div></div>
-
 <div id="authModal" class="modalBg" onclick="if(event.target==this)closeAuth()"><div class="modalCard" style="max-width:400px">
   <div style="display:flex;gap:6px;margin-bottom:16px"><button id="tabPublic" class="pill dark" style="flex:1" onclick="openAuthTab('public')">Public</button><button id="tabAdmin" class="pill" style="flex:1" onclick="openAuthTab('admin')">Admin</button></div>
   <div id="publicAuthBox" style="text-align:center">
@@ -112,18 +110,17 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   </div>
   <button class="pill" style="width:100%;margin-top:16px" onclick="closeAuth()">Close</button>
 </div></div>
-
-<div id="archiveModal" class="modalBg" onclick="if(event.target==this)closeArchive()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Archived Posts</h2><button class="pill" onclick="closeArchive()">✕</button></div><div id="archiveList"></div></div></div>
+<div id="archiveModal" class="modalBg" onclick="if(event.target==this)closeArchive()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Archived</h2><button class="pill" onclick="closeArchive()">✕</button></div><div id="archiveList"></div></div></div>
 <div id="draftsModal" class="modalBg" onclick="if(event.target==this)closeDrafts()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Drafts</h2><button class="pill" onclick="closeDrafts()">✕</button></div><div id="draftsList"></div></div></div>
+<div id="deletedModal" class="modalBg" onclick="if(event.target==this)closeDeleted()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Recently Deleted (30 days)</h2><button class="pill" onclick="closeDeleted()">✕</button></div><div id="deletedList"></div></div></div>
 <div id="blockedModal" class="modalBg" onclick="if(event.target==this)closeBlocked()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Blocked Users</h2><button class="pill" onclick="closeBlocked()">✕</button></div><div id="blockedList"></div></div></div>
 <div id="contactModal" class="modalBg" onclick="if(event.target==this)closeContactSidebar()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Contact Aars Rosin</h2><button class="pill" onclick="closeContactSidebar()">✕</button></div><input id="contactName" class="input" placeholder="Your name"><input id="contactEmail" class="input" placeholder="Your email"><textarea id="contactMsg" class="input" style="min-height:90px" placeholder="Your message..."></textarea><button class="pill dark" style="width:100%;padding:12px" onclick="sendContact()">Send Message</button><div id="contactList" style="margin-top:16px"></div></div></div>
-
 <div id="createModal" class="modalBg" onclick="if(event.target==this)closeCreate()"><div class="modalCard" style="max-width:620px">
   <div style="display:flex;justify-content:space-between;margin-bottom:10px"><h2 class="serif" style="font-size:22px">Create Post</h2><button class="pill" onclick="closeCreate()">✕</button></div>
   <div style="display:flex;gap:6px;margin-bottom:8px"><input id="postCat" class="input" style="margin:0" placeholder="Category"><input id="scheduleTime" class="input" type="datetime-local" style="margin:0"></div>
   <input id="postTitle" class="input" placeholder="Title (required)"><textarea id="postBody" class="input" style="min-height:70px" placeholder="Caption"></textarea>
   <div style="border:1px dashed var(--border);border-radius:14px;padding:12px;margin:8px 0">
-    <div style="display:flex;gap:6px;flex-wrap:wrap"><label class="pill dark" style="flex:1">📷 Select Photos / 🎥 Videos<input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden onchange="handleMedia(this)"></label><button class="pill" onclick="document.getElementById('mediaInput').click()">+ Add More</button><button class="pill" style="color:#c44" onclick="tempSlides=[];selectedCropIndex=-1;renderPreview();closeCropper()">Clear All</button></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><label class="pill dark" style="flex:1">📷 Select Photos / 🎥 Videos<input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden onchange="handleMedia(this)"></label><button class="pill" onclick="document.getElementById('mediaInput').click()">+ Add More</button><button class="pill" style="color:#c44" onclick="tempSlides=[];renderPreview();closeCropper()">Clear All</button></div>
     <div id="uploadStatus" style="font-size:11px;opacity:.6;margin-top:6px"></div>
     <div id="preview" class="previewGrid"></div>
     <div id="cropperArea" class="hide">
@@ -137,7 +134,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     </div>
   </div>
   <div class="musicBox">
-    <h4 style="font-size:13px;margin-bottom:8px">🎵 Add Music to Post</h4>
+    <h4 style="font-size:13px;margin-bottom:8px">🎵 Add Music</h4>
     <div style="display:flex;gap:6px;margin-bottom:8px"><label class="pill" style="flex:1">From Phone<input type="file" id="musicFile" accept="audio/*" hidden onchange="handleMusicFile(this)"></label><button class="pill" onclick="openSpotifySearch()">Spotify Search</button></div>
     <div id="spotifyBox" class="hide" style="margin-bottom:8px"><input id="spotifyQuery" class="input" placeholder="Search song..."><button class="pill dark" style="width:100%" onclick="searchSpotify()">Search</button><div id="spotifyResults" style="margin-top:8px"></div></div>
     <div id="musicPreview" class="hide">
@@ -149,15 +146,30 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <div style="display:flex;gap:8px;margin-top:14px"><button class="pill" style="flex:1" onclick="saveDraft()">Draft</button><button class="pill" style="flex:1" onclick="saveSchedule()">Schedule</button><button class="pill dark" style="flex:1;padding:14px;font-weight:600" onclick="publishPost()">Publish ✓</button></div>
   <div id="publishStatus" style="font-size:11px;margin-top:8px"></div>
 </div></div>
-
 <script>
-let POSTS,DRAFTS,BLOCKED,CONTACTS;const DEFAULT=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Slow mornings & coffee.",slides:[{src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1000",type:"image",crop:"cover"}],likes:[],comments:[],date:Date.now(),archived:false,music:null}];
-try{POSTS=JSON.parse(localStorage.getItem('mn_v17')||'null')||DEFAULT}catch{POSTS=DEFAULT}
-try{DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_v17')||'[]')}catch{DRAFTS=[]}
-try{BLOCKED=JSON.parse(localStorage.getItem('mn_blocked_v17')||'[]')}catch{BLOCKED=[]}
-try{CONTACTS=JSON.parse(localStorage.getItem('mn_contacts_v17')||'[]')}catch{CONTACTS=[]}
-let curPost=0,curSlide=0,tempSlides=[],editIdx=-1,tempMusic=null,clipLength=60,cropper=null,selectedCropIndex=-1;
-function saveAll(){try{localStorage.setItem('mn_v17',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v17',JSON.stringify(DRAFTS));localStorage.setItem('mn_blocked_v17',JSON.stringify(BLOCKED));localStorage.setItem('mn_contacts_v17',JSON.stringify(CONTACTS));}catch(e){alert('Storage full! Delete some posts');}}
+const DB_NAME='MindNotesDB_v18'; const DB_VER=1;
+function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{let db=e.target.result;if(!db.objectStoreNames.contains('posts'))db.createObjectStore('posts',{keyPath:'id'});if(!db.objectStoreNames.contains('drafts'))db.createObjectStore('drafts',{keyPath:'id'});if(!db.objectStoreNames.contains('deleted'))db.createObjectStore('deleted',{keyPath:'id'});if(!db.objectStoreNames.contains('contacts'))db.createObjectStore('contacts',{keyPath:'id'});if(!db.objectStoreNames.contains('blocked'))db.createObjectStore('blocked',{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idbGetAll(store){let db=await openDB();return new Promise((res,rej)=>{let tx=db.transaction(store,'readonly');let os=tx.objectStore(store);let req=os.getAll();req.onsuccess=()=>res(req.result||[]);req.onerror=()=>rej(req.error);});}
+async function idbPut(store,obj){let db=await openDB();return new Promise((res,rej)=>{let tx=db.transaction(store,'readwrite');tx.objectStore(store).put(obj);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
+async function idbDelete(store,id){let db=await openDB();return new Promise((res,rej)=>{let tx=db.transaction(store,'readwrite');tx.objectStore(store).delete(id);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
+let POSTS=[],DRAFTS=[],BLOCKED=[],CONTACTS=[],DELETED=[];
+const DEFAULT_POST={id:'default1',cat:"COFFEE",title:"My 6am coffee ritual",body:"Slow mornings & coffee.",slides:[{src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1000",type:"image",crop:"cover"}],likes:[],comments:[],date:Date.now(),archived:false,music:null};
+async function loadAll(){
+  try{
+    POSTS=await idbGetAll('posts');
+    DRAFTS=await idbGetAll('drafts');
+    CONTACTS=await idbGetAll('contacts');
+    let b=await idbGetAll('blocked'); BLOCKED=b.map(x=>x.name||x.id);
+    DELETED=await idbGetAll('deleted');
+    if(!POSTS.length){
+      let old=null;try{old=JSON.parse(localStorage.getItem('mn_v17')||localStorage.getItem('mn_v16')||localStorage.getItem('mn_v15')||'null')}catch{}
+      if(old && old.length){for(let p of old){p.id=p.id||'p_'+Date.now()+'_'+Math.random();await idbPut('posts',p)}POSTS=await idbGetAll('posts');}
+      else{await idbPut('posts',DEFAULT_POST);POSTS=[DEFAULT_POST];}
+      try{localStorage.removeItem('mn_v17');localStorage.removeItem('mn_drafts_v17');localStorage.removeItem('mn_v16');localStorage.removeItem('mn_v15');localStorage.removeItem('mn_contacts_v17');}catch{}
+    }
+  }catch(e){POSTS=[DEFAULT_POST];}
+  renderAuth();render();
+}
 function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
 function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
 function isSignedIn(){return!!getUser() || isAdmin()}
@@ -172,6 +184,7 @@ function renderAuth(){
   document.getElementById('blockedMenuItem').style.display=admin?'flex':'none';
   document.getElementById('archiveMenuItem').style.display=admin?'flex':'none';
   document.getElementById('draftMenuItem').style.display=admin?'flex':'none';
+  document.getElementById('deletedMenuItem').style.display=admin?'flex':'none';
   if(u){
     if(admin){
       let name=localStorage.getItem('mn_custom_name')||u.name||'aarsrosin';
@@ -183,9 +196,7 @@ function renderAuth(){
       document.getElementById('adminRoleDisplay').innerText='Admin • Full Access';
       document.getElementById('adminAvatar').innerHTML=pic?`<img src="${pic}">`:'👤';
     }else{
-      let name=u.name||'User';
-      let email=u.email||'';
-      let pic=u.pic||'';
+      let name=u.name||'User'; let email=u.email||''; let pic=u.pic||'';
       if(s){s.innerText=name.split(' ')[0];s.onclick=()=>openMenu()}
       if(ms)ms.style.display='none';
       b.innerHTML=`<div class="adminProfileBox"><div class="avatar">${pic?`<img src="${pic}">`:'👤'}</div><div style="flex:1;overflow:hidden"><div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div><div style="font-size:11px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${email}</div><div style="font-size:10px;opacity:.5;margin-top:2px">Public • Can like & comment</div></div><button class="pill" style="margin-left:auto;flex-shrink:0" onclick="logout()">Logout</button></div>`;
@@ -195,92 +206,63 @@ function renderAuth(){
     if(ms){ms.innerText='Sign in';ms.style.display='block';ms.onclick=()=>openAccount()}
     b.innerHTML='<div style="font-size:11px;opacity:.6;padding:8px">Sign in to like & comment</div>';
   }
-  document.getElementById('draftCount').innerText=DRAFTS.length?` (${DRAFTS.length})`:'';document.getElementById('archiveCount').innerText=POSTS.filter(p=>p.archived).length?` (${POSTS.filter(p=>p.archived).length})`:'';
+  document.getElementById('draftCount').innerText=DRAFTS.length?` (${DRAFTS.length})`:'';document.getElementById('archiveCount').innerText=POSTS.filter(p=>p.archived).length?` (${POSTS.filter(p=>p.archived).length})`:'';document.getElementById('deletedCount').innerText=DELETED.length?` (${DELETED.length})`:'';
   document.getElementById('darkState').innerText=document.documentElement.classList.contains('dark')?'On':'Off';document.getElementById('darkIcon').innerText=document.documentElement.classList.contains('dark')?'🌙':'☀️';
 }
 function openAccount(){openAuthTab('public');document.getElementById('authModal').classList.add('open')}
 function closeAuth(){document.getElementById('authModal').classList.remove('open')}
 function openAuthTab(t){document.getElementById('publicAuthBox').classList.toggle('hide',t!=='public');document.getElementById('adminAuthBox').classList.toggle('hide',t!=='admin');document.getElementById('tabPublic').classList.toggle('dark',t==='public');document.getElementById('tabAdmin').classList.toggle('dark',t==='admin')}
-function handleGoogleLogin(r){
-  try{
-    let payload=JSON.parse(atob(r.credential.split('.')[1]));
-    if(!payload.email_verified){document.getElementById('publicError').innerText='❌ Not verified';return;}
-    localStorage.removeItem('mn_admin');
-    localStorage.setItem('mn_user',JSON.stringify({name:payload.name,email:payload.email,pic:payload.picture,verified:true}));
-    document.getElementById('publicError').innerText='';
-    closeAuth();renderAuth();render();
-  }catch(e){document.getElementById('publicError').innerText='❌ Login failed';}
-}
-function adminLogin(){
-  let u=document.getElementById('adminUser').value.trim().toLowerCase();
-  let p=document.getElementById('adminPass').value.trim();
-  let err=document.getElementById('adminError');
-  if(u==='aarsrosin' && (p==='@storyteller'||p==='storyteller')){
-    localStorage.setItem('mn_admin','1');
-    let customName=localStorage.getItem('mn_custom_name')||'aarsrosin';
-    let avatar=localStorage.getItem('mn_avatar')||'';
-    localStorage.setItem('mn_user',JSON.stringify({name:customName,email:'admin@mindnotes',pic:avatar,verified:true}));
-    err.innerText='';closeAuth();renderAuth();render();
-  }else{err.innerText='❌ Wrong credentials';}
-}
+function handleGoogleLogin(r){try{let payload=JSON.parse(atob(r.credential.split('.')[1]));if(!payload.email_verified){document.getElementById('publicError').innerText='❌ Not verified';return;}localStorage.removeItem('mn_admin');localStorage.setItem('mn_user',JSON.stringify({name:payload.name,email:payload.email,pic:payload.picture,verified:true}));document.getElementById('publicError').innerText='';closeAuth();renderAuth();render();}catch(e){document.getElementById('publicError').innerText='❌ Login failed';}}
+function adminLogin(){let u=document.getElementById('adminUser').value.trim().toLowerCase();let p=document.getElementById('adminPass').value.trim();let err=document.getElementById('adminError');if(u==='aarsrosin' && (p==='@storyteller'||p==='storyteller')){localStorage.setItem('mn_admin','1');let customName=localStorage.getItem('mn_custom_name')||'aarsrosin';let avatar=localStorage.getItem('mn_avatar')||'';localStorage.setItem('mn_user',JSON.stringify({name:customName,email:'admin@mindnotes',pic:avatar,verified:true}));err.innerText='';closeAuth();renderAuth();render();}else{err.innerText='❌ Wrong credentials';}}
 function logout(){localStorage.removeItem('mn_user');localStorage.removeItem('mn_admin');closeMenu();renderAuth();render();}
 function openAdminProfile(){if(!isAdmin()){alert('Only admin');return;}document.getElementById('adminProfileModal').classList.add('open')}
 function closeAdminProfile(){document.getElementById('adminProfileModal').classList.remove('open')}
 function changeAvatar(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{localStorage.setItem('mn_avatar',e.target.result);renderAuth();};r.readAsDataURL(f);}
-function removeAvatar(){localStorage.removeItem('mn_avatar');renderAuth();}
 function updateUsername(){let n=document.getElementById('newUsername').value.trim();if(!n)return;localStorage.setItem('mn_custom_name',n);let u=getUser();if(u){u.name=n;localStorage.setItem('mn_user',JSON.stringify(u));}renderAuth();alert('Updated');}
-function render(){let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);if(q)list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));grid.innerHTML=list.map(p=>{let ri=POSTS.indexOf(p);let liked=isPostLiked(p);let first=p.slides[0];let media=first? (first.type==='video'?`<video src="${first.src}" muted></video>`:`<img src="${first.src}" loading="lazy">`) : '';return `<div class="cardPost" onclick="openPost(${ri})"><div class="cardMedia">${media}${p.music?`<div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:3px 6px;border-radius:10px">♪ ${p.music.name.substring(0,12)}</div>`:''}</div><div style="padding:8px 10px"><div style="font-size:10px;letter-spacing:1px;opacity:.6;text-transform:uppercase">${p.cat}</div><div style="display:flex;gap:6px;margin-top:4px;align-items:center"><button class="heartBtn ${liked?'liked':''}" onclick="event.stopPropagation();quickLike(${ri})">${liked?'♥':'♡'}</button><span style="font-size:11px">${p.likes?.length||0}</span><span style="margin-left:8px;opacity:.5">💬 ${p.comments?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts yet</div>';}
+function render(){let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);if(q)list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));grid.innerHTML=list.map(p=>{let liked=isPostLiked(p);let first=p.slides[0];let media=first? (first.type==='video'?`<video src="${first.src}" muted></video>`:`<img src="${first.src}" loading="lazy">`) : '';return `<div class="cardPost" onclick="openPost('${p.id}')"><div class="cardMedia">${media}${p.music?`<div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:3px 6px;border-radius:10px">♪ ${p.music.name.substring(0,12)}</div>`:''}</div><div style="padding:8px 10px"><div style="font-size:10px;letter-spacing:1px;opacity:.6;text-transform:uppercase">${p.cat}</div><div style="display:flex;gap:6px;margin-top:4px;align-items:center"><button class="heartBtn ${liked?'liked':''}" onclick="event.stopPropagation();quickLike('${p.id}')">${liked?'♥':'♡'}</button><span style="font-size:11px">${p.likes?.length||0}</span><span style="margin-left:8px;opacity:.5">💬 ${p.comments?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts yet</div>';}
 function isPostLiked(p){let id=(getUser()?.email)||'';if(!id)return false;return (p.likes||[]).includes(id)}
-function quickLike(ri){if(!isSignedIn()){openAccount();return;}let p=POSTS[ri];if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);saveAll();render();}
-function openPost(i){curPost=i;curSlide=0;let p=POSTS[i];document.getElementById('postModal').classList.add('open');document.getElementById('modalTitle').innerText=p.title;document.getElementById('modalCat').innerText=p.cat;document.getElementById('modalDate').innerText=new Date(p.date).toLocaleString();document.getElementById('modalBody').innerText=p.body;document.getElementById('delBtn').classList.toggle('hide',!isAdmin());document.getElementById('archBtn').classList.toggle('hide',!isAdmin());renderSlide();renderLikes();renderComments();renderMusicPlayer(p);}
-function renderSlide(){let s=POSTS[curPost].slides[curSlide];let b=document.getElementById('slideBox');if(!s)return;b.innerHTML=s.type==='video'?`<video src="${s.src}" controls ${s.muted?'muted':''} style="width:100%;height:100%;object-fit:${s.crop||'contain'}"></video>`:`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop||'contain'}">`;}
-function nextSlide(){if(curSlide<POSTS[curPost].slides.length-1){curSlide++;renderSlide();}}function prevSlide(){if(curSlide>0){curSlide--;renderSlide();}}function closePost(){document.getElementById('postModal').classList.remove('open')}
-function renderLikes(){let p=POSTS[curPost];document.getElementById('likeCount').innerText=p.likes?.length||0;document.getElementById('cmtCount').innerText=p.comments?.length||0;let btn=document.getElementById('heartBtn');if(btn){btn.innerText=isPostLiked(p)?'♥':'♡';btn.classList.toggle('liked',isPostLiked(p));}}
-function toggleLike(){if(!isSignedIn()){openAccount();return;}let p=POSTS[curPost];if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);saveAll();renderLikes();render();}
-function renderComments(){let list=document.getElementById('commentsList');let p=POSTS[curPost];if(!p.comments)p.comments=[];list.innerHTML=p.comments.map((c,ci)=>`<div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0">👤</div><div style="flex:1"><b style="font-size:13px">${c.name}</b><div style="font-size:13px;margin-top:2px">${c.text}</div><div style="display:flex;gap:6px;margin-top:6px"><button class="pill" style="padding:4px 10px;font-size:11px" onclick="likeComment(${ci})">♡ ${c.likes?.length||0}</button>${isAdmin()?`<button class="pill" style="padding:4px 10px;font-size:11px" onclick="blockUser('${c.name}')">Block</button><button class="pill" style="padding:4px 10px;font-size:11px;color:#c44" onclick="delComment(${ci})">Delete</button>`:''}</div></div></div>`).join('')||'<div style="text-align:center;padding:20px;opacity:.5;font-size:13px">No comments yet</div>';}
-function addComment(){if(!isSignedIn()){openAccount();return;}let input=document.getElementById('commentInput');let txt=input.value.trim();if(!txt){alert('Write a comment');return;}let p=POSTS[curPost];if(!p.comments)p.comments=[];let u=getUser();p.comments.unshift({name:u?.name||'Guest',text:txt,date:Date.now(),likes:[]});input.value='';saveAll();renderComments();renderLikes();render();}
-function likeComment(ci){if(!isSignedIn()){openAccount();return;}let c=POSTS[curPost].comments[ci];if(!c.likes)c.likes=[];let id=(getUser()?.email)||'admin';let idx=c.likes.indexOf(id);if(idx>=0)c.likes.splice(idx,1);else c.likes.push(id);saveAll();renderComments();}
-function delComment(ci){if(!isAdmin())return;POSTS[curPost].comments.splice(ci,1);saveAll();renderComments();renderLikes();render();}
-function blockUser(n){if(!isAdmin())return;BLOCKED.push(n);saveAll();render();alert(n+' blocked');}
-function deletePost(){if(!isAdmin())return;if(!confirm('Delete permanently?'))return;POSTS.splice(curPost,1);saveAll();closePost();render();}
-function archivePost(){if(!isAdmin())return;POSTS[curPost].archived=true;saveAll();closePost();render();}
+async function quickLike(id){if(!isSignedIn()){openAccount();return;}let p=POSTS.find(x=>x.id===id);if(!p)return;if(!p.likes)p.likes=[];let uid=(getUser()?.email)||'admin';let idx=p.likes.indexOf(uid);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(uid);await idbPut('posts',p);render();}
+let curPostId=null,curSlide=0,tempSlides=[],editIdx=-1,tempMusic=null,clipLength=60,cropper=null,selectedCropIndex=-1;
+function openPost(id){curPostId=id;curSlide=0;let p=POSTS.find(x=>x.id===id);if(!p)return;document.getElementById('postModal').classList.add('open');document.getElementById('modalTitle').innerText=p.title;document.getElementById('modalCat').innerText=p.cat;document.getElementById('modalDate').innerText=new Date(p.date).toLocaleString();document.getElementById('modalBody').innerText=p.body;document.getElementById('delBtn').classList.toggle('hide',!isAdmin());document.getElementById('archBtn').classList.toggle('hide',!isAdmin());renderSlide();renderLikes();renderComments();renderMusicPlayer(p);}
+function getCurPost(){return POSTS.find(x=>x.id===curPostId)}
+function renderSlide(){let p=getCurPost();if(!p)return;let s=p.slides[curSlide];let b=document.getElementById('slideBox');if(!s)return;b.innerHTML=s.type==='video'?`<video src="${s.src}" controls ${s.muted?'muted':''} style="width:100%;height:100%;object-fit:${s.crop||'contain'}"></video>`:`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop||'contain'}">`;}
+function nextSlide(){let p=getCurPost();if(curSlide<p.slides.length-1){curSlide++;renderSlide();}}function prevSlide(){if(curSlide>0){curSlide--;renderSlide();}}function closePost(){document.getElementById('postModal').classList.remove('open')}
+function renderLikes(){let p=getCurPost();if(!p)return;document.getElementById('likeCount').innerText=p.likes?.length||0;document.getElementById('cmtCount').innerText=p.comments?.length||0;let btn=document.getElementById('heartBtn');if(btn){btn.innerText=isPostLiked(p)?'♥':'♡';btn.classList.toggle('liked',isPostLiked(p));}}
+async function toggleLike(){if(!isSignedIn()){openAccount();return;}let p=getCurPost();if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);await idbPut('posts',p);renderLikes();render();}
+function renderComments(){let list=document.getElementById('commentsList');let p=getCurPost();if(!p)return;if(!p.comments)p.comments=[];list.innerHTML=p.comments.map((c,ci)=>`<div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0">👤</div><div style="flex:1"><b style="font-size:13px">${c.name}</b><div style="font-size:13px;margin-top:2px">${c.text}</div><div style="display:flex;gap:6px;margin-top:6px"><button class="pill" style="padding:4px 10px;font-size:11px" onclick="likeComment(${ci})">♡ ${c.likes?.length||0}</button>${isAdmin()?`<button class="pill" style="padding:4px 10px;font-size:11px" onclick="blockUser('${c.name}')">Block</button><button class="pill" style="padding:4px 10px;font-size:11px;color:#c44" onclick="delComment(${ci})">Delete</button>`:''}</div></div></div>`).join('')||'<div style="text-align:center;padding:20px;opacity:.5;font-size:13px">No comments yet</div>';}
+async function addComment(){if(!isSignedIn()){openAccount();return;}let input=document.getElementById('commentInput');let txt=input.value.trim();if(!txt){alert('Write a comment');return;}let p=getCurPost();if(!p.comments)p.comments=[];let u=getUser();p.comments.unshift({name:u?.name||'Guest',text:txt,date:Date.now(),likes:[]});input.value='';await idbPut('posts',p);renderComments();renderLikes();render();}
+async function likeComment(ci){if(!isSignedIn()){openAccount();return;}let p=getCurPost();let c=p.comments[ci];if(!c.likes)c.likes=[];let id=(getUser()?.email)||'admin';let idx=c.likes.indexOf(id);if(idx>=0)c.likes.splice(idx,1);else c.likes.push(id);await idbPut('posts',p);renderComments();}
+async function delComment(ci){if(!isAdmin())return;let p=getCurPost();p.comments.splice(ci,1);await idbPut('posts',p);renderComments();renderLikes();render();}
+async function blockUser(n){if(!isAdmin())return;await idbPut('blocked',{id:n,name:n});BLOCKED.push(n);render();alert(n+' blocked');}
+async function deletePost(){if(!isAdmin())return;if(!confirm('Move to Recently Deleted?'))return;let p=getCurPost();if(!p)return;await idbPut('deleted',{...p,deletedAt:Date.now()});await idbDelete('posts',p.id);POSTS=POSTS.filter(x=>x.id!==p.id);DELETED=await idbGetAll('deleted');closePost();render();renderAuth();alert('Moved to Recently Deleted');}
+async function archivePost(){if(!isAdmin())return;let p=getCurPost();p.archived=true;await idbPut('posts',p);closePost();render();}
 function openArchive(){if(!isAdmin()){alert('Only admin');return;}renderArchiveList();document.getElementById('archiveModal').classList.add('open')}
 function closeArchive(){document.getElementById('archiveModal').classList.remove('open')}
-function renderArchiveList(){let arch=POSTS.filter(p=>p.archived);let box=document.getElementById('archiveList');if(!arch.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No archived posts</div>';return;}box.innerHTML=arch.map(p=>{let idx=POSTS.indexOf(p);return `<div class="listItem"><img src="${p.slides[0]?.src}"><div style="flex:1"><div style="font-weight:600;font-size:13px">${p.title}</div></div><button class="pill dark" onclick="recoverPost(${idx})">Recover</button><button class="pill" style="color:#c44" onclick="deleteArchived(${idx})">Delete</button></div>`}).join('');}
-function recoverPost(idx){POSTS[idx].archived=false;saveAll();renderArchiveList();render();}
-function deleteArchived(idx){POSTS.splice(idx,1);saveAll();renderArchiveList();render();}
+function renderArchiveList(){let arch=POSTS.filter(p=>p.archived);let box=document.getElementById('archiveList');if(!arch.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No archived posts</div>';return;}box.innerHTML=arch.map(p=>`<div class="listItem"><img src="${p.slides[0]?.src}"><div style="flex:1"><div style="font-weight:600;font-size:13px">${p.title}</div></div><button class="pill dark" onclick="recoverPost('${p.id}')">Recover</button><button class="pill" style="color:#c44" onclick="deleteArchived('${p.id}')">Delete</button></div>`).join('');}
+async function recoverPost(id){let p=POSTS.find(x=>x.id===id);if(p){p.archived=false;await idbPut('posts',p);renderArchiveList();render();}}
+async function deleteArchived(id){let p=POSTS.find(x=>x.id===id);if(p){await idbPut('deleted',{...p,deletedAt:Date.now()});await idbDelete('posts',id);POSTS=POSTS.filter(x=>x.id!==id);DELETED=await idbGetAll('deleted');renderArchiveList();render();renderAuth();}}
+function openDeleted(){if(!isAdmin()){alert('Only admin');return;}renderDeletedList();document.getElementById('deletedModal').classList.add('open')}
+function closeDeleted(){document.getElementById('deletedModal').classList.remove('open')}
+function renderDeletedList(){let box=document.getElementById('deletedList');if(!DELETED.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No deleted posts</div>';return;}box.innerHTML=DELETED.map(p=>`<div class="listItem"><img src="${p.slides[0]?.src}"><div style="flex:1"><div style="font-weight:600;font-size:13px">${p.title}</div><div style="font-size:10px;opacity:.6">Deleted ${new Date(p.deletedAt).toLocaleDateString()}</div></div><button class="pill dark" onclick="restoreDeleted('${p.id}')">Restore</button><button class="pill" style="color:#c44" onclick="permDelete('${p.id}')">Delete Forever</button></div>`).join('');}
+async function restoreDeleted(id){let p=DELETED.find(x=>x.id===id);if(p){delete p.deletedAt; await idbPut('posts',p); await idbDelete('deleted',id); POSTS=await idbGetAll('posts'); DELETED=await idbGetAll('deleted'); renderDeletedList();render();renderAuth();}}
+async function permDelete(id){if(!confirm('Delete forever?'))return;await idbDelete('deleted',id);DELETED=DELETED.filter(x=>x.id!==id);renderDeletedList();renderAuth();}
 function openDrafts(){if(!isAdmin()){alert('Only admin');return;}renderDraftsList();document.getElementById('draftsModal').classList.add('open')}
 function closeDrafts(){document.getElementById('draftsModal').classList.remove('open')}
-function renderDraftsList(){let box=document.getElementById('draftsList');if(!DRAFTS.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No drafts</div>';return;}box.innerHTML=DRAFTS.map((d,i)=>`<div class="listItem"><div style="flex:1"><div style="font-weight:600;font-size:13px">${d.title||'Untitled'}</div></div><button class="pill dark" onclick="loadDraft(${i})">Load</button><button class="pill" onclick="deleteDraft(${i})">✕</button></div>`).join('');}
-function loadDraft(i){let d=DRAFTS[i];tempSlides=d.slides||[];tempMusic=d.music||null;document.getElementById('postTitle').value=d.title||'';document.getElementById('postBody').value=d.body||'';document.getElementById('postCat').value=d.cat||'';closeDrafts();openCreate();renderPreview();if(tempMusic)renderTempMusic();}
-function deleteDraft(i){DRAFTS.splice(i,1);saveAll();renderDraftsList();renderAuth();}
+function renderDraftsList(){let box=document.getElementById('draftsList');if(!DRAFTS.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No drafts</div>';return;}box.innerHTML=DRAFTS.map(d=>`<div class="listItem"><div style="flex:1"><div style="font-weight:600;font-size:13px">${d.title||'Untitled'}</div></div><button class="pill dark" onclick="loadDraft('${d.id}')">Load</button><button class="pill" onclick="deleteDraft('${d.id}')">✕</button></div>`).join('');}
+async function loadDraft(id){let d=DRAFTS.find(x=>x.id===id);if(!d)return;tempSlides=d.slides||[];tempMusic=d.music||null;document.getElementById('postTitle').value=d.title||'';document.getElementById('postBody').value=d.body||'';document.getElementById('postCat').value=d.cat||'';closeDrafts();openCreate();renderPreview();if(tempMusic)renderTempMusic();}
+async function deleteDraft(id){await idbDelete('drafts',id);DRAFTS=DRAFTS.filter(x=>x.id!==id);renderDraftsList();renderAuth();}
 function openBlocked(){if(!isAdmin()){alert('Only admin');return;}renderBlockedList();document.getElementById('blockedModal').classList.add('open')}
 function closeBlocked(){document.getElementById('blockedModal').classList.remove('open')}
-function renderBlockedList(){let box=document.getElementById('blockedList');if(!BLOCKED.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No blocked users</div>';return;}box.innerHTML=BLOCKED.map((n,i)=>`<div class="listItem"><div style="flex:1">${n}</div><button class="pill" onclick="unblockUser(${i})">Unblock</button></div>`).join('');}
-function unblockUser(i){BLOCKED.splice(i,1);saveAll();renderBlockedList();render();}
+function renderBlockedList(){let box=document.getElementById('blockedList');if(!BLOCKED.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No blocked users</div>';return;}box.innerHTML=BLOCKED.map(n=>`<div class="listItem"><div style="flex:1">${n}</div><button class="pill" onclick="unblockUser('${n}')">Unblock</button></div>`).join('');}
+async function unblockUser(n){await idbDelete('blocked',n);BLOCKED=BLOCKED.filter(x=>x!==n);renderBlockedList();render();}
 function openContactSidebar(){closeMenu();renderContacts();document.getElementById('contactModal').classList.add('open')}
 function closeContactSidebar(){document.getElementById('contactModal').classList.remove('open')}
-function sendContact(){let n=document.getElementById('contactName').value.trim(),e=document.getElementById('contactEmail').value.trim(),m=document.getElementById('contactMsg').value.trim();if(!n||!m)return alert('Name & message required');CONTACTS.unshift({name:n,email:e,msg:m,date:Date.now()});saveAll();document.getElementById('contactName').value='';document.getElementById('contactEmail').value='';document.getElementById('contactMsg').value='';renderContacts();alert('Message sent');}
-function renderContacts(){let box=document.getElementById('contactList');if(!CONTACTS.length){box.innerHTML='';return;}if(!isAdmin()){box.innerHTML=`<div style="font-size:11px;opacity:.6;margin-top:8px">${CONTACTS.length} message(s) sent</div>`;return;}box.innerHTML=CONTACTS.map((c,i)=>`<div style="background:var(--card2);padding:10px;border-radius:10px;margin-top:8px"><b style="font-size:12px">${c.name} • ${c.email}</b><div style="font-size:13px;margin-top:4px">${c.msg}</div><div style="font-size:9px;opacity:.5;margin-top:4px">${new Date(c.date).toLocaleString()} <button onclick="CONTACTS.splice(${i},1);saveAll();renderContacts()" style="float:right;background:none;border:none;color:#c44;cursor:pointer">Delete</button></div></div>`).join('');}
-function openCreate(){if(!isAdmin()){alert('Only admin can create posts');return;}closeMenu();tempSlides=[];selectedCropIndex=-1;editIdx=-1;tempMusic=null;clipLength=60;document.getElementById('postTitle').value='';document.getElementById('postBody').value='';document.getElementById('postCat').value='';document.getElementById('preview').innerHTML='';document.getElementById('musicPreview').classList.add('hide');document.getElementById('editTools').classList.add('hide');document.getElementById('cropperArea').classList.add('hide');document.getElementById('publishStatus').innerText='';document.getElementById('uploadStatus').innerText='';closeCropper();document.getElementById('createModal').classList.add('open');}
+async function sendContact(){let n=document.getElementById('contactName').value.trim(),e=document.getElementById('contactEmail').value.trim(),m=document.getElementById('contactMsg').value.trim();if(!n||!m)return alert('Name & message required');let obj={id:'c_'+Date.now(),name:n,email:e,msg:m,date:Date.now()};await idbPut('contacts',obj);CONTACTS=await idbGetAll('contacts');document.getElementById('contactName').value='';document.getElementById('contactEmail').value='';document.getElementById('contactMsg').value='';renderContacts();alert('Message sent');}
+function renderContacts(){let box=document.getElementById('contactList');if(!CONTACTS.length){box.innerHTML='';return;}if(!isAdmin()){box.innerHTML=`<div style="font-size:11px;opacity:.6;margin-top:8px">${CONTACTS.length} message(s) sent</div>`;return;}box.innerHTML=CONTACTS.map(c=>`<div style="background:var(--card2);padding:10px;border-radius:10px;margin-top:8px"><b style="font-size:12px">${c.name} • ${c.email}</b><div style="font-size:13px;margin-top:4px">${c.msg}</div><div style="font-size:9px;opacity:.5;margin-top:4px">${new Date(c.date).toLocaleString()} <button onclick="deleteContact('${c.id}')" style="float:right;background:none;border:none;color:#c44;cursor:pointer">Delete</button></div></div>`).join('');}
+async function deleteContact(id){await idbDelete('contacts',id);CONTACTS=CONTACTS.filter(x=>x.id!==id);renderContacts();}
+function openCreate(){if(!isAdmin()){alert('Only admin');return;}closeMenu();tempSlides=[];selectedCropIndex=-1;editIdx=-1;tempMusic=null;clipLength=60;document.getElementById('postTitle').value='';document.getElementById('postBody').value='';document.getElementById('postCat').value='';document.getElementById('preview').innerHTML='';document.getElementById('musicPreview').classList.add('hide');document.getElementById('editTools').classList.add('hide');document.getElementById('cropperArea').classList.add('hide');document.getElementById('publishStatus').innerText='';document.getElementById('uploadStatus').innerText='';closeCropper();document.getElementById('createModal').classList.add('open');}
 function closeCreate(){closeCropper();document.getElementById('createModal').classList.remove('open')}
-function handleMedia(inp){
-  let files=[...inp.files];if(!files.length)return;
-  document.getElementById('uploadStatus').innerText=`Processing ${files.length} file(s)...`;
-  let processed=0;
-  files.forEach(f=>{
-    if(f.type.startsWith('image/')){
-      let reader=new FileReader();
-      reader.onload=e=>{compressImage(e.target.result,1024,0.7,compressed=>{tempSlides.push({src:compressed,type:'image',crop:'cover',muted:false,original:e.target.result});processed++;if(processed===files.length){renderPreview();document.getElementById('uploadStatus').innerText=`${tempSlides.length} items ready`;}});};
-      reader.readAsDataURL(f);
-    }else{
-      let reader=new FileReader();
-      reader.onload=e=>{tempSlides.push({src:e.target.result,type:'video',crop:'cover',muted:false});processed++;if(processed===files.length){renderPreview();document.getElementById('uploadStatus').innerText=`${tempSlides.length} items ready`;}};
-      reader.readAsDataURL(f);
-    }
-  });
-  inp.value='';
-}
+function handleMedia(inp){let files=[...inp.files];if(!files.length)return;document.getElementById('uploadStatus').innerText=`Processing ${files.length} file(s)...`;let processed=0;files.forEach(f=>{if(f.type.startsWith('image/')){let reader=new FileReader();reader.onload=e=>{compressImage(e.target.result,1280,0.75,compressed=>{tempSlides.push({src:compressed,type:'image',crop:'cover',muted:false,original:e.target.result});processed++;if(processed===files.length){renderPreview();document.getElementById('uploadStatus').innerText=`${tempSlides.length} items ready`;}});};reader.readAsDataURL(f);}else{let reader=new FileReader();reader.onload=e=>{tempSlides.push({src:e.target.result,type:'video',crop:'cover',muted:false});processed++;if(processed===files.length){renderPreview();document.getElementById('uploadStatus').innerText=`${tempSlides.length} items ready`;}};reader.readAsDataURL(f);}});inp.value='';}
 function compressImage(src,maxSize,quality,cb){let img=new Image();img.onload=()=>{let canvas=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxSize||h>maxSize){if(w>h){h=h*maxSize/w;w=maxSize;}else{w=w*maxSize/h;h=maxSize;}}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);cb(canvas.toDataURL('image/jpeg',quality));};img.src=src;}
 function renderPreview(){let p=document.getElementById('preview');p.innerHTML=tempSlides.map((s,i)=>`<div class="previewItem ${editIdx===i?'selected':''}" onclick="selectEdit(${i})">${s.type==='video'?`<video src="${s.src}" muted style="width:100%;height:100%;object-fit:${s.crop||'cover'}"></video>`:`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop||'cover'}">`}<button onclick="event.stopPropagation();tempSlides.splice(${i},1);if(editIdx===i){editIdx=-1;document.getElementById('editTools').classList.add('hide');closeCropper();}renderPreview()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.8);color:#fff;border:none;border-radius:50%;width:22px;height:22px">✕</button></div>`).join('');}
 function selectEdit(i){editIdx=i;selectedCropIndex=i;document.getElementById('editTools').classList.remove('hide');document.getElementById('editIndex').innerText=(i+1)+'/'+tempSlides.length;renderPreview();}
@@ -288,7 +270,7 @@ function applyQuickCrop(v){if(editIdx<0)return;tempSlides[editIdx].crop=v;render
 function toggleMute(){if(editIdx<0)return;if(tempSlides[editIdx].type!=='video'){alert('Only videos');return;}tempSlides[editIdx].muted=!tempSlides[editIdx].muted;renderPreview();}
 function openCropper(){if(editIdx<0||tempSlides[editIdx].type==='video'){alert('Select image');return;}let src=tempSlides[editIdx].original||tempSlides[editIdx].src;document.getElementById('cropperArea').classList.remove('hide');let img=document.getElementById('cropImage');img.src=src;setTimeout(()=>{if(cropper)cropper.destroy();cropper=new Cropper(img,{viewMode:1,dragMode:'move',aspectRatio:NaN,autoCropArea:0.8,movable:true,zoomable:true,scalable:true,rotatable:true,guides:true,center:true,highlight:true,background:false,cropBoxMovable:true,cropBoxResizable:true});},100);}
 function closeCropper(){document.getElementById('cropperArea').classList.add('hide');if(cropper){cropper.destroy();cropper=null;}}
-function applyCropper(){if(!cropper||selectedCropIndex<0)return;let canvas=cropper.getCroppedCanvas({width:1024,height:1024,fillColor:'#fff'});let cropped=canvas.toDataURL('image/jpeg',0.8);tempSlides[selectedCropIndex].src=cropped;renderPreview();closeCropper();}
+function applyCropper(){if(!cropper||selectedCropIndex<0)return;let canvas=cropper.getCroppedCanvas({width:1280,height:1280,fillColor:'#fff'});let cropped=canvas.toDataURL('image/jpeg',0.8);tempSlides[selectedCropIndex].src=cropped;renderPreview();closeCropper();}
 function setAspect(r){if(!cropper)return;cropper.setAspectRatio(r);document.querySelectorAll('.cropBtns.pill').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
 function rotateCropper(){if(!cropper)return;cropper.rotate(90);}
 function handleMusicFile(inp){let f=inp.files[0];if(!f)return;tempMusic={src:URL.createObjectURL(f),name:f.name,type:'local'};renderTempMusic();}
@@ -304,9 +286,10 @@ function setClipLength(s){clipLength=s;document.querySelectorAll('[onclick^="set
 function openSpotifySearch(){document.getElementById('spotifyBox').classList.toggle('hide');}
 function searchSpotify(){let q=document.getElementById('spotifyQuery').value.trim();if(!q)return;document.getElementById('spotifyResults').innerHTML=`<div class="listItem"><div style="flex:1"><div style="font-size:12px;font-weight:600">🎵 ${q}</div></div><button class="pill dark" onclick="tempMusic={src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',name:'${q}',type:'spotify'};renderTempMusic()">Add</button></div>`;}
 function renderMusicPlayer(p){let box=document.getElementById('modalMusicPlayer');if(!p.music){box.classList.add('hide');return;}box.classList.remove('hide');box.innerHTML=`<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px;display:flex;gap:10px;align-items:center"><button class="pill dark" onclick="let a=document.getElementById('modalAudio');a.paused?a.play():a.pause()">▶️ ${p.music.name}</button><audio id="modalAudio" src="${p.music.src}"></audio></div>`;}
-function publishPost(){let t=document.getElementById('postTitle').value.trim();let b=document.getElementById('postBody').value.trim();let c=document.getElementById('postCat').value.trim()||'LIFE';let status=document.getElementById('publishStatus');if(!t){status.innerText='❌ Title required';return;}if(!tempSlides.length){status.innerText='❌ Add media';return;}status.innerText='Publishing...';try{let newPost={cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false,music:tempMusic};POSTS.unshift(newPost);saveAll();closeCreate();render();status.innerText='';}catch(e){status.innerText='❌ Failed: '+e.message;}}
-function saveDraft(){let t=document.getElementById('postTitle').value.trim()||'Untitled';DRAFTS.unshift({title:t,body:document.getElementById('postBody').value,cat:document.getElementById('postCat').value,slides:[...tempSlides],music:tempMusic});saveAll();alert('Saved');closeCreate();renderAuth();}
-function saveSchedule(){let dt=document.getElementById('scheduleTime').value;if(!dt)return alert('Select time');let t=document.getElementById('postTitle').value.trim()||'Untitled';let newPost={cat:(document.getElementById('postCat').value||'LIFE').toUpperCase(),title:t,body:document.getElementById('postBody').value,slides:[...tempSlides],likes:[],comments:[],date:new Date(dt).getTime(),archived:false,music:tempMusic};let delay=new Date(dt).getTime()-Date.now();if(delay>0){setTimeout(()=>{POSTS.unshift(newPost);saveAll();render();},delay);alert('Scheduled');}else{POSTS.unshift(newPost);saveAll();render();}closeCreate();}
-renderAuth();render();
+async function publishPost(){let t=document.getElementById('postTitle').value.trim();let b=document.getElementById('postBody').value.trim();let c=document.getElementById('postCat').value.trim()||'LIFE';let status=document.getElementById('publishStatus');if(!t){status.innerText='❌ Title required';return;}if(!tempSlides.length){status.innerText='❌ Add media';return;}status.innerText='Publishing...';try{let newPost={id:'p_'+Date.now()+'_'+Math.random().toString(36).slice(2),cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false,music:tempMusic};await idbPut('posts',newPost);POSTS.unshift(newPost);closeCreate();render();status.innerText='';}catch(e){status.innerText='❌ Failed: '+e.message;}}
+async function saveDraft(){let t=document.getElementById('postTitle').value.trim()||'Untitled';let d={id:'d_'+Date.now(),title:t,body:document.getElementById('postBody').value,cat:document.getElementById('postCat').value,slides:[...tempSlides],music:tempMusic,date:Date.now()};await idbPut('drafts',d);DRAFTS.unshift(d);alert('Saved to Drafts');closeCreate();renderAuth();}
+async function saveSchedule(){let dt=document.getElementById('scheduleTime').value;if(!dt)return alert('Select time');let t=document.getElementById('postTitle').value.trim()||'Untitled';let newPost={id:'p_'+Date.now(),cat:(document.getElementById('postCat').value||'LIFE').toUpperCase(),title:t,body:document.getElementById('postBody').value,slides:[...tempSlides],likes:[],comments:[],date:new Date(dt).getTime(),archived:false,music:tempMusic};let delay=new Date(dt).getTime()-Date.now();if(delay>0){setTimeout(async()=>{await idbPut('posts',newPost);POSTS=await idbGetAll('posts');render();},delay);alert('Scheduled for '+dt);}else{await idbPut('posts',newPost);POSTS=await idbGetAll('posts');render();}closeCreate();}
+async function clearAllData(){if(!confirm('Clear old cache to fix Storage full? Your posts are safe in IndexedDB.'))return;try{localStorage.removeItem('mn_v17');localStorage.removeItem('mn_drafts_v17');localStorage.removeItem('mn_v16');localStorage.removeItem('mn_v15');localStorage.removeItem('mn_contacts_v17');localStorage.removeItem('mn_blocked_v17');}catch{}alert('Cache cleared! Reload page.');location.reload();}
+loadAll();
 </script>
 </body></html>
