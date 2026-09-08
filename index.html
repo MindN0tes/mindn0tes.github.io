@@ -14,7 +14,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .brand{flex-shrink:0}.brand h1{font-family:'Instrument Serif',serif;font-size:26px;letter-spacing:-1px;white-space:nowrap}
 .searchWrap{flex:1;display:flex;justify-content:center;min-width:0}
 .searchTop{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:7px 12px;width:100%;max-width:260px}
-.searchTop span{color:var(--icon)}.searchTop input{border:none;background:transparent;outline:none;width:100%;font-size:13px;color:var(--text)}
+.searchTop input{border:none;background:transparent;outline:none;width:100%;font-size:13px;color:var(--text)}
 .rightActions{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .pill{padding:7px 12px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;justify-content:center}
 .pill.dark{background:var(--text);color:var(--bg);border-color:var(--text)}
@@ -64,10 +64,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <div class="menuHead"><span>Menu</span><button class="pill" onclick="closeMenu()">✕</button></div>
   <div id="authBox" style="margin-bottom:10px"></div>
   <button id="menuSignBtn" class="pill dark" style="width:100%;padding:12px;margin-bottom:12px" onclick="openAccount()">Sign in</button>
-  <div class="menuItem" onclick="openAccount()"><span>Account</span><span>›</span></div>
-  <div class="menuItem" id="archiveMenuItem"><span>Archive</span><span>›</span></div>
-  <div class="menuItem" id="draftMenuItem"><span>Drafts</span><span id="draftCount"></span></div>
-  <div class="menuItem" id="createMenuItem"><span>+ Create Post</span><span>›</span></div>
+  <div class="menuItem" onclick="handleAccountClick()"><span>Account</span><span>›</span></div>
+  <div class="menuItem" id="archiveMenuItem" onclick="openArchive()"><span>Archive</span><span>›</span></div>
+  <div class="menuItem" id="draftMenuItem" onclick="openDrafts()"><span>Drafts</span><span id="draftCount"></span></div>
+  <div class="menuItem" id="createMenuItem" onclick="openCreate()"><span>+ Create Post</span><span>›</span></div>
   <div class="menuItem" onclick="toggleDark()"><span>Dark Mode</span><span id="darkState">Off</span></div>
 </div></div>
 <div id="grid" class="grid"></div>
@@ -118,10 +118,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <div id="createModal" class="modalBg" onclick="if(event.target==this)closeCreate()"><div class="modalCard" style="max-width:500px"><h2 class="serif" style="font-size:22px">Create Post</h2><input id="postCat" class="input" placeholder="Category" style="margin-top:10px"><input id="postTitle" class="input" placeholder="Title"><input id="postImgUrl" class="input" placeholder="Image URL or upload"><div style="display:flex;gap:6px;margin-bottom:6px"><label class="pill" style="flex:1;text-align:center;cursor:pointer">📷 Photo<input type="file" accept="image/*" multiple hidden onchange="handleMulti(this)"></label></div><div id="preview" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0"></div><textarea id="postBody" class="input" style="min-height:90px" placeholder="Body"></textarea><div style="display:flex;gap:6px"><button class="pill" style="flex:1" onclick="saveDraft()">Draft</button><button class="pill dark" style="flex:1" onclick="publishPost()">Publish</button></div><button class="pill" style="width:100%;margin-top:6px" onclick="closeCreate()">Close</button></div></div>
 <script>
 let POSTS,DRAFTS;const DEFAULT=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Slow mornings & coffee. 01:00AM thoughts curated from Muzaffarpur.",slides:[{src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1000"}],likes:[],comments:[],date:Date.now(),archived:false},{cat:"DESK",title:"Desk",body:"Minimal desk setup.",slides:[{src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"}],likes:[],comments:[],date:Date.now()}];
-try{POSTS=JSON.parse(localStorage.getItem('mn_v10')||'null')||DEFAULT}catch{POSTS=DEFAULT}
-try{DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_v10')||'[]')}catch{DRAFTS=[]}
+try{POSTS=JSON.parse(localStorage.getItem('mn_v11')||'null')||DEFAULT}catch{POSTS=DEFAULT}
+try{DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_v11')||'[]')}catch{DRAFTS=[]}
 let curPost=0,curSlide=0,tempSlides=[];
-function saveAll(){localStorage.setItem('mn_v10',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v10',JSON.stringify(DRAFTS))}
+function saveAll(){localStorage.setItem('mn_v11',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v11',JSON.stringify(DRAFTS))}
 function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
 function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
 function isSignedIn(){return!!getUser() || isAdmin()}
@@ -136,16 +136,20 @@ function renderAuth(){
   if(draftItem) draftItem.style.display=signed?'flex':'none';
   if(createItem) createItem.style.display=isAdmin()?'flex':'none';
   if(u||isAdmin()){
-    let name=u?u.name:'aarsrosin';if(s)s.innerText=name.split(' ')[0];if(ms){ms.innerText='Signed in as '+name;ms.onclick=function(){logout()}}
-    b.innerHTML=`<div style="background:var(--card2);padding:10px;border-radius:14px;display:flex;gap:8px;align-items:center;border:1px solid var(--border)"><div style="width:32px;height:32px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center">👤</div><div><div style="font-size:12px;font-weight:600">${name}${isAdmin()?' • Admin':''}</div></div><button class="pill" style="margin-left:auto" onclick="logout()">Logout</button></div>`;
+    let name=u?u.name:'aarsrosin';
+    if(s){s.innerText=name.split(' ')[0]; s.onclick=function(){openMenu()}}
+    if(ms){ms.innerText='Logout'; ms.onclick=function(){logout()}; ms.style.display='none'}
+    b.innerHTML=`<div style="background:var(--card2);padding:10px;border-radius:14px;display:flex;gap:8px;align-items:center;border:1px solid var(--border)"><div style="width:32px;height:32px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center">👤</div><div><div style="font-size:12px;font-weight:600">${name}${isAdmin()?' • Admin':''}</div><div style="font-size:10px;opacity:.6">Active</div></div><button class="pill" style="margin-left:auto" onclick="logout()">Logout</button></div>`;
   }else{
-    if(s)s.innerText='Sign in';if(ms){ms.innerText='Sign in';ms.onclick=function(){openAccount()}}
+    if(s){s.innerText='Sign in'; s.onclick=function(){openAccount()}}
+    if(ms){ms.innerText='Sign in'; ms.onclick=function(){openAccount()}; ms.style.display='block'}
     b.innerHTML='';
   }
   let dc=document.getElementById('draftCount');if(dc)dc.innerText=DRAFTS.length?`(${DRAFTS.length})`:'';
   let ds=document.getElementById('darkState');if(ds)ds.innerText=document.documentElement.classList.contains('dark')?'On':'Off';
   let di=document.getElementById('darkIcon');if(di)di.innerText=document.documentElement.classList.contains('dark')?'🌙':'☀️';
 }
+function handleAccountClick(){if(isSignedIn()){alert('Already signed in as '+(getUser()?.name||'aarsrosin')+' • Admin');}else{openAccount();}}
 function openAccount(){openAuthTab('public');document.getElementById('authModal').classList.add('open')}
 function closeAuth(){document.getElementById('authModal').classList.remove('open')}
 function openAuthTab(t){
@@ -153,20 +157,19 @@ function openAuthTab(t){
   if(t==='public'){pub.classList.remove('hide');adm.classList.add('hide');tp.classList.add('active');ta.classList.remove('active');}
   else{adm.classList.remove('hide');pub.classList.add('hide');ta.classList.add('active');tp.classList.remove('active');}
 }
-function handleGoogleLogin(r){try{let p=JSON.parse(atob(r.credential.split('.')[1]));localStorage.setItem('mn_user',JSON.stringify({name:p.name,email:p.email,pic:p.picture}));closeAuth();renderAuth();render();}catch(e){alert('Sign-in failed. Use Admin tab if on GitHub.');}}
+function handleGoogleLogin(r){try{let p=JSON.parse(atob(r.credential.split('.')[1]));localStorage.setItem('mn_user',JSON.stringify({name:p.name,email:p.email,pic:p.picture}));closeAuth();renderAuth();render();}catch(e){alert('Google sign-in failed on GitHub Pages. Use Admin tab: aarsrosin / @storyteller');openAuthTab('admin');}}
 function adminLogin(){
   let uEl=document.getElementById('adminUser');let pEl=document.getElementById('adminPass');let msg=document.getElementById('adminMsg');
   let u=(uEl.value||'').trim().toLowerCase();let p=(pEl.value||'').trim();
-  if((u==='aarsrosin' && (p==='@storyteller' || p==='storyteller' || p==='@Storyteller'))){
+  if((u==='aarsrosin' && (p==='@storyteller' || p==='storyteller'))){
     localStorage.setItem('mn_admin','1');
     localStorage.setItem('mn_user',JSON.stringify({name:'aarsrosin',email:'admin@mindnotes',pic:''}));
     if(msg)msg.innerText='';closeAuth();renderAuth();render();
-    alert('Admin signed in successfully!');
   }else{
-    if(msg)msg.innerText='Invalid credentials. Try: aarsrosin / @storyteller';
+    if(msg)msg.innerText='Invalid. Use aarsrosin / @storyteller';
   }
 }
-function logout(){localStorage.removeItem('mn_user');localStorage.removeItem('mn_admin');renderAuth();render();}
+function logout(){localStorage.removeItem('mn_user');localStorage.removeItem('mn_admin');closeMenu();renderAuth();render();}
 function render(){
   let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);
   if(q) list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));
@@ -190,12 +193,14 @@ function replyComment(ci){if(!isSignedIn()){openAccount();return;}let txt=prompt
 function delComment(ci){if(!isAdmin())return;POSTS[curPost].comments.splice(ci,1);saveAll();renderComments();renderLikes();}
 function deletePost(){if(!isAdmin())return;if(!confirm('Delete?'))return;POSTS.splice(curPost,1);saveAll();closePost();render();}
 function archivePost(){if(!isSignedIn()){openAccount();return;}POSTS[curPost].archived=true;saveAll();closePost();render();}
-function publishPost(){let t=document.getElementById('postTitle').value.trim();let b=document.getElementById('postBody').value.trim();let c=document.getElementById('postCat').value.trim()||'COFFEE';let u=document.getElementById('postImgUrl').value.trim();if(!t)return alert('Title required');if(u&&!tempSlides.length)tempSlides.push({src:u});if(!tempSlides.length)return alert('Add image');POSTS.unshift({cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false});saveAll();closeCreate();render();}
-function saveDraft(){let t=document.getElementById('postTitle').value.trim()||'Untitled';DRAFTS.unshift({title:t,slides:[...tempSlides],body:document.getElementById('postBody').value});saveAll();alert('Draft saved');closeCreate();renderAuth();}
-function openCreate(){if(!isAdmin()){openAuthTab('admin');openAccount();return;}tempSlides=[];document.getElementById('createModal').classList.add('open');renderPreview();}
+function openArchive(){if(!isSignedIn()){openAccount();return;}let arch=POSTS.filter(p=>p.archived);if(!arch.length){alert('No archived posts');return;}let sel=prompt(arch.map((p,i)=>`${i+1}. ${p.title}`).join('\n')+'\nEnter number to restore (0 to cancel)');if(sel){let idx=parseInt(sel)-1;if(idx>=0 && arch[idx]){POSTS[POSTS.indexOf(arch[idx])].archived=false;saveAll();render();alert('Restored!');}}}
+function openDrafts(){if(!isSignedIn()){openAccount();return;}if(!DRAFTS.length){alert('No drafts');return;}let sel=prompt(DRAFTS.map((d,i)=>`${i+1}. ${d.title}`).join('\n')+'\nEnter number to load');if(sel){let i=parseInt(sel)-1;if(DRAFTS[i]){tempSlides=DRAFTS[i].slides||[];document.getElementById('postTitle').value=DRAFTS[i].title;document.getElementById('postBody').value=DRAFTS[i].body||'';openCreate();renderPreview();}}}
+function openCreate(){if(!isAdmin()){openAuthTab('admin');openAccount();return;}closeMenu();tempSlides=[];document.getElementById('postTitle').value='';document.getElementById('postBody').value='';document.getElementById('postCat').value='';document.getElementById('postImgUrl').value='';document.getElementById('createModal').classList.add('open');renderPreview();}
 function closeCreate(){document.getElementById('createModal').classList.remove('open')}
 function handleMulti(inp){[...inp.files].forEach(f=>{let r=new FileReader();r.onload=e=>{tempSlides.push({src:e.target.result});renderPreview();};r.readAsDataURL(f);});}
 function renderPreview(){document.getElementById('preview').innerHTML=tempSlides.map((s,i)=>`<div style="position:relative;background:var(--card2);border-radius:10px;overflow:hidden;aspect-ratio:1"><img src="${s.src}" style="width:100%;height:100%;object-fit:cover"><button onclick="tempSlides.splice(${i},1);renderPreview()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px">✕</button></div>`).join('');}
+function publishPost(){let t=document.getElementById('postTitle').value.trim();let b=document.getElementById('postBody').value.trim();let c=document.getElementById('postCat').value.trim()||'COFFEE';let u=document.getElementById('postImgUrl').value.trim();if(!t)return alert('Title required');if(u&&!tempSlides.length)tempSlides.push({src:u});if(!tempSlides.length)return alert('Add image');POSTS.unshift({cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false});saveAll();closeCreate();render();}
+function saveDraft(){let t=document.getElementById('postTitle').value.trim()||'Untitled';DRAFTS.unshift({title:t,slides:[...tempSlides],body:document.getElementById('postBody').value});saveAll();alert('Draft saved');closeCreate();renderAuth();}
 renderAuth();render();
 </script>
 </body></html>
