@@ -172,30 +172,54 @@ async function loadAll(){
     POSTS=await idbGetAll('posts');
     DRAFTS=await idbGetAll('drafts');
     CONTACTS=await idbGetAll('contacts');
-    let b=await idbGetAll('blocked'); BLOCKED=b.map(x=>x.name||x.id);
+    let b=await idbGetAll('blocked');
+    BLOCKED=b.map(x=>x.name||x.id);
     DELETED=await idbGetAll('deleted');
-  }catch(e){POSTS=[];}
+  }catch(e){
+    console.error('Local DB load failed:',e);
+    POSTS=[];
+    DRAFTS=[];
+    CONTACTS=[];
+    BLOCKED=[];
+    DELETED=[];
+  }
 
-  // Cloud sync - dusre phone pe dikhne ke liye
+  POSTS.sort((a,b)=>(b.date||0)-(a.date||0));
+  renderAuth();
+  render();
+
   cloudRef.on('value', async snap=>{
-    let val=snap.val();
-    if(val){
-      let cloudPosts=Object.values(val).filter(p=>p && p.id);
-      // local me merge
-      for(let p of cloudPosts){
-        if(!POSTS.find(x=>x.id===p.id)){
-          await idbPut('posts',p);
-        }
+    try{
+      const val=snap.val() || {};
+      const cloudPosts=Object.values(val).filter(p=>p && p.id).sort((a,b)=>(b.date||0)-(a.date||0));
+
+      const db=await openDB();
+      await new Promise((resolve,reject)=>{
+        const tx=db.transaction('posts','readwrite');
+        const store=tx.objectStore('posts');
+        store.clear();
+        cloudPosts.forEach(p=>{
+          store.put(p);
+        });
+        tx.oncomplete=resolve;
+        tx.onerror=()=>reject(tx.error);
+        tx.onabort=()=>reject(tx.error || new Error('IndexedDB transaction aborted'));
+      });
+      db.close();
+
+      POSTS=cloudPosts;
+      if(curPostId &&!POSTS.some(p=>p.id===curPostId)){
+        closePost();
+        curPostId=null;
       }
-      POSTS=await idbGetAll('posts');
-      // sort by date desc
-      POSTS.sort((a,b)=>b.date-a.date);
-      render();renderAuth();
-    } else {
       render();
+      renderAuth();
+    }catch(e){
+      console.error('Firebase sync failed:',e);
     }
+  },err=>{
+    console.error('Firebase read failed:',err);
   });
-  renderAuth();render();
 }
 function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
 function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
