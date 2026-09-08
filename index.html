@@ -3,6 +3,8 @@
 <title>MindNotes. — 01:00AM thoughts</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 <style>
 :root{--bg:#fefaf3;--card:#fff;--card2:#f6eee3;--text:#121212;--border:#efe6d8;--paper:#fdf8f0;--accent:#121212}
 :root.dark{--bg:#0e0e0e;--card:#1a1a1a;--card2:#242424;--text:#f4efe7;--border:#2a2a2a;--paper:#121212;--accent:#f4efe7}
@@ -22,12 +24,12 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .cardMedia{aspect-ratio:1/1;background:#111;overflow:hidden;position:relative}.cardMedia img,.cardMedia video{width:100%;height:100%;object-fit:cover;display:block}
 .heartBtn{background:transparent;border:none;cursor:pointer;font-size:20px;width:28px;height:28px}.heartBtn.liked{color:#ff2d2d}
 .modalBg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);z-index:500;display:none;align-items:center;justify-content:center;padding:12px}.modalBg.open{display:flex}
-.modalCard{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto}
+.modalCard{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;width:100%;max-width:620px;max-height:92vh;overflow-y:auto}
 .input{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);margin-bottom:8px;outline:none;font-size:14px}
 .mModal{position:fixed;inset:0;background:var(--paper);z-index:300;display:none;overflow-y:auto}.mModal.open{display:block}
 .mediaWrap{background:#000;border-radius:20px;overflow:hidden;margin:12px;aspect-ratio:3/4;position:relative;display:flex;align-items:center;justify-content:center}
 .mediaWrap img,.mediaWrap video{width:100%;height:100%;object-fit:contain}
-.navArrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:#fff;color:#111;border:none;cursor:pointer}
+.navArrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:#fff;color:#111;border:none;cursor:pointer;z-index:5}
 .navArrow.left{left:10px}.navArrow.right{right:10px}
 .menuPanel{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(10px);z-index:400;display:none}.menuPanel.open{display:flex;justify-content:flex-end}
 .menuBox{width:86%;max-width:360px;background:var(--card);height:100%;padding:20px;overflow-y:auto}
@@ -46,6 +48,14 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .listItem img{width:48px;height:48px;border-radius:8px;object-fit:cover}
 .badge{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--border);margin-left:6px}
 .badge.admin{background:#121212;color:#fff}.dark.badge.admin{background:#fff;color:#000}
+.cropContainer{width:100%;max-height:400px;background:#111;border-radius:12px;overflow:hidden;margin:10px 0}
+.commentRow{display:flex;gap:8px;align-items:center;margin-top:12px}
+.commentRow input{flex:1;margin:0}
+.cropBtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.previewGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.previewItem{position:relative;background:var(--card2);border-radius:12px;overflow:hidden;aspect-ratio:1;border:1px solid var(--border);cursor:pointer}
+.previewItem.selected{border:2px solid var(--text)}
+.previewItem img,.previewItem video{width:100%;height:100%;object-fit:cover}
 </style></head><body>
 <div class="top">
   <div class="brand"><h1 class="serif">MindNotes.</h1></div>
@@ -70,28 +80,37 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <div id="postModal" class="mModal">
   <div style="padding:10px;display:flex;gap:6px;position:sticky;top:0;background:var(--paper);z-index:10;border-bottom:1px solid var(--border)"><button class="pill" onclick="closePost()">Back</button><div style="flex:1"></div><button id="archBtn" class="pill hide" onclick="archivePost()">Archive</button><button id="delBtn" class="pill hide" style="color:#c44" onclick="deletePost()">Delete</button></div>
   <div class="mediaWrap" id="slideBox"></div><button class="navArrow left" onclick="prevSlide()">‹</button><button class="navArrow right" onclick="nextSlide()">›</button>
-  <div style="padding:0 16px;max-width:700px;margin:0 auto"><div id="modalCat"></div><h1 id="modalTitle" class="serif" style="font-size:32px"></h1><div id="modalMusicPlayer" class="hide"></div><div id="modalDate" style="font-size:10px;opacity:.5"></div><div id="modalBody" style="margin-top:10px;line-height:1.6;white-space:pre-wrap"></div><div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><button class="heartBtn" id="heartBtn" onclick="toggleLike()">♡</button><span id="likeCount">0</span><span>💬</span><span id="cmtCount">0</span></div><div style="padding:12px 0"><input id="commentInput" class="input" placeholder="Add a comment..." style="width:75%;display:inline-block"><button class="pill dark" style="width:22%;margin-left:2%" onclick="addComment()">Post</button><div id="commentsList"></div></div></div>
+  <div style="padding:0 16px;max-width:700px;margin:0 auto">
+    <div id="modalCat" style="font-size:10px;letter-spacing:1px;opacity:.6;margin-top:10px"></div>
+    <h1 id="modalTitle" class="serif" style="font-size:32px;margin-top:4px"></h1>
+    <div id="modalMusicPlayer" class="hide" style="margin-top:10px"></div>
+    <div id="modalDate" style="font-size:10px;opacity:.5;margin-top:4px"></div>
+    <div id="modalBody" style="margin-top:10px;line-height:1.6;white-space:pre-wrap;font-size:14px"></div>
+    <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);align-items:center"><button class="heartBtn" id="heartBtn" onclick="toggleLike()">♡</button><span id="likeCount">0</span><span style="margin-left:8px">💬</span><span id="cmtCount">0</span></div>
+    <div class="commentRow"><input id="commentInput" class="input" placeholder="Add a comment..."><button class="pill dark" style="padding:11px 20px" onclick="addComment()">Post</button></div>
+    <div id="commentsList" style="margin-top:14px"></div>
+  </div>
 </div>
 
 <div id="adminProfileModal" class="modalBg" onclick="if(event.target==this)closeAdminProfile()"><div class="modalCard"><h2 class="serif" style="font-size:22px">Admin Profile</h2><div class="adminProfileBox" style="margin-top:12px"><div class="avatar" id="adminAvatar">👤</div><div><div id="adminNameDisplay">aarsrosin</div><div id="adminRoleDisplay" style="font-size:11px;opacity:.6">Admin • Active</div></div><button class="pill" style="margin-left:auto" onclick="document.getElementById('avatarInput').click()">Change</button><input type="file" id="avatarInput" accept="image/*" hidden onchange="changeAvatar(this)"></div><input id="newUsername" class="input" placeholder="New display name"><button class="pill dark" style="width:100%;margin-bottom:12px" onclick="updateUsername()">Update Username</button><button class="pill" style="width:100%" onclick="closeAdminProfile()">Close</button></div></div>
 
-<div id="authModal" class="modalBg" onclick="if(event.target==this)closeAuth()"><div class="modalCard">
-  <div style="display:flex;gap:6px;margin-bottom:14px"><button id="tabPublic" class="pill dark" style="flex:1" onclick="openAuthTab('public')">Public</button><button id="tabAdmin" class="pill" style="flex:1" onclick="openAuthTab('admin')">Admin</button></div>
-  <div id="publicAuthBox">
-    <h2 class="serif" style="font-size:22px">Public Login</h2><p style="font-size:11px;opacity:.6;margin:6px 0 12px">Real Google sign-in required to like, comment & save</p>
+<div id="authModal" class="modalBg" onclick="if(event.target==this)closeAuth()"><div class="modalCard" style="max-width:400px">
+  <div style="display:flex;gap:6px;margin-bottom:16px"><button id="tabPublic" class="pill dark" style="flex:1" onclick="openAuthTab('public')">Public</button><button id="tabAdmin" class="pill" style="flex:1" onclick="openAuthTab('admin')">Admin</button></div>
+  <div id="publicAuthBox" style="text-align:center">
+    <h2 class="serif" style="font-size:24px">Welcome</h2>
+    <p style="font-size:12px;opacity:.6;margin:8px 0 20px">Sign in with Google</p>
     <div id="g_id_onload" data-client_id="481207537216-s6i7p5llhme1olb63592fgoarnnafr19.apps.googleusercontent.com" data-callback="handleGoogleLogin" data-auto_prompt="false"></div>
-    <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" data-width="320"></div>
-    <p id="publicError" style="font-size:11px;color:#ff4444;margin-top:8px;min-height:14px"></p>
-    <div style="margin-top:12px;font-size:10px;opacity:.6">Only verified Google accounts can login. No fake email allowed.</div>
+    <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" data-width="320" style="display:flex;justify-content:center"></div>
+    <p id="publicError" style="font-size:11px;color:#ff4444;margin-top:10px;min-height:14px"></p>
   </div>
   <div id="adminAuthBox" class="hide">
-    <h2 class="serif" style="font-size:22px">Admin Access</h2><p style="font-size:11px;opacity:.6;margin:6px 0">Only for site owner</p>
+    <h2 class="serif" style="font-size:22px">Admin</h2>
     <p id="adminError" style="font-size:11px;color:#ff4444;min-height:14px;margin:8px 0"></p>
-    <input id="adminUser" class="input" placeholder="Username" autocomplete="username">
-    <input id="adminPass" class="input" type="password" placeholder="Password" autocomplete="current-password">
-    <button class="pill dark" style="width:100%;padding:12px" onclick="adminLogin()">Sign in as Admin →</button>
+    <input id="adminUser" class="input" placeholder="Username">
+    <input id="adminPass" class="input" type="password" placeholder="Password">
+    <button class="pill dark" style="width:100%;padding:12px" onclick="adminLogin()">Sign in →</button>
   </div>
-  <button class="pill" style="width:100%;margin-top:12px" onclick="closeAuth()">Close</button>
+  <button class="pill" style="width:100%;margin-top:16px" onclick="closeAuth()">Close</button>
 </div></div>
 
 <div id="archiveModal" class="modalBg" onclick="if(event.target==this)closeArchive()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Archived Posts</h2><button class="pill" onclick="closeArchive()">✕</button></div><div id="archiveList"></div></div></div>
@@ -99,51 +118,64 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <div id="blockedModal" class="modalBg" onclick="if(event.target==this)closeBlocked()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Blocked Users</h2><button class="pill" onclick="closeBlocked()">✕</button></div><div id="blockedList"></div></div></div>
 <div id="contactModal" class="modalBg" onclick="if(event.target==this)closeContactSidebar()"><div class="modalCard"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><h2 class="serif" style="font-size:20px">Contact Aars Rosin</h2><button class="pill" onclick="closeContactSidebar()">✕</button></div><input id="contactName" class="input" placeholder="Your name"><input id="contactEmail" class="input" placeholder="Your email"><textarea id="contactMsg" class="input" style="min-height:90px" placeholder="Your message..."></textarea><button class="pill dark" style="width:100%;padding:12px" onclick="sendContact()">Send Message</button><div id="contactList" style="margin-top:16px"></div></div></div>
 
-<div id="createModal" class="modalBg" onclick="if(event.target==this)closeCreate()"><div class="modalCard" style="max-width:600px">
+<div id="createModal" class="modalBg" onclick="if(event.target==this)closeCreate()"><div class="modalCard" style="max-width:620px">
   <div style="display:flex;justify-content:space-between;margin-bottom:10px"><h2 class="serif" style="font-size:22px">Create Post</h2><button class="pill" onclick="closeCreate()">✕</button></div>
   <div style="display:flex;gap:6px;margin-bottom:8px"><input id="postCat" class="input" style="margin:0" placeholder="Category"><input id="scheduleTime" class="input" type="datetime-local" style="margin:0"></div>
-  <input id="postTitle" class="input" placeholder="Title"><textarea id="postBody" class="input" style="min-height:70px" placeholder="Caption"></textarea>
-  <div style="border:1px dashed var(--border);border-radius:14px;padding:10px;margin:8px 0"><div style="display:flex;gap:6px"><label class="pill dark" style="flex:1">📷 Photos / 🎥 Videos<input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden onchange="handleMedia(this)"></label><button class="pill" onclick="document.getElementById('mediaInput').click()">+ Add</button><button class="pill" onclick="tempSlides=[];renderPreview()">Clear</button></div><div id="preview" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px"></div><div id="editTools" class="hide" style="margin-top:10px;background:var(--card2);padding:10px;border-radius:12px"><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" onclick="applyCrop('cover')">Free Crop</button><button class="pill" onclick="applyCrop('contain')">Fit</button><button class="pill" onclick="applyCrop('1/1')">1:1</button><button class="pill" onclick="applyCrop('4/5')">4:5</button><button class="pill" id="muteBtn" onclick="toggleMute()">🔊 Mute</button></div></div></div>
+  <input id="postTitle" class="input" placeholder="Title (required)"><textarea id="postBody" class="input" style="min-height:70px" placeholder="Caption"></textarea>
+  <div style="border:1px dashed var(--border);border-radius:14px;padding:12px;margin:8px 0">
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><label class="pill dark" style="flex:1">📷 Select Photos / 🎥 Videos<input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden onchange="handleMedia(this)"></label><button class="pill" onclick="document.getElementById('mediaInput').click()">+ Add More</button><button class="pill" style="color:#c44" onclick="tempSlides=[];selectedCropIndex=-1;renderPreview();closeCropper()">Clear All</button></div>
+    <div id="uploadStatus" style="font-size:11px;opacity:.6;margin-top:6px"></div>
+    <div id="preview" class="previewGrid"></div>
+    <div id="cropperArea" class="hide">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><h4 style="font-size:13px">✂️ Drag 4 corners to crop</h4><button class="pill dark" style="padding:6px 12px" onclick="applyCropper()">Apply Crop ✓</button></div>
+      <div class="cropContainer"><img id="cropImage" style="max-width:100%"></div>
+      <div class="cropBtns"><button class="pill active" onclick="setAspect(0)">Free Drag</button><button class="pill" onclick="setAspect(1)">1:1</button><button class="pill" onclick="setAspect(4/5)">4:5</button><button class="pill" onclick="setAspect(16/9)">16:9</button><button class="pill" onclick="rotateCropper()">↻ Rotate</button></div>
+    </div>
+    <div id="editTools" class="hide" style="margin-top:10px;background:var(--card2);padding:10px;border-radius:12px">
+      <div style="font-size:12px;margin-bottom:6px">Selected: <span id="editIndex">0</span></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" onclick="applyQuickCrop('cover')">Free</button><button class="pill" onclick="applyQuickCrop('contain')">Fit</button><button class="pill" onclick="applyQuickCrop('1/1')">1:1</button><button class="pill" onclick="applyQuickCrop('4/5')">4:5</button><button class="pill" id="muteBtn" onclick="toggleMute()">🔊 Mute</button><button class="pill dark" onclick="openCropper()">↔️ Drag Crop</button></div>
+    </div>
+  </div>
   <div class="musicBox">
     <h4 style="font-size:13px;margin-bottom:8px">🎵 Add Music to Post</h4>
     <div style="display:flex;gap:6px;margin-bottom:8px"><label class="pill" style="flex:1">From Phone<input type="file" id="musicFile" accept="audio/*" hidden onchange="handleMusicFile(this)"></label><button class="pill" onclick="openSpotifySearch()">Spotify Search</button></div>
     <div id="spotifyBox" class="hide" style="margin-bottom:8px"><input id="spotifyQuery" class="input" placeholder="Search song..."><button class="pill dark" style="width:100%" onclick="searchSpotify()">Search</button><div id="spotifyResults" style="margin-top:8px"></div></div>
     <div id="musicPreview" class="hide">
       <audio id="musicAudio" style="width:100%" controls ontimeupdate="onMusicTimeUpdate()" onloadedmetadata="onMusicLoaded()"></audio>
-      <div style="display:flex;gap:6px;align-items:center;margin-top:8px"><button class="pill dark" id="musicPlayBtn" onclick="toggleMusic()">▶️ Play from selected part</button><span id="musicName" style="font-size:10px;flex:1"></span><button class="pill" onclick="removeMusic()">✕</button></div>
-      <div style="margin-top:10px"><label style="font-size:11px;font-weight:600">Choose clip length:</label><div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0"><button class="pill" onclick="setClipLength(8)">8s</button><button class="pill" onclick="setClipLength(15)">15s</button><button class="pill" onclick="setClipLength(20)">20s</button><button class="pill" onclick="setClipLength(25)">25s</button><button class="pill" onclick="setClipLength(35)">35s</button><button class="pill active" onclick="setClipLength(60)">60s</button></div><label style="font-size:11px">Drag to choose which part plays:</label><input type="range" id="musicRange" class="range" min="0" max="100" value="30" oninput="seekToPercent(this.value)"><div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6"><span id="rangeStart">0:30</span><span id="rangeEnd">1:30 (60s clip)</span></div><div style="background:linear-gradient(90deg,#ddd,#222);height:32px;border-radius:10px;position:relative;margin-top:6px;overflow:hidden"><div id="musicShade" style="position:absolute;top:2px;bottom:2px;left:30%;width:30%;background:rgba(255,255,255,.5);border:2px solid #fff;border-radius:8px"></div></div></div>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:8px"><button class="pill dark" id="musicPlayBtn" onclick="toggleMusic()">▶️ Play</button><span id="musicName" style="font-size:10px;flex:1"></span><button class="pill" onclick="removeMusic()">✕</button></div>
+      <div style="margin-top:10px"><label style="font-size:11px;font-weight:600">Clip length:</label><div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0"><button class="pill" onclick="setClipLength(8)">8s</button><button class="pill" onclick="setClipLength(15)">15s</button><button class="pill" onclick="setClipLength(20)">20s</button><button class="pill" onclick="setClipLength(25)">25s</button><button class="pill" onclick="setClipLength(35)">35s</button><button class="pill active" onclick="setClipLength(60)">60s</button></div><input type="range" id="musicRange" class="range" min="0" max="100" value="30" oninput="seekToPercent(this.value)"><div style="display:flex;justify-content:space-between;font-size:10px;opacity:.6"><span id="rangeStart">0:30</span><span id="rangeEnd">1:30</span></div><div style="background:linear-gradient(90deg,#ddd,#222);height:32px;border-radius:10px;position:relative;margin-top:6px;overflow:hidden"><div id="musicShade" style="position:absolute;top:2px;bottom:2px;left:30%;width:30%;background:rgba(255,255,255,.5);border:2px solid #fff;border-radius:8px"></div></div></div>
     </div>
   </div>
-  <div style="display:flex;gap:8px;margin-top:12px"><button class="pill" style="flex:1" onclick="saveDraft()">Draft</button><button class="pill" style="flex:1" onclick="saveSchedule()">Schedule</button><button class="pill dark" style="flex:1" onclick="publishPost()">Publish</button></div>
+  <div style="display:flex;gap:8px;margin-top:14px"><button class="pill" style="flex:1" onclick="saveDraft()">Draft</button><button class="pill" style="flex:1" onclick="saveSchedule()">Schedule</button><button class="pill dark" style="flex:1;padding:14px;font-weight:600" onclick="publishPost()">Publish ✓</button></div>
+  <div id="publishStatus" style="font-size:11px;margin-top:8px"></div>
 </div></div>
 
 <script>
 let POSTS,DRAFTS,BLOCKED,CONTACTS;const DEFAULT=[{cat:"COFFEE",title:"My 6am coffee ritual",body:"Slow mornings & coffee.",slides:[{src:"https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1000",type:"image",crop:"cover"}],likes:[],comments:[],date:Date.now(),archived:false,music:null}];
-try{POSTS=JSON.parse(localStorage.getItem('mn_v15')||'null')||DEFAULT}catch{POSTS=DEFAULT}
-try{DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_v15')||'[]')}catch{DRAFTS=[]}
-try{BLOCKED=JSON.parse(localStorage.getItem('mn_blocked_v15')||'[]')}catch{BLOCKED=[]}
-try{CONTACTS=JSON.parse(localStorage.getItem('mn_contacts_v15')||'[]')}catch{CONTACTS=[]}
-let curPost=0,curSlide=0,tempSlides=[],editIdx=-1,tempMusic=null,clipLength=60;
-function saveAll(){localStorage.setItem('mn_v15',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v15',JSON.stringify(DRAFTS));localStorage.setItem('mn_blocked_v15',JSON.stringify(BLOCKED));localStorage.setItem('mn_contacts_v15',JSON.stringify(CONTACTS));}
+try{POSTS=JSON.parse(localStorage.getItem('mn_v17')||'null')||DEFAULT}catch{POSTS=DEFAULT}
+try{DRAFTS=JSON.parse(localStorage.getItem('mn_drafts_v17')||'[]')}catch{DRAFTS=[]}
+try{BLOCKED=JSON.parse(localStorage.getItem('mn_blocked_v17')||'[]')}catch{BLOCKED=[]}
+try{CONTACTS=JSON.parse(localStorage.getItem('mn_contacts_v17')||'[]')}catch{CONTACTS=[]}
+let curPost=0,curSlide=0,tempSlides=[],editIdx=-1,tempMusic=null,clipLength=60,cropper=null,selectedCropIndex=-1;
+function saveAll(){try{localStorage.setItem('mn_v17',JSON.stringify(POSTS));localStorage.setItem('mn_drafts_v17',JSON.stringify(DRAFTS));localStorage.setItem('mn_blocked_v17',JSON.stringify(BLOCKED));localStorage.setItem('mn_contacts_v17',JSON.stringify(CONTACTS));}catch(e){alert('Storage full! Delete some posts');}}
 function getUser(){try{return JSON.parse(localStorage.getItem('mn_user')||'null')}catch{return null}}
 function isAdmin(){return localStorage.getItem('mn_admin')==='1'}
-function isPublicUser(){let u=getUser();return!!u &&!isAdmin();}
 function isSignedIn(){return!!getUser() || isAdmin()}
 function openMenu(){document.getElementById('menuPanel').classList.add('open');renderAuth();}
 function closeMenu(){document.getElementById('menuPanel').classList.remove('open')}
 function toggleDark(){document.documentElement.classList.toggle('dark');localStorage.setItem('mn_dark',document.documentElement.classList.contains('dark')?'1':'0');renderAuth();}if(localStorage.getItem('mn_dark')==='1')document.documentElement.classList.add('dark');
 function renderAuth(){
   let u=getUser();let b=document.getElementById('authBox');let s=document.getElementById('signBtn');let ms=document.getElementById('menuSignBtn');
-  let signed=isSignedIn();let admin=isAdmin();
-  document.getElementById('archiveMenuItem').style.display=signed?'flex':'none';
-  document.getElementById('draftMenuItem').style.display=signed?'flex':'none';
+  let admin=isAdmin();
   document.getElementById('adminProfileItem').style.display=admin?'flex':'none';
   document.getElementById('createMenuItem').style.display=admin?'flex':'none';
   document.getElementById('blockedMenuItem').style.display=admin?'flex':'none';
+  document.getElementById('archiveMenuItem').style.display=admin?'flex':'none';
+  document.getElementById('draftMenuItem').style.display=admin?'flex':'none';
   if(u){
-    let name=localStorage.getItem('mn_custom_name')||u.name;
-    let pic=localStorage.getItem('mn_avatar')||u.pic||'';
     if(admin){
+      let name=localStorage.getItem('mn_custom_name')||u.name||'aarsrosin';
+      let pic=localStorage.getItem('mn_avatar')||u.pic||'';
       if(s){s.innerText=name.split(' ')[0];s.onclick=()=>openMenu()}
       if(ms)ms.style.display='none';
       b.innerHTML=`<div class="adminProfileBox"><div class="avatar">${pic?`<img src="${pic}">`:'👤'}</div><div><div style="font-weight:600;font-size:13px">${name} <span class="badge admin">Admin</span></div><div style="font-size:10px;opacity:.6">Full access • ${POSTS.length} posts</div></div><button class="pill" style="margin-left:auto" onclick="logout()">Logout</button></div>`;
@@ -151,14 +183,17 @@ function renderAuth(){
       document.getElementById('adminRoleDisplay').innerText='Admin • Full Access';
       document.getElementById('adminAvatar').innerHTML=pic?`<img src="${pic}">`:'👤';
     }else{
+      let name=u.name||'User';
+      let email=u.email||'';
+      let pic=u.pic||'';
       if(s){s.innerText=name.split(' ')[0];s.onclick=()=>openMenu()}
       if(ms)ms.style.display='none';
-      b.innerHTML=`<div class="adminProfileBox"><div class="avatar">${pic?`<img src="${pic}">`:'👤'}</div><div><div style="font-weight:600;font-size:13px">${name} <span class="badge">Public</span></div><div style="font-size:10px;opacity:.6">Can like, comment, save • ${u.email}</div></div><button class="pill" style="margin-left:auto" onclick="logout()">Logout</button></div>`;
+      b.innerHTML=`<div class="adminProfileBox"><div class="avatar">${pic?`<img src="${pic}">`:'👤'}</div><div style="flex:1;overflow:hidden"><div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div><div style="font-size:11px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${email}</div><div style="font-size:10px;opacity:.5;margin-top:2px">Public • Can like & comment</div></div><button class="pill" style="margin-left:auto;flex-shrink:0" onclick="logout()">Logout</button></div>`;
     }
   }else{
     if(s){s.innerText='Sign in';s.onclick=()=>openAccount()}
     if(ms){ms.innerText='Sign in';ms.style.display='block';ms.onclick=()=>openAccount()}
-    b.innerHTML='<div style="font-size:11px;opacity:.6;padding:8px">Sign in to access features</div>';
+    b.innerHTML='<div style="font-size:11px;opacity:.6;padding:8px">Sign in to like & comment</div>';
   }
   document.getElementById('draftCount').innerText=DRAFTS.length?` (${DRAFTS.length})`:'';document.getElementById('archiveCount').innerText=POSTS.filter(p=>p.archived).length?` (${POSTS.filter(p=>p.archived).length})`:'';
   document.getElementById('darkState').innerText=document.documentElement.classList.contains('dark')?'On':'Off';document.getElementById('darkIcon').innerText=document.documentElement.classList.contains('dark')?'🌙':'☀️';
@@ -169,14 +204,12 @@ function openAuthTab(t){document.getElementById('publicAuthBox').classList.toggl
 function handleGoogleLogin(r){
   try{
     let payload=JSON.parse(atob(r.credential.split('.')[1]));
-    if(!payload.email_verified){document.getElementById('publicError').innerText='❌ Email not verified by Google';return;}
-    localStorage.setItem('mn_user',JSON.stringify({name:payload.name,email:payload.email,pic:payload.picture,verified:true}));
+    if(!payload.email_verified){document.getElementById('publicError').innerText='❌ Not verified';return;}
     localStorage.removeItem('mn_admin');
+    localStorage.setItem('mn_user',JSON.stringify({name:payload.name,email:payload.email,pic:payload.picture,verified:true}));
     document.getElementById('publicError').innerText='';
     closeAuth();renderAuth();render();
-  }catch(e){
-    document.getElementById('publicError').innerText='❌ Real Google login failed';
-  }
+  }catch(e){document.getElementById('publicError').innerText='❌ Login failed';}
 }
 function adminLogin(){
   let u=document.getElementById('adminUser').value.trim().toLowerCase();
@@ -184,74 +217,96 @@ function adminLogin(){
   let err=document.getElementById('adminError');
   if(u==='aarsrosin' && (p==='@storyteller'||p==='storyteller')){
     localStorage.setItem('mn_admin','1');
-    localStorage.setItem('mn_user',JSON.stringify({name:localStorage.getItem('mn_custom_name')||'aarsrosin',email:'admin@mindnotes',verified:true}));
+    let customName=localStorage.getItem('mn_custom_name')||'aarsrosin';
+    let avatar=localStorage.getItem('mn_avatar')||'';
+    localStorage.setItem('mn_user',JSON.stringify({name:customName,email:'admin@mindnotes',pic:avatar,verified:true}));
     err.innerText='';closeAuth();renderAuth();render();
-  }else{
-    err.innerText=u!=='aarsrosin'?'❌ Wrong username':'❌ Wrong password';
-  }
+  }else{err.innerText='❌ Wrong credentials';}
 }
 function logout(){localStorage.removeItem('mn_user');localStorage.removeItem('mn_admin');closeMenu();renderAuth();render();}
-function openAdminProfile(){if(!isAdmin()){alert('Only admin can access Admin Profile');return;}document.getElementById('adminProfileModal').classList.add('open')}
+function openAdminProfile(){if(!isAdmin()){alert('Only admin');return;}document.getElementById('adminProfileModal').classList.add('open')}
 function closeAdminProfile(){document.getElementById('adminProfileModal').classList.remove('open')}
 function changeAvatar(inp){let f=inp.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{localStorage.setItem('mn_avatar',e.target.result);renderAuth();};r.readAsDataURL(f);}
 function removeAvatar(){localStorage.removeItem('mn_avatar');renderAuth();}
-function updateUsername(){let n=document.getElementById('newUsername').value.trim();if(!n)return;localStorage.setItem('mn_custom_name',n);renderAuth();alert('Updated');}
-function render(){let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);if(q)list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));grid.innerHTML=list.map(p=>{let ri=POSTS.indexOf(p);let liked=isPostLiked(p);let first=p.slides[0];let media=first.type==='video'?`<video src="${first.src}" muted></video>`:`<img src="${first.src}">`;return `<div class="cardPost" onclick="openPost(${ri})"><div class="cardMedia">${media}${p.music?`<div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:3px 6px;border-radius:10px">♪ ${p.music.name}</div>`:''}</div><div class="cardMeta"><div class="cardCat">${p.cat}</div><div style="display:flex;gap:6px;margin-top:4px"><button class="heartBtn ${liked?'liked':''}" onclick="event.stopPropagation();quickLike(${ri})">${liked?'♥':'♡'}</button><span>${p.likes?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts</div>';}
+function updateUsername(){let n=document.getElementById('newUsername').value.trim();if(!n)return;localStorage.setItem('mn_custom_name',n);let u=getUser();if(u){u.name=n;localStorage.setItem('mn_user',JSON.stringify(u));}renderAuth();alert('Updated');}
+function render(){let q=(document.getElementById('search').value||'').toLowerCase();let grid=document.getElementById('grid');let list=POSTS.filter(p=>!p.archived);if(q)list=list.filter(p=>(p.title+p.body+p.cat).toLowerCase().includes(q));grid.innerHTML=list.map(p=>{let ri=POSTS.indexOf(p);let liked=isPostLiked(p);let first=p.slides[0];let media=first? (first.type==='video'?`<video src="${first.src}" muted></video>`:`<img src="${first.src}" loading="lazy">`) : '';return `<div class="cardPost" onclick="openPost(${ri})"><div class="cardMedia">${media}${p.music?`<div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:3px 6px;border-radius:10px">♪ ${p.music.name.substring(0,12)}</div>`:''}</div><div style="padding:8px 10px"><div style="font-size:10px;letter-spacing:1px;opacity:.6;text-transform:uppercase">${p.cat}</div><div style="display:flex;gap:6px;margin-top:4px;align-items:center"><button class="heartBtn ${liked?'liked':''}" onclick="event.stopPropagation();quickLike(${ri})">${liked?'♥':'♡'}</button><span style="font-size:11px">${p.likes?.length||0}</span><span style="margin-left:8px;opacity:.5">💬 ${p.comments?.length||0}</span></div></div></div>`}).join('')||'<div style="grid-column:1/-1;text-align:center;padding:30px;opacity:.5">No posts yet</div>';}
 function isPostLiked(p){let id=(getUser()?.email)||'';if(!id)return false;return (p.likes||[]).includes(id)}
 function quickLike(ri){if(!isSignedIn()){openAccount();return;}let p=POSTS[ri];if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);saveAll();render();}
-function openPost(i){curPost=i;curSlide=0;let p=POSTS[i];document.getElementById('postModal').classList.add('open');document.getElementById('modalTitle').innerText=p.title;document.getElementById('modalCat').innerText=p.cat;document.getElementById('modalDate').innerText=new Date(p.date).toLocaleString();document.getElementById('modalBody').innerText=p.body;document.getElementById('delBtn').classList.toggle('hide',!isAdmin());document.getElementById('archBtn').classList.toggle('hide',!isSignedIn());renderSlide();renderLikes();renderComments();renderMusicPlayer(p);}
-function renderSlide(){let s=POSTS[curPost].slides[curSlide];let b=document.getElementById('slideBox');if(!s)return;b.innerHTML=s.type==='video'?`<video src="${s.src}" controls ${s.muted?'muted':''}></video>`:`<img src="${s.src}">`;}
+function openPost(i){curPost=i;curSlide=0;let p=POSTS[i];document.getElementById('postModal').classList.add('open');document.getElementById('modalTitle').innerText=p.title;document.getElementById('modalCat').innerText=p.cat;document.getElementById('modalDate').innerText=new Date(p.date).toLocaleString();document.getElementById('modalBody').innerText=p.body;document.getElementById('delBtn').classList.toggle('hide',!isAdmin());document.getElementById('archBtn').classList.toggle('hide',!isAdmin());renderSlide();renderLikes();renderComments();renderMusicPlayer(p);}
+function renderSlide(){let s=POSTS[curPost].slides[curSlide];let b=document.getElementById('slideBox');if(!s)return;b.innerHTML=s.type==='video'?`<video src="${s.src}" controls ${s.muted?'muted':''} style="width:100%;height:100%;object-fit:${s.crop||'contain'}"></video>`:`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop||'contain'}">`;}
 function nextSlide(){if(curSlide<POSTS[curPost].slides.length-1){curSlide++;renderSlide();}}function prevSlide(){if(curSlide>0){curSlide--;renderSlide();}}function closePost(){document.getElementById('postModal').classList.remove('open')}
-function renderLikes(){let p=POSTS[curPost];document.getElementById('likeCount').innerText=p.likes?.length||0;document.getElementById('cmtCount').innerText=p.comments?.length||0;let btn=document.getElementById('heartBtn');btn.innerText=isPostLiked(p)?'♥':'♡';btn.classList.toggle('liked',isPostLiked(p));}
+function renderLikes(){let p=POSTS[curPost];document.getElementById('likeCount').innerText=p.likes?.length||0;document.getElementById('cmtCount').innerText=p.comments?.length||0;let btn=document.getElementById('heartBtn');if(btn){btn.innerText=isPostLiked(p)?'♥':'♡';btn.classList.toggle('liked',isPostLiked(p));}}
 function toggleLike(){if(!isSignedIn()){openAccount();return;}let p=POSTS[curPost];if(!p.likes)p.likes=[];let id=(getUser()?.email)||'admin';let idx=p.likes.indexOf(id);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(id);saveAll();renderLikes();render();}
-function renderComments(){let list=document.getElementById('commentsList');let p=POSTS[curPost];if(!p.comments)p.comments=[];list.innerHTML=p.comments.map((c,ci)=>`<div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:8px"><div>👤</div><div style="flex:1"><b>${c.name}</b><div>${c.text}</div><div style="display:flex;gap:6px;margin-top:4px"><button class="pill" style="padding:3px 8px;font-size:10px" onclick="likeComment(${ci})">♡ ${c.likes?.length||0}</button>${isAdmin()?`<button class="pill" style="padding:3px 8px;font-size:10px" onclick="blockUser('${c.name}')">Block</button><button class="pill" style="padding:3px 8px;font-size:10px;color:#c44" onclick="delComment(${ci})">Delete</button>`:''}</div></div></div>`).join('')||'No comments';}
-function addComment(){if(!isSignedIn()){openAccount();return;}let txt=document.getElementById('commentInput').value.trim();if(!txt)return;let p=POSTS[curPost];if(!p.comments)p.comments=[];let u=getUser();p.comments.unshift({name:u?.name||'aarsrosin',text:txt,date:Date.now(),likes:[]});document.getElementById('commentInput').value='';saveAll();renderComments();renderLikes();render();}
-function likeComment(ci){let c=POSTS[curPost].comments[ci];if(!c.likes)c.likes=[];let id=(getUser()?.email)||'admin';let idx=c.likes.indexOf(id);if(idx>=0)c.likes.splice(idx,1);else c.likes.push(id);saveAll();renderComments();}
-function delComment(ci){POSTS[curPost].comments.splice(ci,1);saveAll();renderComments();}
+function renderComments(){let list=document.getElementById('commentsList');let p=POSTS[curPost];if(!p.comments)p.comments=[];list.innerHTML=p.comments.map((c,ci)=>`<div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;flex-shrink:0">👤</div><div style="flex:1"><b style="font-size:13px">${c.name}</b><div style="font-size:13px;margin-top:2px">${c.text}</div><div style="display:flex;gap:6px;margin-top:6px"><button class="pill" style="padding:4px 10px;font-size:11px" onclick="likeComment(${ci})">♡ ${c.likes?.length||0}</button>${isAdmin()?`<button class="pill" style="padding:4px 10px;font-size:11px" onclick="blockUser('${c.name}')">Block</button><button class="pill" style="padding:4px 10px;font-size:11px;color:#c44" onclick="delComment(${ci})">Delete</button>`:''}</div></div></div>`).join('')||'<div style="text-align:center;padding:20px;opacity:.5;font-size:13px">No comments yet</div>';}
+function addComment(){if(!isSignedIn()){openAccount();return;}let input=document.getElementById('commentInput');let txt=input.value.trim();if(!txt){alert('Write a comment');return;}let p=POSTS[curPost];if(!p.comments)p.comments=[];let u=getUser();p.comments.unshift({name:u?.name||'Guest',text:txt,date:Date.now(),likes:[]});input.value='';saveAll();renderComments();renderLikes();render();}
+function likeComment(ci){if(!isSignedIn()){openAccount();return;}let c=POSTS[curPost].comments[ci];if(!c.likes)c.likes=[];let id=(getUser()?.email)||'admin';let idx=c.likes.indexOf(id);if(idx>=0)c.likes.splice(idx,1);else c.likes.push(id);saveAll();renderComments();}
+function delComment(ci){if(!isAdmin())return;POSTS[curPost].comments.splice(ci,1);saveAll();renderComments();renderLikes();render();}
 function blockUser(n){if(!isAdmin())return;BLOCKED.push(n);saveAll();render();alert(n+' blocked');}
-function deletePost(){POSTS.splice(curPost,1);saveAll();closePost();render();}
-function archivePost(){POSTS[curPost].archived=true;saveAll();closePost();render();}
-function openArchive(){if(!isSignedIn()){openAccount();return;}renderArchiveList();document.getElementById('archiveModal').classList.add('open')}
+function deletePost(){if(!isAdmin())return;if(!confirm('Delete permanently?'))return;POSTS.splice(curPost,1);saveAll();closePost();render();}
+function archivePost(){if(!isAdmin())return;POSTS[curPost].archived=true;saveAll();closePost();render();}
+function openArchive(){if(!isAdmin()){alert('Only admin');return;}renderArchiveList();document.getElementById('archiveModal').classList.add('open')}
 function closeArchive(){document.getElementById('archiveModal').classList.remove('open')}
-function renderArchiveList(){let arch=POSTS.filter(p=>p.archived);let box=document.getElementById('archiveList');if(!arch.length){box.innerHTML='No archived posts';return;}box.innerHTML=arch.map(p=>{let idx=POSTS.indexOf(p);return `<div class="listItem"><img src="${p.slides[0]?.src}"><div style="flex:1"><div style="font-weight:600">${p.title}</div></div><button class="pill dark" onclick="recoverPost(${idx})">Recover</button><button class="pill" style="color:#c44" onclick="deleteArchived(${idx})">Delete</button></div>`}).join('');}
+function renderArchiveList(){let arch=POSTS.filter(p=>p.archived);let box=document.getElementById('archiveList');if(!arch.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No archived posts</div>';return;}box.innerHTML=arch.map(p=>{let idx=POSTS.indexOf(p);return `<div class="listItem"><img src="${p.slides[0]?.src}"><div style="flex:1"><div style="font-weight:600;font-size:13px">${p.title}</div></div><button class="pill dark" onclick="recoverPost(${idx})">Recover</button><button class="pill" style="color:#c44" onclick="deleteArchived(${idx})">Delete</button></div>`}).join('');}
 function recoverPost(idx){POSTS[idx].archived=false;saveAll();renderArchiveList();render();}
 function deleteArchived(idx){POSTS.splice(idx,1);saveAll();renderArchiveList();render();}
-function openDrafts(){if(!isSignedIn()){openAccount();return;}renderDraftsList();document.getElementById('draftsModal').classList.add('open')}
+function openDrafts(){if(!isAdmin()){alert('Only admin');return;}renderDraftsList();document.getElementById('draftsModal').classList.add('open')}
 function closeDrafts(){document.getElementById('draftsModal').classList.remove('open')}
-function renderDraftsList(){let box=document.getElementById('draftsList');if(!DRAFTS.length){box.innerHTML='No drafts';return;}box.innerHTML=DRAFTS.map((d,i)=>`<div class="listItem"><div style="flex:1"><div style="font-weight:600">${d.title}</div></div><button class="pill dark" onclick="loadDraft(${i})">Load</button><button class="pill" onclick="deleteDraft(${i})">✕</button></div>`).join('');}
-function loadDraft(i){let d=DRAFTS[i];tempSlides=d.slides||[];tempMusic=d.music||null;document.getElementById('postTitle').value=d.title;document.getElementById('postBody').value=d.body||'';document.getElementById('postCat').value=d.cat||'';closeDrafts();openCreate();renderPreview();if(tempMusic)renderTempMusic();}
+function renderDraftsList(){let box=document.getElementById('draftsList');if(!DRAFTS.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No drafts</div>';return;}box.innerHTML=DRAFTS.map((d,i)=>`<div class="listItem"><div style="flex:1"><div style="font-weight:600;font-size:13px">${d.title||'Untitled'}</div></div><button class="pill dark" onclick="loadDraft(${i})">Load</button><button class="pill" onclick="deleteDraft(${i})">✕</button></div>`).join('');}
+function loadDraft(i){let d=DRAFTS[i];tempSlides=d.slides||[];tempMusic=d.music||null;document.getElementById('postTitle').value=d.title||'';document.getElementById('postBody').value=d.body||'';document.getElementById('postCat').value=d.cat||'';closeDrafts();openCreate();renderPreview();if(tempMusic)renderTempMusic();}
 function deleteDraft(i){DRAFTS.splice(i,1);saveAll();renderDraftsList();renderAuth();}
 function openBlocked(){if(!isAdmin()){alert('Only admin');return;}renderBlockedList();document.getElementById('blockedModal').classList.add('open')}
 function closeBlocked(){document.getElementById('blockedModal').classList.remove('open')}
-function renderBlockedList(){let box=document.getElementById('blockedList');if(!BLOCKED.length){box.innerHTML='No blocked users';return;}box.innerHTML=BLOCKED.map((n,i)=>`<div class="listItem"><div style="flex:1">${n}</div><button class="pill" onclick="unblockUser(${i})">Unblock</button></div>`).join('');}
+function renderBlockedList(){let box=document.getElementById('blockedList');if(!BLOCKED.length){box.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">No blocked users</div>';return;}box.innerHTML=BLOCKED.map((n,i)=>`<div class="listItem"><div style="flex:1">${n}</div><button class="pill" onclick="unblockUser(${i})">Unblock</button></div>`).join('');}
 function unblockUser(i){BLOCKED.splice(i,1);saveAll();renderBlockedList();render();}
 function openContactSidebar(){closeMenu();renderContacts();document.getElementById('contactModal').classList.add('open')}
 function closeContactSidebar(){document.getElementById('contactModal').classList.remove('open')}
 function sendContact(){let n=document.getElementById('contactName').value.trim(),e=document.getElementById('contactEmail').value.trim(),m=document.getElementById('contactMsg').value.trim();if(!n||!m)return alert('Name & message required');CONTACTS.unshift({name:n,email:e,msg:m,date:Date.now()});saveAll();document.getElementById('contactName').value='';document.getElementById('contactEmail').value='';document.getElementById('contactMsg').value='';renderContacts();alert('Message sent');}
-function renderContacts(){let box=document.getElementById('contactList');if(!CONTACTS.length){box.innerHTML='';return;}if(!isAdmin()){box.innerHTML=`<div style="font-size:11px;opacity:.6">${CONTACTS.length} message(s) sent</div>`;return;}box.innerHTML=CONTACTS.map((c,i)=>`<div style="background:var(--card2);padding:8px;border-radius:10px;margin-top:6px"><b>${c.name}</b><div>${c.msg}</div><div style="font-size:9px;opacity:.5">${new Date(c.date).toLocaleString()} <button onclick="CONTACTS.splice(${i},1);saveAll();renderContacts()" style="float:right;background:none;border:none;color:#c44">Delete</button></div></div>`).join('');}
-function openCreate(){if(!isAdmin()){alert('Only admin can create posts');return;}closeMenu();tempSlides=[];tempMusic=null;editIdx=-1;clipLength=60;document.getElementById('postTitle').value='';document.getElementById('postBody').value='';document.getElementById('postCat').value='';document.getElementById('preview').innerHTML='';document.getElementById('musicPreview').classList.add('hide');document.getElementById('editTools').classList.add('hide');document.getElementById('createModal').classList.add('open');}
-function closeCreate(){document.getElementById('createModal').classList.remove('open')}
-function handleMedia(inp){[...inp.files].forEach(f=>{let r=new FileReader();r.onload=e=>{tempSlides.push({src:e.target.result,type:f.type.startsWith('video')?'video':'image',crop:'cover',muted:false});renderPreview();};r.readAsDataURL(f);});}
-function renderPreview(){let p=document.getElementById('preview');p.innerHTML=tempSlides.map((s,i)=>`<div style="position:relative;background:var(--card2);border-radius:12px;overflow:hidden;aspect-ratio:1;border:${editIdx===i?'2px solid var(--text)':'1px solid var(--border)'}" onclick="selectEdit(${i})">${s.type==='video'?`<video src="${s.src}" muted style="width:100%;height:100%;object-fit:${s.crop}"></video>`:`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop}">`}<button onclick="event.stopPropagation();tempSlides.splice(${i},1);renderPreview()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:20px;height:20px">✕</button></div>`).join('');}
-function selectEdit(i){editIdx=i;document.getElementById('editTools').classList.remove('hide');renderPreview();}
-function applyCrop(v){if(editIdx<0)return;tempSlides[editIdx].crop=v;renderPreview();}
-function toggleMute(){if(editIdx<0)return;tempSlides[editIdx].muted=!tempSlides[editIdx].muted;renderPreview();}
+function renderContacts(){let box=document.getElementById('contactList');if(!CONTACTS.length){box.innerHTML='';return;}if(!isAdmin()){box.innerHTML=`<div style="font-size:11px;opacity:.6;margin-top:8px">${CONTACTS.length} message(s) sent</div>`;return;}box.innerHTML=CONTACTS.map((c,i)=>`<div style="background:var(--card2);padding:10px;border-radius:10px;margin-top:8px"><b style="font-size:12px">${c.name} • ${c.email}</b><div style="font-size:13px;margin-top:4px">${c.msg}</div><div style="font-size:9px;opacity:.5;margin-top:4px">${new Date(c.date).toLocaleString()} <button onclick="CONTACTS.splice(${i},1);saveAll();renderContacts()" style="float:right;background:none;border:none;color:#c44;cursor:pointer">Delete</button></div></div>`).join('');}
+function openCreate(){if(!isAdmin()){alert('Only admin can create posts');return;}closeMenu();tempSlides=[];selectedCropIndex=-1;editIdx=-1;tempMusic=null;clipLength=60;document.getElementById('postTitle').value='';document.getElementById('postBody').value='';document.getElementById('postCat').value='';document.getElementById('preview').innerHTML='';document.getElementById('musicPreview').classList.add('hide');document.getElementById('editTools').classList.add('hide');document.getElementById('cropperArea').classList.add('hide');document.getElementById('publishStatus').innerText='';document.getElementById('uploadStatus').innerText='';closeCropper();document.getElementById('createModal').classList.add('open');}
+function closeCreate(){closeCropper();document.getElementById('createModal').classList.remove('open')}
+function handleMedia(inp){
+  let files=[...inp.files];if(!files.length)return;
+  document.getElementById('uploadStatus').innerText=`Processing ${files.length} file(s)...`;
+  let processed=0;
+  files.forEach(f=>{
+    if(f.type.startsWith('image/')){
+      let reader=new FileReader();
+      reader.onload=e=>{compressImage(e.target.result,1024,0.7,compressed=>{tempSlides.push({src:compressed,type:'image',crop:'cover',muted:false,original:e.target.result});processed++;if(processed===files.length){renderPreview();document.getElementById('uploadStatus').innerText=`${tempSlides.length} items ready`;}});};
+      reader.readAsDataURL(f);
+    }else{
+      let reader=new FileReader();
+      reader.onload=e=>{tempSlides.push({src:e.target.result,type:'video',crop:'cover',muted:false});processed++;if(processed===files.length){renderPreview();document.getElementById('uploadStatus').innerText=`${tempSlides.length} items ready`;}};
+      reader.readAsDataURL(f);
+    }
+  });
+  inp.value='';
+}
+function compressImage(src,maxSize,quality,cb){let img=new Image();img.onload=()=>{let canvas=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxSize||h>maxSize){if(w>h){h=h*maxSize/w;w=maxSize;}else{w=w*maxSize/h;h=maxSize;}}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);cb(canvas.toDataURL('image/jpeg',quality));};img.src=src;}
+function renderPreview(){let p=document.getElementById('preview');p.innerHTML=tempSlides.map((s,i)=>`<div class="previewItem ${editIdx===i?'selected':''}" onclick="selectEdit(${i})">${s.type==='video'?`<video src="${s.src}" muted style="width:100%;height:100%;object-fit:${s.crop||'cover'}"></video>`:`<img src="${s.src}" style="width:100%;height:100%;object-fit:${s.crop||'cover'}">`}<button onclick="event.stopPropagation();tempSlides.splice(${i},1);if(editIdx===i){editIdx=-1;document.getElementById('editTools').classList.add('hide');closeCropper();}renderPreview()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.8);color:#fff;border:none;border-radius:50%;width:22px;height:22px">✕</button></div>`).join('');}
+function selectEdit(i){editIdx=i;selectedCropIndex=i;document.getElementById('editTools').classList.remove('hide');document.getElementById('editIndex').innerText=(i+1)+'/'+tempSlides.length;renderPreview();}
+function applyQuickCrop(v){if(editIdx<0)return;tempSlides[editIdx].crop=v;renderPreview();}
+function toggleMute(){if(editIdx<0)return;if(tempSlides[editIdx].type!=='video'){alert('Only videos');return;}tempSlides[editIdx].muted=!tempSlides[editIdx].muted;renderPreview();}
+function openCropper(){if(editIdx<0||tempSlides[editIdx].type==='video'){alert('Select image');return;}let src=tempSlides[editIdx].original||tempSlides[editIdx].src;document.getElementById('cropperArea').classList.remove('hide');let img=document.getElementById('cropImage');img.src=src;setTimeout(()=>{if(cropper)cropper.destroy();cropper=new Cropper(img,{viewMode:1,dragMode:'move',aspectRatio:NaN,autoCropArea:0.8,movable:true,zoomable:true,scalable:true,rotatable:true,guides:true,center:true,highlight:true,background:false,cropBoxMovable:true,cropBoxResizable:true});},100);}
+function closeCropper(){document.getElementById('cropperArea').classList.add('hide');if(cropper){cropper.destroy();cropper=null;}}
+function applyCropper(){if(!cropper||selectedCropIndex<0)return;let canvas=cropper.getCroppedCanvas({width:1024,height:1024,fillColor:'#fff'});let cropped=canvas.toDataURL('image/jpeg',0.8);tempSlides[selectedCropIndex].src=cropped;renderPreview();closeCropper();}
+function setAspect(r){if(!cropper)return;cropper.setAspectRatio(r);document.querySelectorAll('.cropBtns.pill').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
+function rotateCropper(){if(!cropper)return;cropper.rotate(90);}
 function handleMusicFile(inp){let f=inp.files[0];if(!f)return;tempMusic={src:URL.createObjectURL(f),name:f.name,type:'local'};renderTempMusic();}
 function renderTempMusic(){if(!tempMusic)return;document.getElementById('musicPreview').classList.remove('hide');let a=document.getElementById('musicAudio');a.src=tempMusic.src;a.load();document.getElementById('musicName').innerText=tempMusic.name;}
 function onMusicLoaded(){updateShade();}
-function onMusicTimeUpdate(){let a=document.getElementById('musicAudio');if(!a.duration)return;let clipEnd=(a._clipStart||0)+clipLength;if(a.currentTime>=clipEnd){a.pause();a.currentTime=a._clipStart||0;document.getElementById('musicPlayBtn').innerText='▶️ Play from selected part';}}
+function onMusicTimeUpdate(){let a=document.getElementById('musicAudio');if(!a.duration)return;let clipEnd=(a._clipStart||0)+clipLength;if(a.currentTime>=clipEnd){a.pause();a.currentTime=a._clipStart||0;document.getElementById('musicPlayBtn').innerText='▶️ Play';}}
 function seekToPercent(p){let a=document.getElementById('musicAudio');if(!a.duration)return;let startTime=(p/100)*a.duration;a._clipStart=startTime;a.currentTime=startTime;a.play();document.getElementById('musicPlayBtn').innerText='⏸️ Pause';updateShade();updateTimeLabels();}
 function updateShade(){let range=document.getElementById('musicRange');let shade=document.getElementById('musicShade');let a=document.getElementById('musicAudio');if(!a||!a.duration)return;let pct=parseFloat(range.value);shade.style.left=pct+'%';let widthPct=(clipLength/a.duration)*100;if(widthPct>40)widthPct=40;shade.style.width=widthPct+'%';}
-function updateTimeLabels(){let a=document.getElementById('musicAudio');if(!a.duration)return;let start=a._clipStart||0;document.getElementById('rangeStart').innerText=Math.floor(start/60)+':'+String(Math.floor(start%60)).padStart(2,'0');document.getElementById('rangeEnd').innerText=Math.floor((start+clipLength)/60)+':'+String(Math.floor((start+clipLength)%60)).padStart(2,'0')+` (${clipLength}s clip)`;}
-function toggleMusic(){let a=document.getElementById('musicAudio');if(a.paused){a.play();document.getElementById('musicPlayBtn').innerText='⏸️ Pause';}else{a.pause();document.getElementById('musicPlayBtn').innerText='▶️ Play from selected part';}}
+function updateTimeLabels(){let a=document.getElementById('musicAudio');if(!a.duration)return;let start=a._clipStart||0;document.getElementById('rangeStart').innerText=Math.floor(start/60)+':'+String(Math.floor(start%60)).padStart(2,'0');document.getElementById('rangeEnd').innerText=Math.floor((start+clipLength)/60)+':'+String(Math.floor((start+clipLength)%60)).padStart(2,'0');}
+function toggleMusic(){let a=document.getElementById('musicAudio');if(a.paused){a.play();document.getElementById('musicPlayBtn').innerText='⏸️ Pause';}else{a.pause();document.getElementById('musicPlayBtn').innerText='▶️ Play';}}
 function removeMusic(){tempMusic=null;document.getElementById('musicPreview').classList.add('hide');let a=document.getElementById('musicAudio');a.pause();a.src='';}
 function setClipLength(s){clipLength=s;document.querySelectorAll('[onclick^="setClipLength"]').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');updateShade();updateTimeLabels();let a=document.getElementById('musicAudio');if(a&&a._clipStart!==undefined){a.currentTime=a._clipStart;a.play();}}
 function openSpotifySearch(){document.getElementById('spotifyBox').classList.toggle('hide');}
-function searchSpotify(){let q=document.getElementById('spotifyQuery').value.trim();if(!q)return;document.getElementById('spotifyResults').innerHTML=`<div class="listItem"><div style="flex:1"><div style="font-size:12px;font-weight:600">🎵 ${q}</div></div><button class="pill dark" onclick="tempMusic={src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',name:'${q} (Spotify)',type:'spotify'};renderTempMusic()">Add</button></div>`;}
+function searchSpotify(){let q=document.getElementById('spotifyQuery').value.trim();if(!q)return;document.getElementById('spotifyResults').innerHTML=`<div class="listItem"><div style="flex:1"><div style="font-size:12px;font-weight:600">🎵 ${q}</div></div><button class="pill dark" onclick="tempMusic={src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',name:'${q}',type:'spotify'};renderTempMusic()">Add</button></div>`;}
 function renderMusicPlayer(p){let box=document.getElementById('modalMusicPlayer');if(!p.music){box.classList.add('hide');return;}box.classList.remove('hide');box.innerHTML=`<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px;display:flex;gap:10px;align-items:center"><button class="pill dark" onclick="let a=document.getElementById('modalAudio');a.paused?a.play():a.pause()">▶️ ${p.music.name}</button><audio id="modalAudio" src="${p.music.src}"></audio></div>`;}
-function publishPost(){let t=document.getElementById('postTitle').value.trim();let b=document.getElementById('postBody').value.trim();let c=document.getElementById('postCat').value.trim()||'LIFE';if(!t)return alert('Title required');if(!tempSlides.length)return alert('Add media');POSTS.unshift({cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false,music:tempMusic});saveAll();closeCreate();render();}
-function saveDraft(){let t=document.getElementById('postTitle').value.trim()||'Untitled';DRAFTS.unshift({title:t,body:document.getElementById('postBody').value,cat:document.getElementById('postCat').value,slides:[...tempSlides],music:tempMusic});saveAll();alert('Saved to Drafts');closeCreate();renderAuth();}
-function saveSchedule(){let dt=document.getElementById('scheduleTime').value;if(!dt)return alert('Select time');let t=document.getElementById('postTitle').value.trim()||'Untitled';let newPost={cat:(document.getElementById('postCat').value||'LIFE').toUpperCase(),title:t,body:document.getElementById('postBody').value,slides:[...tempSlides],likes:[],comments:[],date:new Date(dt).getTime(),archived:false,music:tempMusic};let delay=new Date(dt).getTime()-Date.now();if(delay>0){setTimeout(()=>{POSTS.unshift(newPost);saveAll();render();},delay);alert('Scheduled for '+dt);}else{POSTS.unshift(newPost);saveAll();render();}closeCreate();}
+function publishPost(){let t=document.getElementById('postTitle').value.trim();let b=document.getElementById('postBody').value.trim();let c=document.getElementById('postCat').value.trim()||'LIFE';let status=document.getElementById('publishStatus');if(!t){status.innerText='❌ Title required';return;}if(!tempSlides.length){status.innerText='❌ Add media';return;}status.innerText='Publishing...';try{let newPost={cat:c.toUpperCase(),title:t,body:b,slides:[...tempSlides],likes:[],comments:[],date:Date.now(),archived:false,music:tempMusic};POSTS.unshift(newPost);saveAll();closeCreate();render();status.innerText='';}catch(e){status.innerText='❌ Failed: '+e.message;}}
+function saveDraft(){let t=document.getElementById('postTitle').value.trim()||'Untitled';DRAFTS.unshift({title:t,body:document.getElementById('postBody').value,cat:document.getElementById('postCat').value,slides:[...tempSlides],music:tempMusic});saveAll();alert('Saved');closeCreate();renderAuth();}
+function saveSchedule(){let dt=document.getElementById('scheduleTime').value;if(!dt)return alert('Select time');let t=document.getElementById('postTitle').value.trim()||'Untitled';let newPost={cat:(document.getElementById('postCat').value||'LIFE').toUpperCase(),title:t,body:document.getElementById('postBody').value,slides:[...tempSlides],likes:[],comments:[],date:new Date(dt).getTime(),archived:false,music:tempMusic};let delay=new Date(dt).getTime()-Date.now();if(delay>0){setTimeout(()=>{POSTS.unshift(newPost);saveAll();render();},delay);alert('Scheduled');}else{POSTS.unshift(newPost);saveAll();render();}closeCreate();}
 renderAuth();render();
 </script>
 </body></html>
