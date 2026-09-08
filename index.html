@@ -158,7 +158,7 @@ const firebaseConfig = {
   appId: "1:173337692340:web:e8531e2cf9096c5d016fe1"
 };
 firebase.initializeApp(firebaseConfig);
-const cloudRef = firebase.database().ref('posts');
+const cloudRef = firebase.database().ref('mindnotes-cloud')
 
 const DB_NAME='MindNotesDB_v21'; const DB_VER=1;
 function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{let db=e.target.result;if(!db.objectStoreNames.contains('posts'))db.createObjectStore('posts',{keyPath:'id'});if(!db.objectStoreNames.contains('drafts'))db.createObjectStore('drafts',{keyPath:'id'});if(!db.objectStoreNames.contains('deleted'))db.createObjectStore('deleted',{keyPath:'id'});if(!db.objectStoreNames.contains('contacts'))db.createObjectStore('contacts',{keyPath:'id'});if(!db.objectStoreNames.contains('blocked'))db.createObjectStore('blocked',{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
